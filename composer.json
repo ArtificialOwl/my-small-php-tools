@@ -2,7 +2,7 @@
   "name": "daita/my-small-php-tools",
   "description": "My small PHP Tools",
   "minimum-stability": "stable",
-  "license": "agpl",
+  "license": "AGPL-3.0-or-later",
   "authors": [
     {
       "name": "Maxence Lange",
