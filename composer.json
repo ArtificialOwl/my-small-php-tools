@@ -1,0 +1,15 @@
+{
+  "name": "daita/my-small-php-tools",
+  "description": "My small PHP Tools",
+  "minimum-stability": "stable",
+  "license": "agpl",
+  "authors": [
+    {
+      "name": "Maxence Lange",
+      "email": "maxence@artificial-owl.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0"
+  }
+}
