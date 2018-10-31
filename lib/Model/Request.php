@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 
 /**
- * Nextcloud - Social Support
+ * Some tools for myself.
  *
  * This file is licensed under the Affero General Public License version 3 or
  * later. See the COPYING file.
@@ -31,7 +31,8 @@ namespace daita\MySmallPhpTools\Model;
 
 use JsonSerializable;
 
-class Request implements \JsonSerializable {
+
+class Request implements JsonSerializable {
 
 	const TYPE_GET = 0;
 	const TYPE_POST = 1;
