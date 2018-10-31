@@ -45,7 +45,7 @@ trait TArrayTools {
 			return $default;
 		}
 
-		if (!key_exists($k, $arr) || $arr[$k] === null) {
+		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
 			return $default;
 		}
 
@@ -65,7 +65,7 @@ trait TArrayTools {
 			return $default;
 		}
 
-		if (!key_exists($k, $arr) || $arr[$k] === null) {
+		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
 			return $default;
 		}
 
@@ -85,7 +85,7 @@ trait TArrayTools {
 			return $default;
 		}
 
-		if (!key_exists($k, $arr)) {
+		if (!array_key_exists($k, $arr)) {
 			return $default;
 		}
 
@@ -105,7 +105,7 @@ trait TArrayTools {
 			return $default;
 		}
 
-		if (!key_exists($k, $arr)) {
+		if (!array_key_exists($k, $arr)) {
 			return $default;
 		}
 
