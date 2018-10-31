@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 
 /**
- * Nextcloud - Social Support
+ * Some tools for myself.
  *
  * This file is licensed under the Affero General Public License version 3 or
  * later. See the COPYING file.
@@ -39,27 +39,39 @@ trait TNCDataResponse {
 
 	/**
 	 * @param string $message
+	 * @param array $more
 	 *
 	 * @return DataResponse
 	 */
-	private function fail(string $message = ''): DataResponse {
+	private function fail(string $message = '', array $more = []): DataResponse {
+		$data = array_merge(
+			$more,
+			[
+				'status'  => -1,
+				'message' => $message
+			]
+		);
+
 		return new DataResponse(
-			['status' => -1, 'message' => $message], Http::STATUS_NON_AUTHORATIVE_INFORMATION
+			$data, Http::STATUS_NON_AUTHORATIVE_INFORMATION
 		);
 	}
 
 
 	/**
 	 * @param array $result
+	 * @param array $more
 	 *
 	 * @return DataResponse
 	 */
-	private function success(array $result): DataResponse {
-		$data =
+	private function success(array $result, array $more = []): DataResponse {
+		$data = array_merge(
+			$more,
 			[
 				'result' => $result,
 				'status' => 1
-			];
+			]
+		);
 
 		return new DataResponse($data, Http::STATUS_OK);
 	}
