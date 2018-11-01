@@ -82,6 +82,26 @@ trait TArrayTools {
 	/**
 	 * @param string $k
 	 * @param array $arr
+	 * @param float $default
+	 *
+	 * @return float
+	 */
+	private function getFloat(string $k, array $arr, float $default = 0): float {
+		if ($arr === null) {
+			return $default;
+		}
+
+		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
+			return $default;
+		}
+
+		return intval($arr[$k]);
+	}
+
+
+	/**
+	 * @param string $k
+	 * @param array $arr
 	 * @param bool $default
 	 *
 	 * @return bool
