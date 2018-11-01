@@ -54,11 +54,16 @@ trait TPathTools {
 	/**
 	 * @param string $path
 	 * @param bool $force
+	 * @param bool $clean
 	 *
 	 * @return string
 	 */
-	private function withoutEndSlash(string $path, bool $force = false): string {
-		$path = str_replace('//', '/', $path);
+	private function withoutEndSlash(string $path, bool $force = false, bool $clean = true
+	): string {
+		if ($clean) {
+			$path = str_replace('//', '/', $path);
+		}
+		
 		if ($path === '/' && !$force) {
 			return $path;
 		}
@@ -85,11 +90,15 @@ trait TPathTools {
 	/**
 	 * @param string $path
 	 * @param bool $force
+	 * @param bool $clean
 	 *
 	 * @return string
 	 */
-	private function withoutBeginSlash(string $path, bool $force = false) {
-		$path = str_replace('//', '/', $path);
+	private function withoutBeginSlash(string $path, bool $force = false, bool $clean = true) {
+		if ($clean) {
+			$path = str_replace('//', '/', $path);
+		}
+
 		if ($path === '/' && !$force) {
 			return $path;
 		}
