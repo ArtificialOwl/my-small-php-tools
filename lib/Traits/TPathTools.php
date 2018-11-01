@@ -63,7 +63,7 @@ trait TPathTools {
 		if ($clean) {
 			$path = str_replace('//', '/', $path);
 		}
-		
+
 		if ($path === '/' && !$force) {
 			return $path;
 		}

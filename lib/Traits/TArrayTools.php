@@ -55,7 +55,7 @@ trait TArrayTools {
 			return $default;
 		}
 
-		return $arr[$k];
+		return (string) $arr[$k];
 	}
 
 
