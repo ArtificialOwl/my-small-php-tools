@@ -31,66 +31,72 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits;
 
 
-use JsonSerializable;
-use OCP\AppFramework\Http;
-use OCP\AppFramework\Http\DataResponse;
-
-
 /**
- * Trait TNCDataResponse
+ * Trait TArrayTools
  *
  * @package daita\MySmallPhpTools\Traits
  */
-trait TNCDataResponse {
-
+trait TPathTools {
 
 	/**
-	 * @param string $message
-	 * @param array $more
+	 * @param string $path
 	 *
-	 * @return DataResponse
+	 * @return string
 	 */
-	private function fail(string $message = '', array $more = []): DataResponse {
-		$data = array_merge(
-			$more,
-			[
-				'status'  => -1,
-				'message' => $message
-			]
-		);
+	private function withEndSlash(string $path): string {
+		$path .= '/';
+		$path = str_replace('//', '/', $path);
 
-		return new DataResponse(
-			$data, Http::STATUS_NON_AUTHORATIVE_INFORMATION
-		);
+		return trim($path);
 	}
 
 
 	/**
-	 * @param array $result
-	 * @param array $more
+	 * @param string $path
+	 * @param bool $force
 	 *
-	 * @return DataResponse
+	 * @return string
 	 */
-	private function success(array $result, array $more = []): DataResponse {
-		$data = array_merge(
-			$more,
-			[
-				'result' => $result,
-				'status' => 1
-			]
-		);
+	private function withoutEndSlash(string $path, bool $force = false): string {
+		$path = str_replace('//', '/', $path);
+		if ($path === '/' && !$force) {
+			return $path;
+		}
 
-		return new DataResponse($data, Http::STATUS_OK);
+		$path = rtrim($path, '/');
+
+		return trim($path);
 	}
 
 
 	/**
-	 * @param JsonSerializable $result
+	 * @param string $path
 	 *
-	 * @return DataResponse
+	 * @return string
 	 */
-	private function directSuccess(JsonSerializable $result): DataResponse {
-		return new DataResponse($result, Http::STATUS_OK);
+	private function withBeginSlash(string $path): string {
+		$path = '/' . $path;
+		$path = str_replace('//', '/', $path);
+
+		return trim($path);
+	}
+
+
+	/**
+	 * @param string $path
+	 * @param bool $force
+	 *
+	 * @return string
+	 */
+	private function withoutBeginSlash(string $path, bool $force = false) {
+		$path = str_replace('//', '/', $path);
+		if ($path === '/' && !$force) {
+			return $path;
+		}
+
+		$path = ltrim($path, '/');
+
+		return trim($path);
 	}
 
 }

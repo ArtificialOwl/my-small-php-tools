@@ -27,9 +27,15 @@ declare(strict_types=1);
  *
  */
 
+
 namespace daita\MySmallPhpTools\Traits;
 
 
+/**
+ * Trait TArrayTools
+ *
+ * @package daita\MySmallPhpTools\Traits
+ */
 trait TArrayTools {
 
 

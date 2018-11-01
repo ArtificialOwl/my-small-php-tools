@@ -27,11 +27,18 @@ declare(strict_types=1);
  *
  */
 
+
 namespace daita\MySmallPhpTools\Model;
+
 
 use JsonSerializable;
 
 
+/**
+ * Class Request
+ *
+ * @package daita\MySmallPhpTools\Model
+ */
 class Request implements JsonSerializable {
 
 	const TYPE_GET = 0;
