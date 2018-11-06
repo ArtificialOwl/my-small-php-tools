@@ -46,7 +46,7 @@ trait TArrayTools {
 	 *
 	 * @return string
 	 */
-	private function get(string $k, array $arr, string $default = ''): string {
+	protected function get(string $k, array $arr, string $default = ''): string {
 		if ($arr === null) {
 			return $default;
 		}
@@ -66,7 +66,7 @@ trait TArrayTools {
 	 *
 	 * @return int
 	 */
-	private function getInt(string $k, array $arr, int $default = 0): int {
+	protected function getInt(string $k, array $arr, int $default = 0): int {
 		if ($arr === null) {
 			return $default;
 		}
@@ -86,7 +86,7 @@ trait TArrayTools {
 	 *
 	 * @return float
 	 */
-	private function getFloat(string $k, array $arr, float $default = 0): float {
+	protected function getFloat(string $k, array $arr, float $default = 0): float {
 		if ($arr === null) {
 			return $default;
 		}
@@ -106,7 +106,7 @@ trait TArrayTools {
 	 *
 	 * @return bool
 	 */
-	private function getBool(string $k, array $arr, bool $default = false): bool {
+	protected function getBool(string $k, array $arr, bool $default = false): bool {
 		if ($arr === null) {
 			return $default;
 		}
@@ -126,7 +126,7 @@ trait TArrayTools {
 	 *
 	 * @return array
 	 */
-	private function getArray(string $k, array $arr, array $default = []): array {
+	protected function getArray(string $k, array $arr, array $default = []): array {
 		if ($arr === null) {
 			return $default;
 		}

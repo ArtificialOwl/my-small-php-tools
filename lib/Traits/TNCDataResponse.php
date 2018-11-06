@@ -50,7 +50,7 @@ trait TNCDataResponse {
 	 *
 	 * @return DataResponse
 	 */
-	private function fail(string $message = '', array $more = []): DataResponse {
+	protected function fail(string $message = '', array $more = []): DataResponse {
 		$data = array_merge(
 			$more,
 			[
@@ -71,7 +71,7 @@ trait TNCDataResponse {
 	 *
 	 * @return DataResponse
 	 */
-	private function success(array $result, array $more = []): DataResponse {
+	protected function success(array $result, array $more = []): DataResponse {
 		$data = array_merge(
 			$more,
 			[
@@ -89,7 +89,7 @@ trait TNCDataResponse {
 	 *
 	 * @return DataResponse
 	 */
-	private function directSuccess(JsonSerializable $result): DataResponse {
+	protected function directSuccess(JsonSerializable $result): DataResponse {
 		return new DataResponse($result, Http::STATUS_OK);
 	}
 
