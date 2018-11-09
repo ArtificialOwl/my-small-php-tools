@@ -31,6 +31,8 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits;
 
 
+use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
+
 /**
  * Trait TArrayTools
  *
@@ -187,6 +189,30 @@ trait TArrayTools {
 
 		return $r;
 	}
+
+
+	/**
+	 * @param string $k
+	 * @param string $value
+	 * @param array $list
+	 *
+	 * @return mixed
+	 * @throws ArrayNotFoundException
+	 */
+	protected function extractArray(string $k, string $value, array $list) {
+		foreach ($list as $arr) {
+			if (!array_key_exists($k, $arr)) {
+				continue;
+			}
+
+			if ($arr[$k] === $value) {
+				return $arr;
+			}
+		}
+
+		throw new ArrayNotFoundException();
+	}
+
 
 }
 

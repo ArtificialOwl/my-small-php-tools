@@ -236,12 +236,27 @@ class Request implements JsonSerializable {
 //		);
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getUrlData() {
+//		return json_encode($this->getData());
+		if ($this->getData() === []) {
+			return '';
+		}
+
+		return preg_replace(
+			'/([(%5B)]{1})[0-9]+([(%5D)]{1})/', '$1$2', http_build_query($this->getData())
+		);
+	}
+
 
 	/**
 	 * @return array
 	 */
 	public function jsonSerialize(): array {
 		return [
+			'host' => $this->getAddress(),
 			'url'  => $this->getUrl(),
 			'type' => $this->getType(),
 			'data' => $this->getData()
