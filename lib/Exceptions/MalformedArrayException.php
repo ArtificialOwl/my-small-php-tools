@@ -36,7 +36,7 @@ namespace daita\MySmallPhpTools\Exceptions;
  *
  * @package daita\MySmallPhpTools\Exceptions
  */
-class ArrayNotFoundException extends \Exception {
+class MalformedArrayException extends \Exception {
 
 }
 

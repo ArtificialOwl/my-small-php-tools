@@ -32,6 +32,7 @@ namespace daita\MySmallPhpTools\Traits;
 
 
 use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
+use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
 
 /**
  * Trait TArrayTools
@@ -213,6 +214,20 @@ trait TArrayTools {
 		throw new ArrayNotFoundException();
 	}
 
+
+	/**
+	 * @param array $keys
+	 * @param array $arr
+	 *
+	 * @throws MalformedArrayException
+	 */
+	public function mustContains(array $keys, array $arr) {
+		foreach ($keys as $key) {
+			if (!array_key_exists($key, $arr)) {
+				throw new MalformedArrayException();
+			}
+		}
+	}
 
 }
 
