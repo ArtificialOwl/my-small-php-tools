@@ -67,6 +67,10 @@ trait TArrayTools {
 			return $default;
 		}
 
+		if (!is_string($arr[$k]) || (!is_int($arr[$k]))) {
+			return $default;
+		}
+
 		return (string)$arr[$k];
 	}
 
