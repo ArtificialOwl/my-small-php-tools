@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace daita\MySmallPhpTools\Traits\Nextcloud;
 
 
 use JsonSerializable;
@@ -59,6 +59,7 @@ trait TNCDataResponse {
 			]
 		);
 
+		\OC::$server->getLogger()->log(2, json_encode($more) . ' - ' . $message);
 		return new DataResponse(
 			$data, Http::STATUS_NON_AUTHORATIVE_INFORMATION
 		);
