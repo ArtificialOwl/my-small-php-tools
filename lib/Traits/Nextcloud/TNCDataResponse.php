@@ -59,9 +59,11 @@ trait TNCDataResponse {
 			]
 		);
 
-		\OC::$server->getLogger()->log(2, json_encode($more) . ' - ' . $message);
+		\OC::$server->getLogger()
+					->log(2, json_encode($more) . ' - ' . $message);
+
 		return new DataResponse(
-			$data, Http::STATUS_NON_AUTHORATIVE_INFORMATION
+			$data, Http::STATUS_INTERNAL_SERVER_ERROR
 		);
 	}
 
@@ -72,7 +74,7 @@ trait TNCDataResponse {
 	 *
 	 * @return DataResponse
 	 */
-	protected function success(array $result, array $more = []): DataResponse {
+	protected function success(array $result = [], array $more = []): DataResponse {
 		$data = array_merge(
 			$more,
 			[
