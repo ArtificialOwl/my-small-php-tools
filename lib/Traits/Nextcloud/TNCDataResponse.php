@@ -62,7 +62,7 @@ trait TNCDataResponse {
 		);
 
 		\OC::$server->getLogger()
-					->log(2, json_encode($more) . ' - ' . $message);
+					->log(2, json_encode($data));
 
 		return new DataResponse(
 			$data, Http::STATUS_INTERNAL_SERVER_ERROR
