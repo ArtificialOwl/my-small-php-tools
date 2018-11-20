@@ -31,6 +31,7 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud;
 
 
+use Exception;
 use JsonSerializable;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -45,17 +46,18 @@ trait TNCDataResponse {
 
 
 	/**
-	 * @param string $message
+	 * @param Exception $e
 	 * @param array $more
 	 *
 	 * @return DataResponse
 	 */
-	protected function fail(string $message = '', array $more = []): DataResponse {
+	protected function fail(Exception $e, array $more = []): DataResponse {
 		$data = array_merge(
 			$more,
 			[
-				'status'  => -1,
-				'message' => $message
+				'status'    => -1,
+				'exception' => get_class($e),
+				'message'   => $e->getMessage()
 			]
 		);
 
