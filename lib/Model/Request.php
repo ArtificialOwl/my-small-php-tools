@@ -61,6 +61,9 @@ class Request implements JsonSerializable {
 	/** @var array */
 	private $data = [];
 
+	/** @var int */
+	private $timeout = 10;
+
 
 	/**
 	 * Request constructor.
@@ -225,7 +228,7 @@ class Request implements JsonSerializable {
 	/**
 	 * @return string
 	 */
-	public function getDataBody() {
+	public function getDataBody(): string {
 		return json_encode($this->getData());
 //		if ($this->getData() === []) {
 //			return '';
@@ -239,7 +242,7 @@ class Request implements JsonSerializable {
 	/**
 	 * @return string
 	 */
-	public function getUrlData() {
+	public function getUrlData(): string {
 //		return json_encode($this->getData());
 		if ($this->getData() === []) {
 			return '';
@@ -252,14 +255,34 @@ class Request implements JsonSerializable {
 
 
 	/**
+	 * @return int
+	 */
+	public function getTimeout(): int {
+		return $this->timeout;
+	}
+
+	/**
+	 * @param int $timeout
+	 *
+	 * @return Request
+	 */
+	public function setTimeout(int $timeout): Request {
+		$this->timeout = $timeout;
+
+		return $this;
+	}
+
+
+	/**
 	 * @return array
 	 */
 	public function jsonSerialize(): array {
 		return [
-			'host' => $this->getAddress(),
-			'url'  => $this->getUrl(),
-			'type' => $this->getType(),
-			'data' => $this->getData()
+			'host'    => $this->getAddress(),
+			'url'     => $this->getUrl(),
+			'timeout' => $this->getTimeout(),
+			'type'    => $this->getType(),
+			'data'    => $this->getData()
 		];
 	}
 }
