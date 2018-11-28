@@ -64,6 +64,9 @@ class Request implements JsonSerializable {
 	/** @var int */
 	private $timeout = 10;
 
+	/** @var string */
+	private $userAgent = '';
+
 
 	/**
 	 * Request constructor.
@@ -268,6 +271,25 @@ class Request implements JsonSerializable {
 	 */
 	public function setTimeout(int $timeout): Request {
 		$this->timeout = $timeout;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getUserAgent(): string {
+		return $this->userAgent;
+	}
+
+	/**
+	 * @param string $userAgent
+	 *
+	 * @return Request
+	 */
+	public function setUserAgent(string $userAgent): Request {
+		$this->userAgent = $userAgent;
 
 		return $this;
 	}
