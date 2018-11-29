@@ -65,7 +65,7 @@ trait TNCDataResponse {
 		);
 
 		\OC::$server->getLogger()
-					->log(2, json_encode($data));
+					->log(2, $status . ' - ' . json_encode($data));
 
 		return new DataResponse($data, $status);
 	}
