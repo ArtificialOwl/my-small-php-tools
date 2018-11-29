@@ -188,7 +188,15 @@ trait TArrayTools {
 		}
 
 		$r = $arr[$k];
-		if ($r === null || !is_array($r)) {
+		if ($r === null || (!is_array($r) && !is_string($r))) {
+			return $default;
+		}
+
+		if (is_string($r)) {
+			$r = json_decode($r, true);
+		}
+
+		if (!is_array($r)) {
 			return $default;
 		}
 
