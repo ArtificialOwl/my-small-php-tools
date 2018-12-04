@@ -47,13 +47,13 @@ class Request implements JsonSerializable {
 	const TYPE_DELETE = 3;
 
 	/** @var string */
-	private $address;
+	private $address = '';
+
+	/** @var string */
+	private $url = '';
 
 	/** @var int */
-	private $url;
-
-	/** @var int */
-	private $type;
+	private $type = 0;
 
 	/** @var array */
 	private $headers = [];
