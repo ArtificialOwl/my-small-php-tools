@@ -50,10 +50,13 @@ trait TNCDataResponse {
 	 * @param array $more
 	 * @param int $status
 	 *
+	 * @param bool $log
+	 *
 	 * @return DataResponse
 	 */
 	protected function fail(
-		Exception $e, array $more = [], int $status = Http::STATUS_INTERNAL_SERVER_ERROR
+		Exception $e, array $more = [], int $status = Http::STATUS_INTERNAL_SERVER_ERROR,
+		bool $log = true
 	): DataResponse {
 		$data = array_merge(
 			$more,
@@ -64,8 +67,10 @@ trait TNCDataResponse {
 			]
 		);
 
-		\OC::$server->getLogger()
-					->log(2, $status . ' - ' . json_encode($data));
+		if ($log) {
+			\OC::$server->getLogger()
+						->log(2, $status . ' - ' . json_encode($data));
+		}
 
 		return new DataResponse($data, $status);
 	}
