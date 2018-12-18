@@ -60,7 +60,13 @@ trait TArrayTools {
 				return $default;
 			}
 
-			return $this->get($subs[1], $arr[$subs[0]], $default);
+
+			$r = $arr[$subs[0]];
+			if (!is_array($r)) {
+				return $default;
+			}
+
+			return $this->get($subs[1], $r, $default);
 		}
 
 		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
@@ -93,7 +99,12 @@ trait TArrayTools {
 				return $default;
 			}
 
-			return $this->getInt($subs[1], $arr[$subs[0]], $default);
+			$r = $arr[$subs[0]];
+			if (!is_array($r)) {
+				return $default;
+			}
+
+			return $this->getInt($subs[1], $r, $default);
 		}
 
 		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
@@ -122,7 +133,12 @@ trait TArrayTools {
 				return $default;
 			}
 
-			return $this->getFloat($subs[1], $arr[$subs[0]], $default);
+			$r = $arr[$subs[0]];
+			if (!is_array($r)) {
+				return $default;
+			}
+
+			return $this->getFloat($subs[1], $r, $default);
 		}
 
 		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
@@ -180,7 +196,12 @@ trait TArrayTools {
 				return $default;
 			}
 
-			return $this->getArray($subs[1], $arr[$subs[0]], $default);
+			$r = $arr[$subs[0]];
+			if (!is_array($r)) {
+				return $default;
+			}
+
+			return $this->getArray($subs[1], $r, $default);
 		}
 
 		if (!array_key_exists($k, $arr)) {
