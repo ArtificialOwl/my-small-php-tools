@@ -41,10 +41,12 @@ use JsonSerializable;
  */
 class Request implements JsonSerializable {
 
+
 	const TYPE_GET = 0;
 	const TYPE_POST = 1;
 	const TYPE_PUT = 2;
 	const TYPE_DELETE = 3;
+
 
 	/** @var string */
 	private $address = '';
@@ -54,6 +56,9 @@ class Request implements JsonSerializable {
 
 	/** @var int */
 	private $type = 0;
+
+	/** @var bool */
+	private $binary = false;
 
 	/** @var array */
 	private $headers = [];
@@ -67,16 +72,21 @@ class Request implements JsonSerializable {
 	/** @var string */
 	private $userAgent = '';
 
+	/** @var int */
+	private $resultCode = 0;
+
 
 	/**
 	 * Request constructor.
 	 *
 	 * @param string $url
 	 * @param int $type
+	 * @param bool $binary
 	 */
-	public function __construct($url, $type = 0) {
+	public function __construct(string $url, int $type = 0, bool $binary = false) {
 		$this->url = $url;
 		$this->type = $type;
+		$this->binary = $binary;
 	}
 
 
@@ -97,6 +107,15 @@ class Request implements JsonSerializable {
 
 		return $this;
 	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isBinary(): bool {
+		return $this->binary;
+	}
+
 
 	/**
 	 * @return string
@@ -290,6 +309,25 @@ class Request implements JsonSerializable {
 	 */
 	public function setUserAgent(string $userAgent): Request {
 		$this->userAgent = $userAgent;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getResultCode(): int {
+		return $this->resultCode;
+	}
+
+	/**
+	 * @param int $resultCode
+	 *
+	 * @return Request
+	 */
+	public function setResultCode(int $resultCode): Request {
+		$this->resultCode = $resultCode;
 
 		return $this;
 	}
