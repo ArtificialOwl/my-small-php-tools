@@ -46,12 +46,19 @@ class Cache implements JsonSerializable {
 
 
 	/** @var CacheItem[] */
-	private $items;
+	private $items = [];
 
 
 	public function __construct() {
 	}
 
+
+	/**
+	 * @return bool
+	 */
+	public function gotItems(): bool {
+		return !empty($this->items);
+	}
 
 	/**
 	 * @return CacheItem[]
@@ -90,6 +97,55 @@ class Cache implements JsonSerializable {
 
 
 	/**
+	 * @param int $id
+	 *
+	 * @return Cache
+	 */
+	public function removeItem(int $id): Cache {
+		$new = [];
+		foreach ($this->getItems() as $item) {
+			if ($item->getId() !== $id) {
+				$new[] = $item;
+			}
+		}
+
+		$this->items = $new;
+
+		return $this;
+	}
+
+
+	/**
+	 * @param CacheItem $cacheItem
+	 *
+	 * @return Cache
+	 */
+	public function updateItem(CacheItem $cacheItem): Cache {
+		if ($cacheItem->getUrl() === '') {
+			return $this;
+		}
+
+		$new = [];
+		$updated = false;
+		foreach ($this->getItems() as $item) {
+			if ($item->getUrl() === $cacheItem->getUrl()) {
+				$updated = true;
+				$new[] = $cacheItem;
+			} else {
+				$new[] = $item;
+			}
+		}
+
+		if (!$updated) {
+			$new[] = $cacheItem;
+		}
+
+		$this->items = $new;
+
+		return $this;
+	}
+
+	/**
 	 * @param array $data
 	 */
 	public function import(array $data) {
@@ -112,15 +168,15 @@ class Cache implements JsonSerializable {
 	 */
 	public function jsonSerialize(): array {
 
-		$items = array_map(
+		$ids = array_map(
 			function(CacheItem $item) {
 				return $item->getUrl();
 			}, $this->getItems()
 		);
 
 		$result = [
-			'_items' => $items,
-			'_count' => count($items)
+			'_items' => $ids,
+			'_count' => count($ids)
 		];
 
 		foreach ($this->getItems() as $item) {
