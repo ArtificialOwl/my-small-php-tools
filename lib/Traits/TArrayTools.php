@@ -54,26 +54,25 @@ trait TArrayTools {
 			return $default;
 		}
 
-		$subs = explode('.', $k, 2);
-		if (sizeof($subs) > 1) {
-			if (!array_key_exists($subs[0], $arr)) {
+		if (!array_key_exists($k, $arr)) {
+			$subs = explode('.', $k, 2);
+			if (sizeof($subs) > 1) {
+				if (!array_key_exists($subs[0], $arr)) {
+					return $default;
+				}
+
+				$r = $arr[$subs[0]];
+				if (!is_array($r)) {
+					return $default;
+				}
+
+				return $this->get($subs[1], $r, $default);
+			} else {
 				return $default;
 			}
-
-
-			$r = $arr[$subs[0]];
-			if (!is_array($r)) {
-				return $default;
-			}
-
-			return $this->get($subs[1], $r, $default);
 		}
 
-		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
-			return $default;
-		}
-
-		if (!is_string($arr[$k]) && (!is_int($arr[$k]))) {
+		if ($arr[$k] === null || !is_string($arr[$k]) && (!is_int($arr[$k]))) {
 			return $default;
 		}
 
@@ -93,21 +92,25 @@ trait TArrayTools {
 			return $default;
 		}
 
-		$subs = explode('.', $k, 2);
-		if (sizeof($subs) > 1) {
-			if (!array_key_exists($subs[0], $arr)) {
+		if (!array_key_exists($k, $arr)) {
+			$subs = explode('.', $k, 2);
+			if (sizeof($subs) > 1) {
+				if (!array_key_exists($subs[0], $arr)) {
+					return $default;
+				}
+
+				$r = $arr[$subs[0]];
+				if (!is_array($r)) {
+					return $default;
+				}
+
+				return $this->getInt($subs[1], $r, $default);
+			} else {
 				return $default;
 			}
-
-			$r = $arr[$subs[0]];
-			if (!is_array($r)) {
-				return $default;
-			}
-
-			return $this->getInt($subs[1], $r, $default);
 		}
 
-		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
+		if ($arr[$k] === null) {
 			return $default;
 		}
 
@@ -127,21 +130,25 @@ trait TArrayTools {
 			return $default;
 		}
 
-		$subs = explode('.', $k, 2);
-		if (sizeof($subs) > 1) {
-			if (!array_key_exists($subs[0], $arr)) {
+		if (!array_key_exists($k, $arr)) {
+			$subs = explode('.', $k, 2);
+			if (sizeof($subs) > 1) {
+				if (!array_key_exists($subs[0], $arr)) {
+					return $default;
+				}
+
+				$r = $arr[$subs[0]];
+				if (!is_array($r)) {
+					return $default;
+				}
+
+				return $this->getFloat($subs[1], $r, $default);
+			} else {
 				return $default;
 			}
-
-			$r = $arr[$subs[0]];
-			if (!is_array($r)) {
-				return $default;
-			}
-
-			return $this->getFloat($subs[1], $r, $default);
 		}
 
-		if (!array_key_exists($k, $arr) || $arr[$k] === null) {
+		if ($arr[$k] === null) {
 			return $default;
 		}
 
@@ -161,16 +168,20 @@ trait TArrayTools {
 			return $default;
 		}
 
-		$subs = explode('.', $k, 2);
-		if (sizeof($subs) > 1) {
-			if (!array_key_exists($subs[0], $arr)) {
+		if (!array_key_exists($k, $arr)) {
+			$subs = explode('.', $k, 2);
+			if (sizeof($subs) > 1) {
+				if (!array_key_exists($subs[0], $arr)) {
+					return $default;
+				}
+
+				return $this->getBool($subs[1], $arr[$subs[0]], $default);
+			} else {
 				return $default;
 			}
-
-			return $this->getBool($subs[1], $arr[$subs[0]], $default);
 		}
 
-		if (!array_key_exists($k, $arr)) {
+		if ($arr[$k] === null) {
 			return $default;
 		}
 
@@ -190,22 +201,22 @@ trait TArrayTools {
 			return $default;
 		}
 
-		$subs = explode('.', $k, 2);
-		if (sizeof($subs) > 1) {
-			if (!array_key_exists($subs[0], $arr)) {
-				return $default;
-			}
-
-			$r = $arr[$subs[0]];
-			if (!is_array($r)) {
-				return $default;
-			}
-
-			return $this->getArray($subs[1], $r, $default);
-		}
-
 		if (!array_key_exists($k, $arr)) {
-			return $default;
+			$subs = explode('.', $k, 2);
+			if (sizeof($subs) > 1) {
+				if (!array_key_exists($subs[0], $arr)) {
+					return $default;
+				}
+
+				$r = $arr[$subs[0]];
+				if (!is_array($r)) {
+					return $default;
+				}
+
+				return $this->getArray($subs[1], $r, $default);
+			} else {
+				return $default;
+			}
 		}
 
 		$r = $arr[$k];
