@@ -55,6 +55,9 @@ class CacheItem implements JsonSerializable {
 	private $status = 0;
 
 	/** @var int */
+	private $error = 0;
+
+	/** @var int */
 	private $creation = 0;
 
 
@@ -124,6 +127,29 @@ class CacheItem implements JsonSerializable {
 		return $this;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getError(): int {
+		return $this->error;
+	}
+
+	/**
+	 * @return CacheItem
+	 */
+	public function incrementError(): CacheItem {
+		$this->error++;
+
+		return $this;
+	}
+
+	/**
+	 * @param int $error
+	 */
+	public function setError(int $error) {
+		$this->error = $error;
+	}
+
 
 	/**
 	 * @return int
@@ -151,6 +177,7 @@ class CacheItem implements JsonSerializable {
 		$this->setUrl($this->get('url', $data, ''));
 		$this->setContent($this->get('content', $data, ''));
 		$this->setStatus($this->getInt('status', $data, 0));
+		$this->setError($this->getInt('error', $data, 0));
 		$this->setCreation($this->getInt('creation', $data, 0));
 	}
 
@@ -163,6 +190,7 @@ class CacheItem implements JsonSerializable {
 			'url'      => $this->getUrl(),
 			'content'  => $this->getContent(),
 			'status'   => $this->getStatus(),
+			'error'    => $this->getError(),
 			'creation' => $this->getCreation()
 		];
 	}
