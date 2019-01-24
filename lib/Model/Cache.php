@@ -153,11 +153,7 @@ class Cache implements JsonSerializable {
 
 		foreach ($items as $entry) {
 			$item = new CacheItem($entry);
-
-			$item->setContent($this->get($entry . '.content', $data, ''));
-			$item->setCached($this->getBool($entry . '.cached', $data, false));
-			$item->setCreation($this->getInt($entry . '.creation', $data, 0));
-
+			$item->import($this->getArray($entry, $data, []));
 			$this->addItem($item);
 		}
 	}
@@ -180,14 +176,7 @@ class Cache implements JsonSerializable {
 		];
 
 		foreach ($this->getItems() as $item) {
-			$entry = [
-				'url'      => $item->getUrl(),
-				'cached'   => $item->isCached(),
-				'content'  => $item->getContent(),
-				'creation' => $item->getCreation()
-			];
-
-			$result[$item->getUrl()] = $entry;
+			$result[$item->getUrl()] = json_encode($item);
 		}
 
 		return $result;

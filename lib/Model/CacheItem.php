@@ -39,7 +39,10 @@ use JsonSerializable;
  *
  * @package daita\MySmallPhpTools\Model
  */
-class CacheItem {
+class CacheItem implements JsonSerializable {
+
+
+	use TArrayTools;
 
 
 	/** @var string */
@@ -48,8 +51,8 @@ class CacheItem {
 	/** @var string */
 	private $content = '';
 
-	/** @var bool */
-	private $cached = false;
+	/** @var int */
+	private $status = 0;
 
 	/** @var int */
 	private $creation = 0;
@@ -104,19 +107,19 @@ class CacheItem {
 
 
 	/**
-	 * @return bool
+	 * @return int
 	 */
-	public function isCached(): bool {
-		return $this->cached;
+	public function getStatus(): int {
+		return $this->status;
 	}
 
 	/**
-	 * @param bool $cached
+	 * @param int $status
 	 *
 	 * @return CacheItem
 	 */
-	public function setCached(bool $cached): CacheItem {
-		$this->cached = $cached;
+	public function setStatus(int $status): CacheItem {
+		$this->status = $status;
 
 		return $this;
 	}
@@ -138,6 +141,30 @@ class CacheItem {
 		$this->creation = $creation;
 
 		return $this;
+	}
+
+
+	/**
+	 * @param array $data
+	 */
+	public function import(array $data) {
+		$this->setUrl($this->get('url', $data, ''));
+		$this->setContent($this->get('content', $data, ''));
+		$this->setStatus($this->getInt('status', $data, 0));
+		$this->setCreation($this->getInt('creation', $data, 0));
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		return [
+			'url'      => $this->getUrl(),
+			'content'  => $this->getContent(),
+			'status'   => $this->getStatus(),
+			'creation' => $this->getCreation()
+		];
 	}
 
 }
