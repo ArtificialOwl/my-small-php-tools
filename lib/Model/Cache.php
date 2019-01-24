@@ -67,7 +67,6 @@ class Cache implements JsonSerializable {
 		return $this->items;
 	}
 
-
 	/**
 	 * @param CacheItem[] $items
 	 *
@@ -78,7 +77,6 @@ class Cache implements JsonSerializable {
 
 		return $this;
 	}
-
 
 	/**
 	 * @param CacheItem $item
@@ -95,16 +93,15 @@ class Cache implements JsonSerializable {
 		return $this;
 	}
 
-
 	/**
-	 * @param int $id
+	 * @param string $url
 	 *
 	 * @return Cache
 	 */
-	public function removeItem(int $id): Cache {
+	public function removeItem(string $url): Cache {
 		$new = [];
 		foreach ($this->getItems() as $item) {
-			if ($item->getId() !== $id) {
+			if ($item->getUrl() !== $url) {
 				$new[] = $item;
 			}
 		}
@@ -114,13 +111,15 @@ class Cache implements JsonSerializable {
 		return $this;
 	}
 
-
 	/**
+	 * $create can be false if we don't create item if it is not already in the list.
+	 *
 	 * @param CacheItem $cacheItem
+	 * @param bool $create
 	 *
 	 * @return Cache
 	 */
-	public function updateItem(CacheItem $cacheItem): Cache {
+	public function updateItem(CacheItem $cacheItem, bool $create = true): Cache {
 		if ($cacheItem->getUrl() === '') {
 			return $this;
 		}
@@ -136,7 +135,7 @@ class Cache implements JsonSerializable {
 			}
 		}
 
-		if (!$updated) {
+		if (!$updated && !$create) {
 			$new[] = $cacheItem;
 		}
 
@@ -144,6 +143,7 @@ class Cache implements JsonSerializable {
 
 		return $this;
 	}
+
 
 	/**
 	 * @param array $data
@@ -163,7 +163,6 @@ class Cache implements JsonSerializable {
 	 * @return array
 	 */
 	public function jsonSerialize(): array {
-
 		$ids = array_map(
 			function(CacheItem $item) {
 				return $item->getUrl();
