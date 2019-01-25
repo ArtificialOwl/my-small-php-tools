@@ -153,7 +153,11 @@ class Cache implements JsonSerializable {
 
 		foreach ($items as $entry) {
 			$item = new CacheItem($entry);
-			$item->import($this->getArray($entry, $data, []));
+			if (!array_key_exists($entry, $data)) {
+				continue;
+			}
+
+			$item->import($data[$entry]);
 			$this->addItem($item);
 		}
 	}
