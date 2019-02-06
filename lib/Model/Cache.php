@@ -179,7 +179,7 @@ class Cache implements JsonSerializable {
 		];
 
 		foreach ($this->getItems() as $item) {
-			$result[$item->getUrl()] = json_encode($item);
+			$result[$item->getUrl()] = $item;
 		}
 
 		return $result;
