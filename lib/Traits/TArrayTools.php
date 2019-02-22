@@ -273,14 +273,12 @@ trait TArrayTools {
 		}
 	}
 
-
+	
 	/**
 	 * @param array $arr
-	 *
-	 * @return array
 	 */
-	public function cleanArray(array $arr) {
-		return array_filter(
+	public function cleanArray(array &$arr) {
+		$arr = array_filter(
 			$arr,
 			function($v) {
 				return ($v !== '');
