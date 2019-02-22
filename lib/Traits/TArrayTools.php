@@ -265,7 +265,7 @@ trait TArrayTools {
 	 *
 	 * @throws MalformedArrayException
 	 */
-	public function mustContains(array $keys, array $arr) {
+	protected function mustContains(array $keys, array $arr) {
 		foreach ($keys as $key) {
 			if (!array_key_exists($key, $arr)) {
 				throw new MalformedArrayException();
@@ -273,11 +273,11 @@ trait TArrayTools {
 		}
 	}
 
-	
+
 	/**
 	 * @param array $arr
 	 */
-	public function cleanArray(array &$arr) {
+	protected function cleanArray(array &$arr) {
 		$arr = array_filter(
 			$arr,
 			function($v) {
