@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud;
+namespace daita\MySmallPhpTools\Db\Nextcloud;
 
 
 use DateInterval;
@@ -41,7 +41,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 /**
  * Class RequestBuilder
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud
+ * @package daita\MySmallPhpTools\Db\Nextcloud
  */
 class RequestBuilder {
 
