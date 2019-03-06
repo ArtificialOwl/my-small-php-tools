@@ -281,7 +281,14 @@ trait TArrayTools {
 		$arr = array_filter(
 			$arr,
 			function($v) {
-				return ($v !== '');
+				if (is_string($v)) {
+					return ($v !== '');
+				}
+				if (is_array($v)) {
+					return !empty($v);
+				}
+
+				return true;
 			}
 		);
 	}
