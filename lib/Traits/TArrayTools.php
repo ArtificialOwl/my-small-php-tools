@@ -33,6 +33,7 @@ namespace daita\MySmallPhpTools\Traits;
 
 use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
+use Exception;
 
 /**
  * Trait TArrayTools
@@ -230,6 +231,33 @@ trait TArrayTools {
 
 		if (!is_array($r)) {
 			return $default;
+		}
+
+		return $r;
+	}
+
+
+	/**
+	 * @param string $k
+	 * @param array $arr
+	 * @param array $import
+	 * @param array $default
+	 *
+	 * @return array
+	 */
+	protected function getList(string $k, array $arr, array $import, array $default = []): array {
+		$list = $this->getArray($k, $arr, $default);
+
+		$r = [];
+		list ($obj, $method) = $import;
+		foreach ($list as $item) {
+			try {
+				$o = new $obj();
+				$o->$method($item);
+
+				$r[] = $o;
+			} catch (Exception $e) {
+			}
 		}
 
 		return $r;
