@@ -63,7 +63,7 @@ trait TStringTools {
 	 * @return string
 	 */
 	protected function commonPart(string $str1, string $str2, bool $cs = true): string {
-		for ($i = 0; $i < strlen($str1); $i++) {
+		for ($i = 0; $i < strlen($str1) && $i < strlen($str2); $i++) {
 			$chr1 = $str1[$i];
 			$chr2 = $str2[$i];
 
@@ -73,11 +73,11 @@ trait TStringTools {
 			}
 
 			if ($chr1 !== $chr2) {
-				return substr($str1, 0, $i);
+				break;
 			}
 		}
 
-		return '';
+		return substr($str1, 0, $i);
 	}
 
 }
