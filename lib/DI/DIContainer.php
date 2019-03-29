@@ -56,7 +56,7 @@ class DIContainer extends Container {
 	 *
 	 * @throws DependencyInjectionException
 	 */
-	public function registerService(string $service, bool $shared = true): void {
+	public function registerService(string $service, bool $shared = true) {
 		$object = $this->resolve($service);
 		$this->registerClass(
 			$service, function() use ($object) {
@@ -71,8 +71,7 @@ class DIContainer extends Container {
 	 * @param string $service
 	 * @param bool $shared
 	 */
-	public function registerInterface(string $interface, string $service, bool $shared = true
-	): void {
+	public function registerInterface(string $interface, string $service, bool $shared = true) {
 		$this->registerClass(
 			$interface, function(DIContainer $container) use ($service) {
 			return $container->query($service);
