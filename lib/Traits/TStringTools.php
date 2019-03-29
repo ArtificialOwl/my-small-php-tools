@@ -63,10 +63,9 @@ trait TStringTools {
 	 * @return string
 	 */
 	protected function commonPart(string $str1, string $str2, bool $cs = true): string {
-		$common = '';
 		for ($i = 0; $i < strlen($str1); $i++) {
-			$chr1 = substr($str1, $i, 1);
-			$chr2 = substr($str2, $i, 1);
+			$chr1 = $str1[$i];
+			$chr2 = $str2[$i];
 
 			if (!$cs) {
 				$chr1 = strtolower($chr1);
@@ -80,6 +79,6 @@ trait TStringTools {
 
 		return '';
 	}
-	
+
 }
 
