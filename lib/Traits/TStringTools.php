@@ -31,9 +31,6 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits;
 
 
-use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
-use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
-
 /**
  * Trait TStringTools
  *
@@ -57,5 +54,32 @@ trait TStringTools {
 		return $uuid;
 	}
 
+
+	/**
+	 * @param string $str1
+	 * @param string $str2
+	 * @param bool $cs case sensitive ?
+	 *
+	 * @return string
+	 */
+	protected function commonPart(string $str1, string $str2, bool $cs = true): string {
+		$common = '';
+		for ($i = 0; $i < strlen($str1); $i++) {
+			$chr1 = substr($str1, $i, 1);
+			$chr2 = substr($str2, $i, 1);
+
+			if (!$cs) {
+				$chr1 = strtolower($chr1);
+				$chr2 = strtolower($chr2);
+			}
+
+			if ($chr1 !== $chr2) {
+				return substr($str1, 0, $i);
+			}
+		}
+
+		return '';
+	}
+	
 }
 
