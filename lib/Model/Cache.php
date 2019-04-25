@@ -84,7 +84,7 @@ class Cache implements JsonSerializable {
 	 * @return Cache
 	 */
 	public function addItem(CacheItem $item): Cache {
-		if ($item->getUrl() === '') {
+		if ($item->getUrl() === '' || $this->haveItem($item->getUrl())) {
 			return $this;
 		}
 
@@ -92,6 +92,23 @@ class Cache implements JsonSerializable {
 
 		return $this;
 	}
+
+
+	/**
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
+	public function haveItem(string $url): bool {
+		foreach ($this->getItems() as $item) {
+			if ($item->getUrl() === $url) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * @param string $url
