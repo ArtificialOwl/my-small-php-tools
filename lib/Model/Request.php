@@ -49,6 +49,9 @@ class Request implements JsonSerializable {
 
 
 	/** @var string */
+	private $protocol = 'https';
+
+	/** @var string */
 	private $address = '';
 
 	/** @var string */
@@ -87,6 +90,25 @@ class Request implements JsonSerializable {
 		$this->url = $url;
 		$this->type = $type;
 		$this->binary = $binary;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getProtocol(): string {
+		return $this->protocol;
+	}
+
+	/**
+	 * @param string $protocol
+	 *
+	 * @return Request
+	 */
+	public function setProtocol(string $protocol): Request {
+		$this->protocol = $protocol;
+
+		return $this;
 	}
 
 
@@ -338,11 +360,12 @@ class Request implements JsonSerializable {
 	 */
 	public function jsonSerialize(): array {
 		return [
-			'host'    => $this->getAddress(),
-			'url'     => $this->getUrl(),
-			'timeout' => $this->getTimeout(),
-			'type'    => $this->getType(),
-			'data'    => $this->getData()
+			'protocol' => $this->getProtocol(),
+			'host'     => $this->getAddress(),
+			'url'      => $this->getUrl(),
+			'timeout'  => $this->getTimeout(),
+			'type'     => $this->getType(),
+			'data'     => $this->getData()
 		];
 	}
 }
