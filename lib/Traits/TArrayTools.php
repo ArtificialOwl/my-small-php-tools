@@ -186,7 +186,19 @@ trait TArrayTools {
 			return $default;
 		}
 
-		return $arr[$k];
+		if (is_bool($arr[$k])) {
+			return $arr[$k];
+		}
+
+		if ($arr[$k] === '1') {
+			return true;
+		}
+
+		if ($arr[$k] === '0') {
+			return false;
+		}
+
+		return $default;
 	}
 
 
