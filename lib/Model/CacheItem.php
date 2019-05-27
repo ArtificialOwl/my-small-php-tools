@@ -110,6 +110,20 @@ class CacheItem implements JsonSerializable {
 
 
 	/**
+	 * @return array
+	 */
+	public function getObject(): array {
+		$arr = json_decode($this->content, true);
+
+		if (is_array($arr)) {
+			return $arr;
+		}
+
+		return [];
+	}
+
+
+	/**
 	 * @return int
 	 */
 	public function getStatus(): int {
@@ -189,6 +203,7 @@ class CacheItem implements JsonSerializable {
 		return [
 			'url'      => $this->getUrl(),
 			'content'  => $this->getContent(),
+			'object'   => $this->getObject(),
 			'status'   => $this->getStatus(),
 			'error'    => $this->getError(),
 			'creation' => $this->getCreation()
