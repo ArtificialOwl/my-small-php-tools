@@ -30,6 +30,7 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Model;
 
 
+use daita\MySmallPhpTools\Exceptions\CacheItemNotFoundException;
 use daita\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
@@ -56,7 +57,7 @@ class Cache implements JsonSerializable {
 	/**
 	 * @return bool
 	 */
-	public function gotItems(): bool {
+	public function hasItems(): bool {
 		return !empty($this->items);
 	}
 
@@ -84,7 +85,7 @@ class Cache implements JsonSerializable {
 	 * @return Cache
 	 */
 	public function addItem(CacheItem $item): Cache {
-		if ($item->getUrl() === '' || $this->haveItem($item->getUrl())) {
+		if ($item->getUrl() === '' || $this->hasItem($item->getUrl())) {
 			return $this;
 		}
 
@@ -97,16 +98,33 @@ class Cache implements JsonSerializable {
 	/**
 	 * @param string $url
 	 *
-	 * @return bool
+	 * @return CacheItem
+	 * @throws CacheItemNotFoundException
 	 */
-	public function haveItem(string $url): bool {
+	public function getItem(string $url): CacheItem {
 		foreach ($this->getItems() as $item) {
 			if ($item->getUrl() === $url) {
-				return true;
+				return $item;
 			}
 		}
 
-		return false;
+		throw new CacheItemNotFoundException();
+	}
+
+
+	/**
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
+	public function hasItem(string $url): bool {
+		try {
+			$this->getItem($url);
+
+			return true;
+		} catch (CacheItemNotFoundException $e) {
+			return false;
+		}
 	}
 
 
