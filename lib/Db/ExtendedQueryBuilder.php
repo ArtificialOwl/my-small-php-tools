@@ -37,6 +37,7 @@ use DateTime;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use Exception;
 use OC\DB\QueryBuilder\QueryBuilder;
+use OCP\DB\QueryBuilder\ICompositeExpression;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 
 
@@ -137,10 +138,11 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	protected function limitToDBField(
+	public function limitToDBField(
 		string $field, string $value, bool $cs = true, string $alias = ''
 	) {
 		$expr = $this->exprLimitToDBField($field, $value, true, $cs, $alias);
+
 		$this->andWhere($expr);
 	}
 
@@ -151,8 +153,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	protected function filterDBField(
-		string $field, string $value, bool $cs = true, string $alias = ''
+	public function filterDBField(string $field, string $value, bool $cs = true, string $alias = ''
 	) {
 		$expr = $this->exprLimitToDBField($field, $value, false, $cs, $alias);
 		$this->andWhere($expr);
@@ -168,7 +169,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 *
 	 * @return string
 	 */
-	protected function exprLimitToDBField(
+	public function exprLimitToDBField(
 		string $field, string $value, bool $eq = true, bool $cs = true, string $alias = ''
 	): string {
 		$expr = $this->expr();
@@ -198,10 +199,83 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 
 	/**
 	 * @param string $field
+	 * @param array $values
+	 * @param bool $cs - case sensitive
+	 * @param string $alias
+	 */
+	public function limitToDBFieldArray(
+		string $field, array $values, bool $cs = true, string $alias = ''
+	) {
+		$expr = $this->exprLimitToDBFieldArray($field, $values, true, $cs, $alias);
+		$this->andWhere($expr);
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param bool $cs - case sensitive
+	 * @param string $alias
+	 */
+	public function filterDBFieldArray(
+		string $field, string $value, bool $cs = true, string $alias = ''
+	) {
+		$expr = $this->exprLimitToDBField($field, $value, false, $cs, $alias);
+		$this->andWhere($expr);
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param array $values
+	 * @param bool $eq
+	 * @param bool $cs
+	 * @param string $alias
+	 *
+	 * @return ICompositeExpression
+	 */
+	public function exprLimitToDBFieldArray(
+		string $field, array $values, bool $eq = true, bool $cs = true, string $alias = ''
+	): ICompositeExpression {
+		$expr = $this->expr();
+
+		$pf = '';
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$pf = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.';
+		}
+		$field = $pf . $field;
+
+		$func = $this->func();
+		if ($eq === false) {
+			$comp = 'neq';
+			$junc = $expr->andX();
+		} else {
+			$comp = 'eq';
+			$junc = $expr->orX();
+		}
+
+		foreach ($values as $value) {
+			if ($cs) {
+				$junc->add($expr->$comp($field, $this->createNamedParameter($value)));
+			} else {
+				$junc->add(
+					$expr->$comp(
+						$func->lower($field), $func->lower($this->createNamedParameter($value))
+					)
+				);
+			}
+		}
+
+		return $junc;
+	}
+
+
+	/**
+	 * @param string $field
 	 * @param int $value
 	 * @param string $alias
 	 */
-	protected function limitToDBFieldInt(string $field, int $value, string $alias = '') {
+	public function limitToDBFieldInt(string $field, int $value, string $alias = '') {
 		$expr = $this->exprLimitToDBFieldInt($field, $value, $alias, true);
 		$this->andWhere($expr);
 	}
@@ -212,7 +286,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param int $value
 	 * @param string $alias
 	 */
-	protected function filterDBFieldInt(string $field, int $value, string $alias = '') {
+	public function filterDBFieldInt(string $field, int $value, string $alias = '') {
 		$expr = $this->exprLimitToDBFieldInt($field, $value, $alias, false);
 		$this->andWhere($expr);
 	}
@@ -222,12 +296,11 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param string $field
 	 * @param int $value
 	 * @param string $alias
-	 *
 	 * @param bool $eq
 	 *
 	 * @return string
 	 */
-	protected function exprLimitToDBFieldInt(
+	public function exprLimitToDBFieldInt(
 		string $field, int $value, string $alias = '', bool $eq = true
 	): string {
 		$expr = $this->expr();
@@ -250,7 +323,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	/**
 	 * @param string $field
 	 */
-	protected function limitToDBFieldEmpty(string $field) {
+	public function limitToDBFieldEmpty(string $field) {
 		$expr = $this->expr();
 		$pf =
 			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
@@ -261,12 +334,10 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	}
 
 
-
-
 	/**
 	 * @param string $field
 	 */
-	protected function filterDBFieldEmpty(string $field) {
+	public function filterDBFieldEmpty(string $field) {
 		$expr = $this->expr();
 		$pf =
 			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
@@ -282,7 +353,8 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param DateTime $date
 	 * @param bool $orNull
 	 */
-	protected function limitToDBFieldDateTime(string $field, DateTime $date, bool $orNull = false) {
+	public function limitToDBFieldDateTime(string $field, DateTime $date, bool $orNull = false
+	) {
 		$expr = $this->expr();
 		$pf =
 			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
@@ -308,7 +380,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 *
 	 * @throws Exception
 	 */
-	protected function limitToSince(int $timestamp, string $field) {
+	public function limitToSince(int $timestamp, string $field) {
 		$dTime = new DateTime();
 		$dTime->setTimestamp($timestamp);
 
@@ -329,33 +401,9 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 
 	/**
 	 * @param string $field
-	 * @param array $values
-	 */
-	protected function limitToDBFieldArray(string $field, array $values) {
-		$expr = $this->expr();
-		$pf =
-			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-															  . '.' : '';
-		$field = $pf . $field;
-
-		if (!is_array($values)) {
-			$values = [$values];
-		}
-
-		$orX = $expr->orX();
-		foreach ($values as $value) {
-			$orX->add($expr->eq($field, $this->createNamedParameter($value)));
-		}
-
-		$this->andWhere($orX);
-	}
-
-
-	/**
-	 * @param string $field
 	 * @param string $value
 	 */
-	protected function searchInDBField(string $field, string $value) {
+	public function searchInDBField(string $field, string $value) {
 		$expr = $this->expr();
 
 		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
