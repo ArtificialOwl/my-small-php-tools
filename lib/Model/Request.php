@@ -78,6 +78,9 @@ class Request implements JsonSerializable {
 	/** @var int */
 	private $resultCode = 0;
 
+	/** @var string */
+	private $contentType = '';
+
 
 	/**
 	 * Request constructor.
@@ -350,6 +353,25 @@ class Request implements JsonSerializable {
 	 */
 	public function setResultCode(int $resultCode): Request {
 		$this->resultCode = $resultCode;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getContentType(): string {
+		return $this->contentType;
+	}
+
+	/**
+	 * @param string $contentType
+	 *
+	 * @return Request
+	 */
+	public function setContentType(string $contentType): Request {
+		$this->contentType = $contentType;
 
 		return $this;
 	}
