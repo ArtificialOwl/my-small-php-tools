@@ -308,7 +308,9 @@ trait TArrayTools {
 	protected function mustContains(array $keys, array $arr) {
 		foreach ($keys as $key) {
 			if (!array_key_exists($key, $arr)) {
-				throw new MalformedArrayException();
+				throw new MalformedArrayException(
+					'source: ' . json_encode($arr) . ' - missing key: ' . $key
+				);
 			}
 		}
 	}
