@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 
 /**
@@ -31,12 +30,15 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Exceptions;
 
 
+use Exception;
+
+
 /**
  * Class CacheItemNotFoundException
  *
  * @package daita\MySmallPhpTools\Exceptions
  */
-class CacheItemNotFoundException extends \Exception {
+class CacheItemNotFoundException extends Exception {
 
 }
 

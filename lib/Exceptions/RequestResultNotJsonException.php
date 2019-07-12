@@ -34,11 +34,11 @@ use Exception;
 
 
 /**
- * Class ArrayNotFoundException
+ * Class RequestResultNotJsonException
  *
  * @package daita\MySmallPhpTools\Exceptions
  */
-class MalformedArrayException extends Exception {
+class RequestResultNotJsonException extends Exception {
 
 }
 
