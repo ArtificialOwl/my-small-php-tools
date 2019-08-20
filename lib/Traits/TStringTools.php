@@ -53,8 +53,11 @@ trait TStringTools {
 			mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
 		);
 
-
 		if ($length > 0) {
+			if ($length <= 16) {
+				$uuid = str_replace('-', '', $uuid);
+			}
+
 			$uuid = substr($uuid, 0, $length);
 		}
 
