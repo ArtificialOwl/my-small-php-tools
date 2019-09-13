@@ -31,7 +31,9 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Db;
 
 
+use daita\MySmallPhpTools\Exceptions\RowNotFoundException;
 use daita\MySmallPhpTools\IExtendedQueryBuilder;
+use daita\MySmallPhpTools\IQueryRow;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -411,6 +413,44 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 		$field = $pf . $field;
 
 		$this->andWhere($expr->iLike($field, $this->createNamedParameter($value)));
+	}
+
+
+	/**
+	 * @param callable $method
+	 *
+	 * @return IQueryRow
+	 * @throws RowNotFoundException
+	 */
+	public function getRow(callable $method): IQueryRow {
+		$cursor = $this->execute();
+		$data = $cursor->fetch();
+		$cursor->closeCursor();
+
+		if ($data === false) {
+			throw new RowNotFoundException();
+		}
+
+		return $method($data);
+	}
+
+	/**
+	 * @param callable $method
+	 *
+	 * @return IQueryRow[]
+	 */
+	public function getRows(callable $method): array {
+		$rows = [];
+		$cursor = $this->execute();
+		while ($data = $cursor->fetch()) {
+			try {
+				$rows[] = $method($data);
+			} catch (Exception $e) {
+			}
+		}
+		$cursor->closeCursor();
+
+		return $rows;
 	}
 
 }
