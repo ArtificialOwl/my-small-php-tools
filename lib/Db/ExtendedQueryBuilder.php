@@ -303,7 +303,8 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 *
 	 * @return string
 	 */
-	public function exprLimitToDBFieldInt(string $field, int $value, string $alias = '', bool $eq = true): string {
+	public function exprLimitToDBFieldInt(string $field, int $value, string $alias = '', bool $eq = true
+	): string {
 		$expr = $this->expr();
 
 		$pf = '';
@@ -436,6 +437,85 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 
 		$this->andWhere($expr->iLike($field, $this->createNamedParameter($value)));
 	}
+
+
+	/**
+	 * @param IQueryBuilder $qb
+	 * @param string $field
+	 * @param string $fieldRight
+	 * @param string $alias
+	 *
+	 * @return string
+	 */
+	public function exprFieldWithinJsonFormat(
+		IQueryBuilder $qb, string $field, string $fieldRight, string $alias = ''
+	) {
+		$func = $qb->func();
+		$expr = $qb->expr();
+
+		if ($alias === '') {
+			$alias = $this->defaultSelectAlias;
+		}
+
+		$concat = $func->concat(
+			$qb->createNamedParameter('%"'),
+			$func->concat($fieldRight, $qb->createNamedParameter('"%'))
+		);
+
+		return $expr->iLike($alias . '.' . $field, $concat);
+	}
+
+
+	/**
+	 * @param IQueryBuilder $qb
+	 * @param string $field
+	 * @param string $value
+	 * @param bool $eq (eq, not eq)
+	 * @param bool $cs (case sensitive, or not)
+	 *
+	 * @return string
+	 */
+	public function exprValueWithinJsonFormat(
+		IQueryBuilder $qb, string $field, string $value, bool $eq = true, bool $cs = true
+	): string {
+		$dbConn = $this->getConnection();
+		$expr = $qb->expr();
+		$func = $qb->func();
+
+		$value = $dbConn->escapeLikeParameter($value);
+		if ($cs) {
+			$field = $func->lower($field);
+			$value = $func->lower($value);
+		}
+
+		$comp = 'iLike';
+		if ($eq) {
+			$comp = 'notLike';
+		}
+		return $expr->$comp($field, $qb->createNamedParameter('%"' . $value . '"%'));
+	}
+
+//
+//	/**
+//	 * @param IQueryBuilder $qb
+//	 * @param string $field
+//	 * @param string $value
+//	 *
+//	 * @return string
+//	 */
+//	public function exprValueNotWithinJsonFormat(IQueryBuilder $qb, string $field, string $value): string {
+//		$dbConn = $this->getConnection();
+//		$expr = $qb->expr();
+//		$func = $qb->func();
+//
+//
+//		return $expr->notLike(
+//			$func->lower($field),
+//			$qb->createNamedParameter(
+//				'%"' . $func->lower($dbConn->escapeLikeParameter($value)) . '"%'
+//			)
+//		);
+//	}
 
 
 	/**
