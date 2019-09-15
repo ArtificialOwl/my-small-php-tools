@@ -163,13 +163,14 @@ interface IExtendedQueryBuilder extends IQueryBuilder {
 	/**
 	 * @param string $field
 	 * @param array $values
+	 * @param bool $eq
 	 * @param bool $cs
 	 * @param string $alias
 	 *
 	 * @return ICompositeExpression
 	 */
 	public function exprLimitToDBFieldArray(
-		string $field, array $values, bool $cs = true, string $alias = ''
+		string $field, array $values, bool $eq = true, bool $cs = true, string $alias = ''
 	): ICompositeExpression;
 
 

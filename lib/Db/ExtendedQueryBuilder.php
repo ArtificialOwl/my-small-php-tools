@@ -31,6 +31,7 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Db;
 
 
+use daita\MySmallPhpTools\Exceptions\DateTimeException;
 use daita\MySmallPhpTools\Exceptions\RowNotFoundException;
 use daita\MySmallPhpTools\IExtendedQueryBuilder;
 use daita\MySmallPhpTools\IQueryRow;
@@ -302,9 +303,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 *
 	 * @return string
 	 */
-	public function exprLimitToDBFieldInt(
-		string $field, int $value, string $alias = '', bool $eq = true
-	): string {
+	public function exprLimitToDBFieldInt(string $field, int $value, string $alias = '', bool $eq = true): string {
 		$expr = $this->expr();
 
 		$pf = '';
@@ -355,8 +354,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param DateTime $date
 	 * @param bool $orNull
 	 */
-	public function limitToDBFieldDateTime(string $field, DateTime $date, bool $orNull = false
-	) {
+	public function limitToDBFieldDateTime(string $field, DateTime $date, bool $orNull = false) {
 		$expr = $this->expr();
 		$pf =
 			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
@@ -373,6 +371,30 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 		}
 
 		$this->andWhere($orX);
+	}
+
+
+	/**
+	 * @param int $since
+	 * @param int $limit
+	 *
+	 * @param string $field
+	 *
+	 * @throws DateTimeException
+	 */
+	protected function paginate($field, int $since = 0, int $limit = 5) {
+		try {
+			if ($since > 0) {
+				$dTime = new DateTime();
+				$dTime->setTimestamp($since);
+				$this->limitToDBFieldDateTime($field, $dTime);
+			}
+		} catch (Exception $e) {
+			throw new DateTimeException();
+		}
+
+		$this->setMaxResults($limit);
+		$this->orderBy($this->defaultSelectAlias . '.' . $field, 'desc');
 	}
 
 
