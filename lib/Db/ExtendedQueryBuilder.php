@@ -53,7 +53,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 
 
 	/** @var string */
-	private $defaultSelectAlias;
+	private $defaultSelectAlias = '';
 
 
 	/**
