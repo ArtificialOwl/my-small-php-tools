@@ -141,9 +141,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	public function limitToDBField(
-		string $field, string $value, bool $cs = true, string $alias = ''
-	) {
+	public function limitToDBField(string $field, string $value, bool $cs = true, string $alias = '') {
 		$expr = $this->exprLimitToDBField($field, $value, true, $cs, $alias);
 
 		$this->andWhere($expr);
@@ -376,43 +374,21 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 
 
 	/**
-	 * @param int $since
-	 * @param int $limit
-	 *
+	 * @param int $timestamp
 	 * @param string $field
 	 *
 	 * @throws DateTimeException
 	 */
-	protected function paginate($field, int $since = 0, int $limit = 5) {
+	public function limitToSince(int $timestamp, string $field) {
 		try {
-			if ($since > 0) {
-				$dTime = new DateTime();
-				$dTime->setTimestamp($since);
-				$this->limitToDBFieldDateTime($field, $dTime);
-			}
+			$dTime = new DateTime();
+			$dTime->setTimestamp($timestamp);
 		} catch (Exception $e) {
-			throw new DateTimeException();
+			throw new DateTimeException($e->getMessage());
 		}
 
-		$this->setMaxResults($limit);
-		$this->orderBy($this->defaultSelectAlias . '.' . $field, 'desc');
-	}
-
-
-	/**
-	 * @param int $timestamp
-	 * @param string $field
-	 *
-	 * @throws Exception
-	 */
-	public function limitToSince(int $timestamp, string $field) {
-		$dTime = new DateTime();
-		$dTime->setTimestamp($timestamp);
-
 		$expr = $this->expr();
-		$pf =
-			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-															  . '.' : '';
+		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias() . '.' : '';
 		$field = $pf . $field;
 
 		$orX = $expr->orX();
@@ -492,6 +468,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 		if ($eq) {
 			$comp = 'notLike';
 		}
+
 		return $expr->$comp($field, $qb->createNamedParameter('%"' . $value . '"%'));
 	}
 
@@ -533,7 +510,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 			throw new RowNotFoundException();
 		}
 
-		return $method($data);
+		return $method($data, $this);
 	}
 
 	/**
@@ -546,7 +523,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 		$cursor = $this->execute();
 		while ($data = $cursor->fetch()) {
 			try {
-				$rows[] = $method($data);
+				$rows[] = $method($data, $this);
 			} catch (Exception $e) {
 			}
 		}
