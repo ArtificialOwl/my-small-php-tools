@@ -57,6 +57,9 @@ class Request implements JsonSerializable {
 	/** @var string */
 	private $url = '';
 
+	/** @var string */
+	private $baseUrl = '';
+
 	/** @var int */
 	private $type = 0;
 
@@ -139,6 +142,7 @@ class Request implements JsonSerializable {
 	public function setAddressFromUrl(string $url) {
 		$this->setProtocol(parse_url($url, PHP_URL_SCHEME));
 		$this->setAddress(parse_url($url, PHP_URL_HOST));
+		$this->baseUrl = parse_url($url, PHP_URL_PATH);
 	}
 
 
@@ -172,7 +176,7 @@ class Request implements JsonSerializable {
 	 * @return string
 	 */
 	public function getUrl(): string {
-		return $this->url;
+		return $this->baseUrl . $this->url;
 	}
 
 
