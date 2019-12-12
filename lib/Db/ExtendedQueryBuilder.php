@@ -90,6 +90,18 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 
 
 	/**
+	 * @param array $ids
+	 *
+	 * @return IExtendedQueryBuilder
+	 */
+	public function limitToIds(array $ids): IExtendedQueryBuilder {
+		$this->limitToDBFieldArray('id', $ids);
+
+		return $this;
+	}
+
+
+	/**
 	 * Limit the request to the Id (string)
 	 *
 	 * @param string $id

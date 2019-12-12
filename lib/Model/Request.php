@@ -133,6 +133,14 @@ class Request implements JsonSerializable {
 		return $this;
 	}
 
+	/**
+	 * @param string $url
+	 */
+	private function setAddressFromUrl(string $url) {
+		$this->setProtocol(parse_url($url, PHP_URL_SCHEME));
+		$this->setAddress(parse_url($url, PHP_URL_HOST));
+	}
+
 
 	/**
 	 * @return bool

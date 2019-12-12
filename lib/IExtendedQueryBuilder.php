@@ -70,6 +70,16 @@ interface IExtendedQueryBuilder extends IQueryBuilder {
 
 
 	/**
+	 * Limit the request to Ids
+	 *
+	 * @param int[] $ids
+	 *
+	 * @return IExtendedQueryBuilder
+	 */
+	public function limitToIds(array $ids): IExtendedQueryBuilder;
+
+
+	/**
 	 * Limit the request to the Id (string)
 	 *
 	 * @param string $id
