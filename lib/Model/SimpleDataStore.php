@@ -31,6 +31,7 @@ namespace daita\MySmallPhpTools\Model;
 
 
 use daita\MySmallPhpTools\Traits\TArrayTools;
+use JsonSerializable;
 
 
 /**
@@ -62,7 +63,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param string $value
 	 */
-	public function setData(string $key, string $value): void {
+	public function s(string $key, string $value): void {
 		$this->data[$key] = $value;
 	}
 
@@ -71,7 +72,7 @@ class SimpleDataStore {
 	 *
 	 * @return string
 	 */
-	public function getData(string $key): string {
+	public function g(string $key): string {
 		return $this->get($key, $this->data);
 	}
 
@@ -79,7 +80,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param string $value
 	 */
-	public function addData(string $key, string $value): void {
+	public function a(string $key, string $value): void {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
@@ -92,7 +93,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param int $value
 	 */
-	public function setDataInt(string $key, int $value): void {
+	public function sInt(string $key, int $value): void {
 		$this->data[$key] = $value;
 	}
 
@@ -101,7 +102,7 @@ class SimpleDataStore {
 	 *
 	 * @return int
 	 */
-	public function getDataInt(string $key): int {
+	public function gInt(string $key): int {
 		return $this->getInt($key, $this->data);
 	}
 
@@ -109,7 +110,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param int $value
 	 */
-	public function addDataInt(string $key, int $value): void {
+	public function aInt(string $key, int $value): void {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
@@ -122,7 +123,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param bool $value
 	 */
-	public function setDataBool(string $key, bool $value): void {
+	public function sBool(string $key, bool $value): void {
 		$this->data[$key] = $value;
 	}
 
@@ -131,7 +132,7 @@ class SimpleDataStore {
 	 *
 	 * @return bool
 	 */
-	public function getDataBool(string $key): bool {
+	public function gBool(string $key): bool {
 		return $this->getBool($key, $this->data);
 	}
 
@@ -139,7 +140,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param bool $value
 	 */
-	public function addDataBool(string $key, bool $value): void {
+	public function aBool(string $key, bool $value): void {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
@@ -152,7 +153,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param array $values
 	 */
-	public function setDataArray(string $key, array $values): void {
+	public function sArray(string $key, array $values): void {
 		$this->data[$key] = $values;
 	}
 
@@ -161,7 +162,7 @@ class SimpleDataStore {
 	 *
 	 * @return array
 	 */
-	public function getDataArray(string $key): array {
+	public function gArray(string $key): array {
 		return $this->getArray($key, $this->data);
 	}
 
@@ -169,7 +170,7 @@ class SimpleDataStore {
 	 * @param string $key
 	 * @param array $values
 	 */
-	public function addDataArray(string $key, array $values): void {
+	public function aArray(string $key, array $values): void {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
@@ -179,16 +180,46 @@ class SimpleDataStore {
 
 
 	/**
+	 * @param string $key
+	 * @param JsonSerializable $value
+	 */
+	public function sObj(string $key, JsonSerializable $value): void {
+		$this->data[$key] = $value;
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function gObj(string $key): JsonSerializable {
+		return $this->getObj($key, $this->data);
+	}
+
+	/**
+	 * @param string $key
+	 * @param bool $value
+	 */
+	public function aObj(string $key, JsonSerializable $value): void {
+		if (!array_key_exists($key, $this->data)) {
+			$this->data[$key] = [];
+		}
+
+		$this->data[$key][] = $value;
+	}
+
+
+	/**
 	 * @return array
 	 */
-	public function getDataAll(): array {
+	public function gAll(): array {
 		return $this->data;
 	}
 
 	/**
 	 * @param array $data
 	 */
-	public function setDataAll(array $data): void {
+	public function sAll(array $data): void {
 		$this->data = $data;
 	}
 
