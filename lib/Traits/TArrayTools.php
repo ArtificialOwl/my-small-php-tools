@@ -34,6 +34,7 @@ namespace daita\MySmallPhpTools\Traits;
 use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
 use Exception;
+use JsonSerializable;
 
 /**
  * Trait TArrayTools
@@ -199,6 +200,35 @@ trait TArrayTools {
 		}
 
 		return $default;
+	}
+
+
+	/**
+	 * @param string $k
+	 * @param array $arr
+	 * @param JsonSerializable|null $default
+	 *
+	 * @return JsonSerializable|null
+	 */
+	protected function getObj(string $k, array $arr, ?JsonSerializable $default = null): ?JsonSerializable {
+		if ($arr === null) {
+			return $default;
+		}
+
+		if (!array_key_exists($k, $arr)) {
+			$subs = explode('.', $k, 2);
+			if (sizeof($subs) > 1) {
+				if (!array_key_exists($subs[0], $arr)) {
+					return $default;
+				}
+
+				return $this->getObj($subs[1], $arr[$subs[0]], $default);
+			} else {
+				return $default;
+			}
+		}
+
+		return $arr[$k];
 	}
 
 
