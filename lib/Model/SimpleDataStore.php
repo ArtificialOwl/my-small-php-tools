@@ -39,7 +39,7 @@ use JsonSerializable;
  *
  * @package daita\MySmallPhpTools\Model
  */
-class SimpleDataStore {
+class SimpleDataStore implements JsonSerializable {
 
 
 	use TArrayTools;
@@ -223,5 +223,13 @@ class SimpleDataStore {
 		$this->data = $data;
 	}
 
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		return $this->data;
+	}
+	
 }
 
