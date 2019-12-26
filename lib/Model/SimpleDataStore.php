@@ -230,6 +230,6 @@ class SimpleDataStore implements JsonSerializable {
 	public function jsonSerialize(): array {
 		return $this->data;
 	}
-	
+
 }
 

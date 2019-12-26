@@ -140,9 +140,20 @@ class Request implements JsonSerializable {
 	 * @param string $url
 	 */
 	public function setAddressFromUrl(string $url) {
-		$this->setProtocol(parse_url($url, PHP_URL_SCHEME));
-		$this->setAddress(parse_url($url, PHP_URL_HOST));
-		$this->baseUrl = parse_url($url, PHP_URL_PATH);
+		$protocol = parse_url($url, PHP_URL_SCHEME);
+		if ($protocol === null) {
+			if (strpos($url, '/') > -1) {
+				list($address, $baseUrl) = explode('/', $url, 2);
+				$this->setAddress($address);
+				$this->baseUrl = $baseUrl;
+			} else {
+				$this->setAddress($url);
+			}
+		} else {
+			$this->setProtocol($protocol);
+			$this->setAddress(parse_url($url, PHP_URL_HOST));
+			$this->baseUrl = parse_url($url, PHP_URL_PATH);
+		}
 	}
 
 
