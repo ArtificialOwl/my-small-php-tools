@@ -46,15 +46,17 @@ trait TStringTools {
 	 * @param int $length
 	 *
 	 * @return string
-	 * @throws Exception
 	 */
 	protected function token(int $length = 15): string {
 		$chars = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890';
 
 		$str = '';
 		$max = strlen($chars);
-		for ($i = 0; $i <= $length; $i++) {
-			$str .= $chars[random_int(0, $max)];
+		for ($i = 0; $i < $length; $i++) {
+			try {
+				$str .= $chars[random_int(0, $max - 1)];
+			} catch (Exception $e) {
+			}
 		}
 
 		return $str;
