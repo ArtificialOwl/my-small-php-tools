@@ -62,9 +62,13 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 * @param string $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function s(string $key, string $value): void {
+	public function s(string $key, string $value): self {
 		$this->data[$key] = $value;
+
+		return $this;
 	}
 
 	/**
@@ -79,22 +83,30 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 * @param string $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function a(string $key, string $value): void {
+	public function a(string $key, string $value): self {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
 
 		$this->data[$key][] = $value;
+
+		return $this;
 	}
 
 
 	/**
 	 * @param string $key
 	 * @param int $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function sInt(string $key, int $value): void {
+	public function sInt(string $key, int $value): self {
 		$this->data[$key] = $value;
+
+		return $this;
 	}
 
 	/**
@@ -109,22 +121,30 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 * @param int $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function aInt(string $key, int $value): void {
+	public function aInt(string $key, int $value): self {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
 
 		$this->data[$key][] = $value;
+
+		return $this;
 	}
 
 
 	/**
 	 * @param string $key
 	 * @param bool $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function sBool(string $key, bool $value): void {
+	public function sBool(string $key, bool $value): self {
 		$this->data[$key] = $value;
+
+		return $this;
 	}
 
 	/**
@@ -139,22 +159,30 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 * @param bool $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function aBool(string $key, bool $value): void {
+	public function aBool(string $key, bool $value): self {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
 
 		$this->data[$key][] = $value;
+
+		return $this;
 	}
 
 
 	/**
 	 * @param string $key
 	 * @param array $values
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function sArray(string $key, array $values): void {
+	public function sArray(string $key, array $values): self {
 		$this->data[$key] = $values;
+
+		return $this;
 	}
 
 	/**
@@ -169,22 +197,30 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 * @param array $values
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function aArray(string $key, array $values): void {
+	public function aArray(string $key, array $values): self {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
 
 		$this->data[$key] = array_merge($this->data[$key], $values);
+
+		return $this;
 	}
 
 
 	/**
 	 * @param string $key
 	 * @param JsonSerializable $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function sObj(string $key, JsonSerializable $value): void {
+	public function sObj(string $key, JsonSerializable $value): self {
 		$this->data[$key] = $value;
+
+		return $this;
 	}
 
 	/**
@@ -199,13 +235,17 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 * @param bool $value
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function aObj(string $key, JsonSerializable $value): void {
+	public function aObj(string $key, JsonSerializable $value): self {
 		if (!array_key_exists($key, $this->data)) {
 			$this->data[$key] = [];
 		}
 
 		$this->data[$key][] = $value;
+
+		return $this;
 	}
 
 
@@ -218,9 +258,13 @@ class SimpleDataStore implements JsonSerializable {
 
 	/**
 	 * @param array $data
+	 *
+	 * @return SimpleDataStore
 	 */
-	public function sAll(array $data): void {
+	public function sAll(array $data): self {
 		$this->data = $data;
+
+		return $this;
 	}
 
 
