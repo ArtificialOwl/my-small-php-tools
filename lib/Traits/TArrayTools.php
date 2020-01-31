@@ -191,7 +191,7 @@ trait TArrayTools {
 			return $arr[$k];
 		}
 
-		if ($arr[$k] === '1') {
+		if ($arr[$k] === '1' || strtolower($arr[$k]) === 'true') {
 			return true;
 		}
 
