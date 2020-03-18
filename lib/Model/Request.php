@@ -49,7 +49,10 @@ class Request implements JsonSerializable {
 
 
 	/** @var string */
-	private $protocol = 'https';
+	private $protocol = '';
+
+	/** @var array */
+	private $protocols = ['https'];
 
 	/** @var string */
 	private $address = '';
@@ -100,9 +103,38 @@ class Request implements JsonSerializable {
 
 
 	/**
+	 * @param string $protocol
+	 *
+	 * @return Request
+	 */
+	public function setProtocol(string $protocol): Request {
+		$this->protocols = [$protocol];
+
+		return $this;
+	}
+
+	/**
+	 * @param array $protocols
+	 *
+	 * @return Request
+	 */
+	public function setProtocols(array $protocols): Request {
+		$this->protocols = $protocols;
+
+		return $this;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getProtocols(): array {
+		return $this->protocols;
+	}
+
+	/**
 	 * @return string
 	 */
-	public function getProtocol(): string {
+	public function getUsedProtocol(): string {
 		return $this->protocol;
 	}
 
@@ -111,7 +143,7 @@ class Request implements JsonSerializable {
 	 *
 	 * @return Request
 	 */
-	public function setProtocol(string $protocol): Request {
+	public function setUsedProtocol(string $protocol): Request {
 		$this->protocol = $protocol;
 
 		return $this;
@@ -145,17 +177,29 @@ class Request implements JsonSerializable {
 			if (strpos($url, '/') > -1) {
 				list($address, $baseUrl) = explode('/', $url, 2);
 				$this->setAddress($address);
-				$this->baseUrl = $baseUrl;
+				$this->setBaseUrl($baseUrl);
 			} else {
 				$this->setAddress($url);
 			}
 		} else {
-			$this->setProtocol($protocol);
+			$this->setProtocols([$protocol]);
 			$this->setAddress(parse_url($url, PHP_URL_HOST));
-			$this->baseUrl = parse_url($url, PHP_URL_PATH);
+			$this->setBaseUrl(parse_url($url, PHP_URL_PATH));
 		}
 	}
 
+	/**
+	 * @param string $baseUrl
+	 *
+	 * @return Request
+	 */
+	public function setBaseUrl(?string $baseUrl): Request {
+		if ($baseUrl !== null) {
+			$this->baseUrl = $baseUrl;
+		}
+
+		return $this;
+	}
 
 	/**
 	 * @return bool
@@ -405,12 +449,13 @@ class Request implements JsonSerializable {
 	 */
 	public function jsonSerialize(): array {
 		return [
-			'protocol' => $this->getProtocol(),
-			'host'     => $this->getAddress(),
-			'url'      => $this->getUrl(),
-			'timeout'  => $this->getTimeout(),
-			'type'     => $this->getType(),
-			'data'     => $this->getData()
+			'protocols'     => $this->getProtocols(),
+			'used_protocol' => $this->getUsedProtocol(),
+			'host'          => $this->getAddress(),
+			'url'           => $this->getUrl(),
+			'timeout'       => $this->getTimeout(),
+			'type'          => $this->getType(),
+			'data'          => $this->getData()
 		];
 	}
 }

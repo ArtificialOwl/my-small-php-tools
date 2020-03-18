@@ -101,22 +101,32 @@ trait TRequest {
 	public function doRequest(Request $request) {
 		$this->maxDownloadSizeReached = false;
 
-		$curl = $this->initRequest($request);
+		$ignoreProtocolOnErrors = [7];
+		foreach ($request->getProtocols() as $protocol) {
+			$request->setUsedProtocol($protocol);
 
-		$this->initRequestGet($request);
-		$this->initRequestPost($curl, $request);
-		$this->initRequestPut($curl, $request);
-		$this->initRequestDelete($curl, $request);
+			$curl = $this->initRequest($request);
 
-		$this->initRequestHeaders($curl, $request);
+			$this->initRequestGet($request);
+			$this->initRequestPost($curl, $request);
+			$this->initRequestPut($curl, $request);
+			$this->initRequestDelete($curl, $request);
 
-		$result = curl_exec($curl);
+			$this->initRequestHeaders($curl, $request);
 
-		if ($this->maxDownloadSizeReached === true) {
-			throw new RequestResultSizeException();
+			$result = curl_exec($curl);
+
+			if (in_array(curl_errno($curl), $ignoreProtocolOnErrors)) {
+				continue;
+			}
+
+			if ($this->maxDownloadSizeReached === true) {
+				throw new RequestResultSizeException();
+			}
+
+			$this->parseRequestResult($curl, $request);
+			break;
 		}
-
-		$this->parseRequestResult($curl, $request);
 
 		return $result;
 	}
@@ -174,7 +184,7 @@ trait TRequest {
 	 * @return resource
 	 */
 	private function generateCurlRequest(Request $request) {
-		$url = $request->getProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
+		$url = $request->getUsedProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
 		if ($request->getType() !== Request::TYPE_GET) {
 			$curl = curl_init($url);
 		} else {
