@@ -54,7 +54,7 @@ trait TStringTools {
 		$max = strlen($chars);
 		for ($i = 0; $i < $length; $i++) {
 			try {
-				$str .= $chars[random_int(0, $max - 1)];
+				$str .= $chars[random_int(0, $max - 2)];
 			} catch (Exception $e) {
 			}
 		}
