@@ -102,6 +102,7 @@ trait TRequest {
 		$this->maxDownloadSizeReached = false;
 
 		$ignoreProtocolOnErrors = [7];
+		$result = '';
 		foreach ($request->getProtocols() as $protocol) {
 			$request->setUsedProtocol($protocol);
 
@@ -148,7 +149,7 @@ trait TRequest {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_BINARYTRANSFER, $request->isBinary());
 
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $request->isVerifyPeer());
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
 		curl_setopt($curl, CURLOPT_BUFFERSIZE, 128);

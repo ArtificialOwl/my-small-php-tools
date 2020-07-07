@@ -69,6 +69,9 @@ class Request implements JsonSerializable {
 	/** @var bool */
 	private $binary = false;
 
+	/** @var bool */
+	private $verifyPeer = true;
+
 	/** @var array */
 	private $headers = [];
 
@@ -206,6 +209,25 @@ class Request implements JsonSerializable {
 	 */
 	public function isBinary(): bool {
 		return $this->binary;
+	}
+
+
+	/**
+	 * @param bool $verifyPeer
+	 *
+	 * @return $this
+	 */
+	public function setVerifyPeer(bool $verifyPeer): Request {
+		$this->verifyPeer = $verifyPeer;
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isVerifyPeer(): bool {
+		return $this->verifyPeer;
 	}
 
 
