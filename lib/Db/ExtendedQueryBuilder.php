@@ -328,7 +328,7 @@ class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder
 			$comp = 'neq';
 		}
 
-		return $expr->$comp($field, $this->createNamedParameter($value));
+		return $expr->$comp($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_INT));
 	}
 
 
