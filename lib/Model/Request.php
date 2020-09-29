@@ -195,7 +195,7 @@ class Request implements JsonSerializable {
 	}
 
 	/**
-	 * @param string $baseUrl
+	 * @param string|null $baseUrl
 	 *
 	 * @return Request
 	 */

@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace daita\MySmallPhpTools\Traits\Nextcloud;
 
 
 use daita\MySmallPhpTools\Exceptions\RequestContentException;
@@ -36,15 +36,18 @@ use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Exceptions\RequestResultNotJsonException;
 use daita\MySmallPhpTools\Exceptions\RequestResultSizeException;
 use daita\MySmallPhpTools\Exceptions\RequestServerException;
+use daita\MySmallPhpTools\Model\Nextcloud\NC19Request;
 use daita\MySmallPhpTools\Model\Request;
+use Exception;
+use OCP\Http\Client\IResponse;
 
 
 /**
- * Trait TCurlRequest
+ * Trait TNCRequest
  *
  * @package daita\MySmallPhpTools\Traits
  */
-trait TRequest {
+trait TNC19Request {
 
 
 	/** @var int */
@@ -63,16 +66,13 @@ trait TRequest {
 
 
 	/**
-	 * @param Request $request
+	 * @param NC19Request $request
 	 *
 	 * @return array
-	 * @throws RequestContentException
 	 * @throws RequestNetworkException
 	 * @throws RequestResultNotJsonException
-	 * @throws RequestResultSizeException
-	 * @throws RequestServerException
 	 */
-	public function retrieveJson(Request $request): array {
+	public function retrieveJson(NC19Request $request): array {
 		$result = $this->doRequest($request);
 
 		if (strpos($request->getContentType(), 'application/xrd') === 0) {
@@ -90,43 +90,35 @@ trait TRequest {
 
 
 	/**
-	 * @param Request $request
+	 * @param NC19Request $request
 	 *
 	 * @return mixed
-	 * @throws RequestContentException
 	 * @throws RequestNetworkException
-	 * @throws RequestResultSizeException
-	 * @throws RequestServerException
 	 */
-	public function doRequest(Request $request) {
+	public function doRequest(NC19Request $request) {
+		$clientService = \OC::$server->getHTTPClientService();
+		$request->setClient($clientService->newClient());
+
 		$this->maxDownloadSizeReached = false;
 
-		$ignoreProtocolOnErrors = [7];
-		$result = '';
+		$result = null;
 		foreach ($request->getProtocols() as $protocol) {
 			$request->setUsedProtocol($protocol);
 
-			$curl = $this->initRequest($request);
+			$this->generationClientOptions($request);
 
-			$this->initRequestGet($request);
-			$this->initRequestPost($curl, $request);
-			$this->initRequestPut($curl, $request);
-			$this->initRequestDelete($curl, $request);
-
-			$this->initRequestHeaders($curl, $request);
-
-			$result = curl_exec($curl);
-
-			if (in_array(curl_errno($curl), $ignoreProtocolOnErrors)) {
-				continue;
+			try {
+				$result = $this->useClient($request);
+				break;
+			} catch (Exception $e) {
 			}
+		}
 
-			if ($this->maxDownloadSizeReached === true) {
-				throw new RequestResultSizeException();
-			}
+		\OC::$server->getLogger()
+					->log(3, '>>> RESULT: ' . json_encode($result));
 
-			$this->parseRequestResult($curl, $request);
-			break;
+		if ($result === null) {
+			throw new RequestNetworkException();
 		}
 
 		return $result;
@@ -134,12 +126,62 @@ trait TRequest {
 
 
 	/**
-	 * @param Request $request
+	 * @param NC19Request $request
+	 */
+	private function generationClientOptions(NC19Request $request) {
+		$options = [
+			'body'    => $request->getData(),
+			'headers' => $request->getHeaders(),
+			'cookies' => [],
+			'verify'  => $request->isVerifyPeer(),
+			'debug'   => true
+		];
+
+		if ($request->isLocalAddressAllowed()) {
+			$options['nextcloud']['allow_local_address'] = true;
+		}
+
+		if ($request->isFollowLocation()) {
+			$options['allow_redirects'] = [
+				'max'     => 10,
+				'strict'  => true,
+				'referer' => true,
+			];
+		}
+
+		$request->setClientOptions($options);
+	}
+
+
+	/**
+	 * @param NC19Request $request
+	 *
+	 * @return IResponse
+	 * @throws Exception
+	 */
+	private function useClient(NC19Request $request): IResponse {
+		$client = $request->getClient();
+		$url = $request->getUsedProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
+
+		switch ($request->getType()) {
+			case Request::TYPE_POST:
+				return $client->post($url, $request->getClientOptions());
+			case Request::TYPE_PUT:
+				return $client->put($url, $request->getClientOptions());
+			case Request::TYPE_DELETE:
+				return $client->delete($url, $request->getClientOptions());
+			default:
+				return $client->get($url, $request->getClientOptions());
+		}
+	}
+
+
+	/**
+	 * @param NC19Request $request
 	 *
 	 * @return resource
 	 */
-	private function initRequest(Request $request) {
-
+	private function initRequest(NC19Request $request) {
 		$curl = $this->generateCurlRequest($request);
 
 		curl_setopt($curl, CURLOPT_USERAGENT, $request->getUserAgent());
@@ -272,7 +314,7 @@ trait TRequest {
 
 		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		$contentType = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
-		$request->setContentType((!is_string($contentType)) ? '' : (string) $contentType);
+		$request->setContentType((!is_string($contentType)) ? '' : (string)$contentType);
 		$request->setResultCode($code);
 
 		$this->parseRequestResultCode301($code, $request);

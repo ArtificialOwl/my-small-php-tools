@@ -40,7 +40,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 
 /**
  * Class RequestBuilder
- *
+ * @deprecated
  * @package daita\MySmallPhpTools\Db
  */
 class RequestBuilder {

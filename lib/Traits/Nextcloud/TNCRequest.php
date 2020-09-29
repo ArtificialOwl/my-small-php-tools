@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace daita\MySmallPhpTools\Traits\Nextcloud;
 
 
 use daita\MySmallPhpTools\Exceptions\RequestContentException;
@@ -37,14 +37,15 @@ use daita\MySmallPhpTools\Exceptions\RequestResultNotJsonException;
 use daita\MySmallPhpTools\Exceptions\RequestResultSizeException;
 use daita\MySmallPhpTools\Exceptions\RequestServerException;
 use daita\MySmallPhpTools\Model\Request;
+use Http\Client\HttpClient;
 
 
 /**
- * Trait TCurlRequest
+ * Trait TNCRequest
  *
  * @package daita\MySmallPhpTools\Traits
  */
-trait TRequest {
+trait TNCRequest {
 
 
 	/** @var int */

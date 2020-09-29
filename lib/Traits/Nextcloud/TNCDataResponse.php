@@ -40,6 +40,7 @@ use OCP\AppFramework\Http\DataResponse;
 /**
  * Trait TNCDataResponse
  *
+ * @deprecated
  * @package daita\MySmallPhpTools\Traits
  */
 trait TNCDataResponse {

@@ -32,8 +32,9 @@ namespace daita\MySmallPhpTools\Traits;
 
 
 /**
- * Trait TArrayTools
+ * Trait TPathTools
  *
+ * @deprecated
  * @package daita\MySmallPhpTools\Traits
  */
 trait TPathTools {
