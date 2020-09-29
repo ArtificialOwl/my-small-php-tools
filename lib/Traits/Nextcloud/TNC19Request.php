@@ -34,7 +34,6 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud;
 use daita\MySmallPhpTools\Exceptions\RequestContentException;
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Exceptions\RequestResultNotJsonException;
-use daita\MySmallPhpTools\Exceptions\RequestResultSizeException;
 use daita\MySmallPhpTools\Exceptions\RequestServerException;
 use daita\MySmallPhpTools\Model\Nextcloud\NC19Request;
 use daita\MySmallPhpTools\Model\Request;
@@ -111,17 +110,19 @@ trait TNC19Request {
 				$result = $this->useClient($request);
 				break;
 			} catch (Exception $e) {
+				\OC::$server->getLogger()
+							->log(3,
+								  'issue while useClient(): ' . get_class($e) . '; ' . $e->getMessage() . '; '
+								  . $request->getResultCode()
+							);
 			}
 		}
-
-		\OC::$server->getLogger()
-					->log(3, '>>> RESULT: ' . json_encode($result));
 
 		if ($result === null) {
 			throw new RequestNetworkException();
 		}
 
-		return $result;
+		return $result->getBody();
 	}
 
 
@@ -130,11 +131,10 @@ trait TNC19Request {
 	 */
 	private function generationClientOptions(NC19Request $request) {
 		$options = [
-			'body'    => $request->getData(),
-			'headers' => $request->getHeaders(),
-			'cookies' => [],
-			'verify'  => $request->isVerifyPeer(),
-			'debug'   => true
+			'form_params' => $request->getData(),
+			'headers'     => $request->getHeaders(),
+			'cookies'     => [],
+			'verify'      => $request->isVerifyPeer()
 		];
 
 		if ($request->isLocalAddressAllowed()) {
@@ -170,8 +170,10 @@ trait TNC19Request {
 				return $client->put($url, $request->getClientOptions());
 			case Request::TYPE_DELETE:
 				return $client->delete($url, $request->getClientOptions());
+			case Request::TYPE_GET:
+				return $client->get($url . '?' . $request->getUrlData(), $request->getClientOptions());
 			default:
-				return $client->get($url, $request->getClientOptions());
+				throw new Exception('unknown request type ' . json_encode($request));
 		}
 	}
 
