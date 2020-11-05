@@ -111,9 +111,10 @@ trait TNC19Request {
 				break;
 			} catch (Exception $e) {
 				\OC::$server->getLogger()
-							->log(3,
-								  'issue while useClient(): ' . get_class($e) . '; ' . $e->getMessage() . '; '
-								  . $request->getResultCode()
+							->log(
+								3,
+								'issue while useClient(): ' . get_class($e) . '; ' . $e->getMessage() . '; '
+								. $request->getResultCode()
 							);
 			}
 		}
@@ -131,10 +132,10 @@ trait TNC19Request {
 	 */
 	private function generationClientOptions(NC19Request $request) {
 		$options = [
-			'form_params' => $request->getData(),
-			'headers'     => $request->getHeaders(),
-			'cookies'     => [],
-			'verify'      => $request->isVerifyPeer()
+			'body'    => $request->getDataBody(),
+			'headers' => $request->getHeaders(),
+			'cookies' => [],
+			'verify'  => $request->isVerifyPeer()
 		];
 
 		if ($request->isLocalAddressAllowed()) {
