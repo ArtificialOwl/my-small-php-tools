@@ -82,6 +82,12 @@ class Request implements JsonSerializable {
 	private $headers = [];
 
 	/** @var array */
+	private $cookies = [];
+
+	/** @var array */
+	private $params = [];
+
+	/** @var array */
 	private $data = [];
 
 	/** @var int */
@@ -346,6 +352,25 @@ class Request implements JsonSerializable {
 	/**
 	 * @return array
 	 */
+	public function getCookies(): array {
+		return $this->cookies;
+	}
+
+	/**
+	 * @param array $cookies
+	 *
+	 * @return Request
+	 */
+	public function setCookies(array $cookies): Request {
+		$this->cookies = $cookies;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return array
+	 */
 	public function getData(): array {
 		return $this->data;
 	}
@@ -388,6 +413,51 @@ class Request implements JsonSerializable {
 
 
 	/**
+	 * @return array
+	 */
+	public function getParams(): array {
+		return $this->params;
+	}
+
+	/**
+	 * @param array $params
+	 *
+	 * @return Request
+	 */
+	public function setParams(array $params): Request {
+		$this->params = $params;
+
+		return $this;
+	}
+
+
+	/**
+	 * @param string $k
+	 * @param string $v
+	 *
+	 * @return Request
+	 */
+	public function addParam(string $k, string $v): Request {
+		$this->params[$k] = $v;
+
+		return $this;
+	}
+
+
+	/**
+	 * @param string $k
+	 * @param int $v
+	 *
+	 * @return Request
+	 */
+	public function addParamInt(string $k, int $v): Request {
+		$this->params[$k] = $v;
+
+		return $this;
+	}
+
+
+	/**
 	 * @param string $k
 	 * @param string $v
 	 *
@@ -418,20 +488,12 @@ class Request implements JsonSerializable {
 	 */
 	public function getDataBody(): string {
 		return json_encode($this->getData());
-//		if ($this->getData() === []) {
-//			return '';
-//		}
-//
-//		return preg_replace(
-//			'/([(%5B)]{1})[0-9]+([(%5D)]{1})/', '$1$2', http_build_query($this->getData())
-//		);
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getUrlData(): string {
-//		return json_encode($this->getData());
 		if ($this->getData() === []) {
 			return '';
 		}

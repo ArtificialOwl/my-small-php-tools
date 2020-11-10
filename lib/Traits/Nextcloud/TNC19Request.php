@@ -132,11 +132,18 @@ trait TNC19Request {
 	 */
 	private function generationClientOptions(NC19Request $request) {
 		$options = [
-			'body'    => $request->getDataBody(),
 			'headers' => $request->getHeaders(),
-			'cookies' => [],
+			'cookies' => $request->getCookies(),
 			'verify'  => $request->isVerifyPeer()
 		];
+
+		if (!empty($request->getData())) {
+			$options['body'] = $request->getDataBody();
+		}
+
+		if (!empty($request->getParams())) {
+			$options['form_params'] = $request->getParams();
+		}
 
 		if ($request->isLocalAddressAllowed()) {
 			$options['nextcloud']['allow_local_address'] = true;
@@ -241,58 +248,6 @@ trait TNC19Request {
 		}
 
 		return $curl;
-	}
-
-
-	/**
-	 * @param Request $request
-	 */
-	private function initRequestGet(Request $request) {
-		if ($request->getType() !== Request::TYPE_GET) {
-			return;
-		}
-	}
-
-
-	/**
-	 * @param resource $curl
-	 * @param Request $request
-	 */
-	private function initRequestPost($curl, Request $request) {
-		if ($request->getType() !== Request::TYPE_POST) {
-			return;
-		}
-
-		curl_setopt($curl, CURLOPT_POST, true);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $request->getDataBody());
-	}
-
-
-	/**
-	 * @param resource $curl
-	 * @param Request $request
-	 */
-	private function initRequestPut($curl, Request $request) {
-		if ($request->getType() !== Request::TYPE_PUT) {
-			return;
-		}
-
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $request->getDataBody());
-	}
-
-
-	/**
-	 * @param resource $curl
-	 * @param Request $request
-	 */
-	private function initRequestDelete($curl, Request $request) {
-		if ($request->getType() !== Request::TYPE_DELETE) {
-			return;
-		}
-
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $request->getDataBody());
 	}
 
 
