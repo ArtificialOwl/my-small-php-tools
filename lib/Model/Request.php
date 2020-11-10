@@ -57,6 +57,9 @@ class Request implements JsonSerializable {
 	/** @var string */
 	private $address = '';
 
+	/** @var int */
+	private $port = 0;
+
 	/** @var string */
 	private $url = '';
 
@@ -174,6 +177,26 @@ class Request implements JsonSerializable {
 		return $this;
 	}
 
+
+	/**
+	 * @return int
+	 */
+	public function getPort(): int {
+		return $this->port;
+	}
+
+	/**
+	 * @param int $port
+	 *
+	 * @return $this
+	 */
+	public function setPort(int $port): self {
+		$this->port = $port;
+
+		return $this;
+	}
+
+
 	/**
 	 * @param string $url
 	 */
@@ -182,15 +205,22 @@ class Request implements JsonSerializable {
 		if ($protocol === null) {
 			if (strpos($url, '/') > -1) {
 				list($address, $baseUrl) = explode('/', $url, 2);
-				$this->setAddress($address);
-				$this->setBaseUrl($baseUrl);
+				$this->setBaseUrl('/' . $baseUrl);
 			} else {
-				$this->setAddress($url);
+				$address = $url;
 			}
+			if (strpos($address, ':') > -1) {
+				list($address, $port) = explode(':', $address, 2);
+				$this->setPort((int)$port);
+			}
+			$this->setAddress($address);
 		} else {
 			$this->setProtocols([$protocol]);
 			$this->setAddress(parse_url($url, PHP_URL_HOST));
 			$this->setBaseUrl(parse_url($url, PHP_URL_PATH));
+			if (is_numeric($port = parse_url($url, PHP_URL_PORT))) {
+				$this->setPort($port);
+			}
 		}
 	}
 
@@ -494,6 +524,7 @@ class Request implements JsonSerializable {
 	public function jsonSerialize(): array {
 		return [
 			'protocols'     => $this->getProtocols(),
+			'port'          => $this->getPort(),
 			'used_protocol' => $this->getUsedProtocol(),
 			'host'          => $this->getAddress(),
 			'url'           => $this->getUrl(),

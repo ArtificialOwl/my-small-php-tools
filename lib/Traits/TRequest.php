@@ -40,7 +40,7 @@ use daita\MySmallPhpTools\Model\Request;
 
 
 /**
- * Trait TCurlRequest
+ * Trait TRequest
  *
  * @package daita\MySmallPhpTools\Traits
  */
@@ -185,7 +185,9 @@ trait TRequest {
 	 * @return resource
 	 */
 	private function generateCurlRequest(Request $request) {
-		$url = $request->getUsedProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
+		$port = ($request->getPort() > 0) ? ':' . $request->getPort() : '';
+		$url =
+			$request->getUsedProtocol() . '://' . $request->getAddress() . $port . $request->getParsedUrl();
 		if ($request->getType() !== Request::TYPE_GET) {
 			$curl = curl_init($url);
 		} else {
@@ -272,7 +274,7 @@ trait TRequest {
 
 		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		$contentType = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
-		$request->setContentType((!is_string($contentType)) ? '' : (string) $contentType);
+		$request->setContentType((!is_string($contentType)) ? '' : (string)$contentType);
 		$request->setResultCode($code);
 
 		$this->parseRequestResultCode301($code, $request);

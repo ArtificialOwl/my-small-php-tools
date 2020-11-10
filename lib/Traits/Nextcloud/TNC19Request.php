@@ -162,7 +162,10 @@ trait TNC19Request {
 	 */
 	private function useClient(NC19Request $request): IResponse {
 		$client = $request->getClient();
-		$url = $request->getUsedProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
+
+		$port = ($request->getPort() > 0) ? ':' . $request->getPort() : '';
+		$url =
+			$request->getUsedProtocol() . '://' . $request->getAddress() . $port . $request->getParsedUrl();
 
 		switch ($request->getType()) {
 			case Request::TYPE_POST:
