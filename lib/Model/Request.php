@@ -55,7 +55,7 @@ class Request implements JsonSerializable {
 	private $protocols = ['https'];
 
 	/** @var string */
-	private $address = '';
+	private $host = '';
 
 	/** @var int */
 	private $port = 0;
@@ -167,18 +167,38 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
+	 * @deprecated - use getHost();
 	 */
 	public function getAddress(): string {
-		return $this->address;
+		return $this->getHost();
 	}
 
 	/**
 	 * @param string $address
 	 *
 	 * @return Request
+	 * @deprecated - use setHost();
 	 */
 	public function setAddress(string $address): Request {
-		$this->address = $address;
+		$this->setHost($address);
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getHost(): string {
+		return $this->host;
+	}
+
+	/**
+	 * @param string $host
+	 *
+	 * @return Request
+	 */
+	public function setHost(string $host): Request {
+		$this->host = $host;
 
 		return $this;
 	}
@@ -205,8 +225,17 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @param string $url
+	 *
+	 * @deprecated - use basedOnUrl();
 	 */
 	public function setAddressFromUrl(string $url) {
+		$this->basedOnUrl($url);
+	}
+
+	/**
+	 * @param string $url
+	 */
+	public function basedOnUrl(string $url) {
 		$protocol = parse_url($url, PHP_URL_SCHEME);
 		if ($protocol === null) {
 			if (strpos($url, '/') > -1) {
@@ -219,10 +248,11 @@ class Request implements JsonSerializable {
 				list($address, $port) = explode(':', $address, 2);
 				$this->setPort((int)$port);
 			}
-			$this->setAddress($address);
+			$this->setHost($address);
 		} else {
 			$this->setProtocols([$protocol]);
-			$this->setAddress(parse_url($url, PHP_URL_HOST));
+			$this->setUsedProtocol($protocol);
+			$this->setHost(parse_url($url, PHP_URL_HOST));
 			$this->setBaseUrl(parse_url($url, PHP_URL_PATH));
 			if (is_numeric($port = parse_url($url, PHP_URL_PORT))) {
 				$this->setPort($port);
@@ -291,9 +321,10 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
+	 * @deprecated - use getParametersUrl() + addParam()
 	 */
 	public function getParsedUrl(): string {
-		$url = $this->getUrl();
+		$url = $this->getPath();
 		$ak = array_keys($this->getData());
 		foreach ($ak as $k) {
 			if (!is_string($this->data[$k])) {
@@ -306,12 +337,48 @@ class Request implements JsonSerializable {
 		return $url;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getParametersUrl(): string {
+		$url = $this->getPath();
+		$ak = array_keys($this->getParams());
+		foreach ($ak as $k) {
+			if (!is_string($this->params[$k])) {
+				continue;
+			}
+
+			$url = str_replace(':' . $k, $this->params[$k], $url);
+		}
+
+		return $url;
+	}
+
 
 	/**
 	 * @return string
 	 */
-	public function getUrl(): string {
+	public function getPath(): string {
 		return $this->baseUrl . $this->url;
+	}
+
+
+	/**
+	 * @return string
+	 * @deprecated - use getPath()
+	 */
+	public function getUrl(): string {
+		return $this->getPath();
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getCompleteUrl(): string {
+		$port = ($this->getPort() > 0) ? ':' . $this->getPort() : '';
+
+		return $this->getUsedProtocol() . '://' . $this->getHost() . $port . $this->getParametersUrl();
 	}
 
 
@@ -492,6 +559,7 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
+	 * @deprecated - use getUrlParams();
 	 */
 	public function getUrlData(): string {
 		if ($this->getData() === []) {
@@ -500,6 +568,19 @@ class Request implements JsonSerializable {
 
 		return preg_replace(
 			'/([(%5B)]{1})[0-9]+([(%5D)]{1})/', '$1$2', http_build_query($this->getData())
+		);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUrlParams(): string {
+		if ($this->getParams() === []) {
+			return '';
+		}
+
+		return preg_replace(
+			'/([(%5B)]{1})[0-9]+([(%5D)]{1})/', '$1$2', http_build_query($this->getParams())
 		);
 	}
 
@@ -586,13 +667,31 @@ class Request implements JsonSerializable {
 	public function jsonSerialize(): array {
 		return [
 			'protocols'     => $this->getProtocols(),
-			'port'          => $this->getPort(),
 			'used_protocol' => $this->getUsedProtocol(),
-			'host'          => $this->getAddress(),
-			'url'           => $this->getUrl(),
+			'port'          => $this->getPort(),
+			'host'          => $this->getHost(),
+			'url'           => $this->getPath(),
 			'timeout'       => $this->getTimeout(),
 			'type'          => $this->getType(),
+			'cookies'       => $this->getCookies(),
+			'params'        => $this->getParams(),
 			'data'          => $this->getData()
 		];
 	}
+
+
+	public static function type(string $type) {
+		switch (strtoupper($type)) {
+			case 'GET':
+				return self::TYPE_GET;
+			case 'POST':
+				return self::TYPE_POST;
+			case 'PUT':
+				return self::TYPE_PUT;
+			case 'DELETE':
+				return self::TYPE_DELETE;
+		}
+	}
+
 }
+

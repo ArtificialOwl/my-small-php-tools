@@ -187,7 +187,7 @@ trait TRequest {
 	private function generateCurlRequest(Request $request) {
 		$port = ($request->getPort() > 0) ? ':' . $request->getPort() : '';
 		$url =
-			$request->getUsedProtocol() . '://' . $request->getAddress() . $port . $request->getParsedUrl();
+			$request->getUsedProtocol() . '://' . $request->getHost() . $port . $request->getParsedUrl();
 		if ($request->getType() !== Request::TYPE_GET) {
 			$curl = curl_init($url);
 		} else {

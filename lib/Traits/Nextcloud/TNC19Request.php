@@ -108,6 +108,7 @@ trait TNC19Request {
 
 			try {
 				$result = $this->useClient($request);
+				$request->setResultCode($result->getStatusCode());
 				break;
 			} catch (Exception $e) {
 				\OC::$server->getLogger()
@@ -170,19 +171,17 @@ trait TNC19Request {
 	private function useClient(NC19Request $request): IResponse {
 		$client = $request->getClient();
 
-		$port = ($request->getPort() > 0) ? ':' . $request->getPort() : '';
-		$url =
-			$request->getUsedProtocol() . '://' . $request->getAddress() . $port . $request->getParsedUrl();
-
 		switch ($request->getType()) {
 			case Request::TYPE_POST:
-				return $client->post($url, $request->getClientOptions());
+				return $client->post($request->getCompleteUrl(), $request->getClientOptions());
 			case Request::TYPE_PUT:
-				return $client->put($url, $request->getClientOptions());
+				return $client->put($request->getCompleteUrl(), $request->getClientOptions());
 			case Request::TYPE_DELETE:
-				return $client->delete($url, $request->getClientOptions());
+				return $client->delete($request->getCompleteUrl(), $request->getClientOptions());
 			case Request::TYPE_GET:
-				return $client->get($url . '?' . $request->getUrlData(), $request->getClientOptions());
+				return $client->get(
+					$request->getCompleteUrl() . '?' . $request->getUrlParams(), $request->getClientOptions()
+				);
 			default:
 				throw new Exception('unknown request type ' . json_encode($request));
 		}
@@ -240,7 +239,7 @@ trait TNC19Request {
 	 * @return resource
 	 */
 	private function generateCurlRequest(Request $request) {
-		$url = $request->getUsedProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
+		$url = $request->getUsedProtocol() . '://' . $request->getHost() . $request->getParsedUrl();
 		if ($request->getType() !== Request::TYPE_GET) {
 			$curl = curl_init($url);
 		} else {

@@ -186,7 +186,7 @@ trait TNCRequest {
 	 * @return resource
 	 */
 	private function generateCurlRequest(Request $request) {
-		$url = $request->getUsedProtocol() . '://' . $request->getAddress() . $request->getParsedUrl();
+		$url = $request->getUsedProtocol() . '://' . $request->getHost() . $request->getParsedUrl();
 		if ($request->getType() !== Request::TYPE_GET) {
 			$curl = curl_init($url);
 		} else {
