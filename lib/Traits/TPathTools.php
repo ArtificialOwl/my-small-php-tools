@@ -34,7 +34,7 @@ namespace daita\MySmallPhpTools\Traits;
 /**
  * Trait TPathTools
  *
- * @deprecated
+ * @deprecated - 19
  * @package daita\MySmallPhpTools\Traits
  */
 trait TPathTools {

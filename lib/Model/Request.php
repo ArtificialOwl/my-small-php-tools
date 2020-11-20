@@ -167,7 +167,7 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
-	 * @deprecated - use getHost();
+	 * @deprecated - 19 - use getHost();
 	 */
 	public function getAddress(): string {
 		return $this->getHost();
@@ -177,7 +177,7 @@ class Request implements JsonSerializable {
 	 * @param string $address
 	 *
 	 * @return Request
-	 * @deprecated - use setHost();
+	 * @deprecated - 19 - use setHost();
 	 */
 	public function setAddress(string $address): Request {
 		$this->setHost($address);
@@ -214,9 +214,9 @@ class Request implements JsonSerializable {
 	/**
 	 * @param int $port
 	 *
-	 * @return $this
+	 * @return Request
 	 */
-	public function setPort(int $port): self {
+	public function setPort(int $port): Request {
 		$this->port = $port;
 
 		return $this;
@@ -224,9 +224,44 @@ class Request implements JsonSerializable {
 
 
 	/**
+	 * @param string $instance
+	 *
+	 * @return Request
+	 */
+	public function setInstance(string $instance): Request {
+		if (strpos($instance, ':') === false) {
+			$this->setHost($instance);
+
+			return $this;
+		}
+
+		list($host, $port) = explode(':', $instance, 2);
+		$this->setHost($host);
+		if ($port !== '') {
+			$this->setPort((int)$port);
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getInstance(): string {
+		$instance = $this->getHost();
+		if ($this->getPort() > 0) {
+			$instance .= ':' . $this->getPort();
+		}
+
+		return $instance;
+	}
+
+
+	/**
 	 * @param string $url
 	 *
-	 * @deprecated - use basedOnUrl();
+	 * @deprecated - 19 - use basedOnUrl();
 	 */
 	public function setAddressFromUrl(string $url) {
 		$this->basedOnUrl($url);
@@ -321,7 +356,7 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
-	 * @deprecated - use getParametersUrl() + addParam()
+	 * @deprecated - 19 - use getParametersUrl() + addParam()
 	 */
 	public function getParsedUrl(): string {
 		$url = $this->getPath();
@@ -365,7 +400,7 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
-	 * @deprecated - use getPath()
+	 * @deprecated - 19 - use getPath()
 	 */
 	public function getUrl(): string {
 		return $this->getPath();
@@ -559,7 +594,7 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
-	 * @deprecated - use getUrlParams();
+	 * @deprecated - 19 - use getUrlParams();
 	 */
 	public function getUrlData(): string {
 		if ($this->getData() === []) {
@@ -680,7 +715,12 @@ class Request implements JsonSerializable {
 	}
 
 
-	public static function type(string $type) {
+	/**
+	 * @param string $type
+	 *
+	 * @return int
+	 */
+	public static function type(string $type): int {
 		switch (strtoupper($type)) {
 			case 'GET':
 				return self::TYPE_GET;
@@ -691,6 +731,8 @@ class Request implements JsonSerializable {
 			case 'DELETE':
 				return self::TYPE_DELETE;
 		}
+
+		return 0;
 	}
 
 }
