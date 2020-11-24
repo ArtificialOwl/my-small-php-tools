@@ -133,8 +133,32 @@ trait TNC20Logger {
 			$opts['exception'] = new HintException($message, json_encode($serializable));
 		}
 
-		$this->logger()
-			 ->log($level, $message, $opts);
+		// fix until 20.0.2
+		// deprecated in 21
+		if ($level === self::$DEBUG) {
+			$this->logger()
+				 ->debug($message, $opts);
+		}
+		if ($level === self::$INFO) {
+			$this->logger()
+				 ->notice($message, $opts);
+		}
+		if ($level === self::$WARNING) {
+			$this->logger()
+				 ->warning($message, $opts);
+		}
+		if ($level === self::$ALERT) {
+			$this->logger()
+				 ->alert($message, $opts);
+		}
+		if ($level === self::$EMERGENCY) {
+			$this->logger()
+				 ->emergency($message, $opts);
+		}
+
+		// bugged in NC20 prior to 20.0.2
+//		$this->logger()
+//			 ->log($level, $message, $opts);
 	}
 
 

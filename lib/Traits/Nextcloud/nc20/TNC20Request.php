@@ -33,7 +33,8 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
 
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Exceptions\RequestResultNotJsonException;
-use daita\MySmallPhpTools\Model\Nextcloud\NC19Request;
+use daita\MySmallPhpTools\Model\Nextcloud\nc20\NC20Request;
+use daita\MySmallPhpTools\Model\Nextcloud\nc20\NC20RequestResult;
 use daita\MySmallPhpTools\Model\Request;
 use Exception;
 use OC;
@@ -60,13 +61,13 @@ trait TNC20Request {
 
 
 	/**
-	 * @param NC19Request $request
+	 * @param NC20Request $request
 	 *
 	 * @return array
 	 * @throws RequestNetworkException
 	 * @throws RequestResultNotJsonException
 	 */
-	public function retrieveJson(NC19Request $request): array {
+	public function retrieveJson(NC20Request $request): array {
 		$result = $this->doRequest($request);
 
 		if (strpos($request->getContentType(), 'application/xrd') === 0) {
@@ -84,12 +85,12 @@ trait TNC20Request {
 
 
 	/**
-	 * @param NC19Request $request
+	 * @param NC20Request $request
 	 *
 	 * @return mixed
 	 * @throws RequestNetworkException
 	 */
-	public function doRequest(NC19Request $request) {
+	public function doRequest(NC20Request $request) {
 		$request->setClient(
 			$this->clientService()
 				 ->newClient()
@@ -102,11 +103,18 @@ trait TNC20Request {
 			$request->setUsedProtocol($protocol);
 
 			try {
-				$result = $this->useClient($request);
-				$request->setResultCode($result->getStatusCode());
+				$response = $this->useClient($request);
+				$request->setResult(new NC20RequestResult($response));
 				break;
 			} catch (Exception $e) {
-				$this->notice('issue while useClient()', true, ['request' => $request]);
+				$this->notice(
+					'issue while useClient()', true, [
+												 'request'   => $request,
+												 'exception' => ['type'    => get_class($e),
+																 'message' => $e->getMessage()
+												 ]
+											 ]
+				);
 			}
 		}
 
@@ -131,9 +139,9 @@ trait TNC20Request {
 
 
 	/**
-	 * @param NC19Request $request
+	 * @param NC20Request $request
 	 */
-	private function generationClientOptions(NC19Request $request) {
+	private function generationClientOptions(NC20Request $request) {
 		$options = [
 			'headers' => $request->getHeaders(),
 			'cookies' => $request->getCookies(),
@@ -165,12 +173,12 @@ trait TNC20Request {
 
 
 	/**
-	 * @param NC19Request $request
+	 * @param NC20Request $request
 	 *
 	 * @return IResponse
 	 * @throws Exception
 	 */
-	private function useClient(NC19Request $request): IResponse {
+	private function useClient(NC20Request $request): IResponse {
 		$client = $request->getClient();
 
 		switch ($request->getType()) {
