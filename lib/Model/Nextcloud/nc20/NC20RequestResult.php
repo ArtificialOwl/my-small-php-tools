@@ -32,7 +32,8 @@ namespace daita\MySmallPhpTools\Model\Nextcloud\nc20;
 
 
 use daita\MySmallPhpTools\Exceptions\RequestContentException;
-use daita\MySmallPhpTools\Exceptions\RequestResultNotJsonException;
+use daita\MySmallPhpTools\Traits\TArrayTools;
+use JsonSerializable;
 use OCP\Http\Client\IResponse;
 
 
@@ -41,12 +42,16 @@ use OCP\Http\Client\IResponse;
  *
  * @package daita\MySmallPhpTools\Model\Nextcloud\nc20
  */
-class NC20RequestResult {
+class NC20RequestResult implements JsonSerializable {
+
+
+	use TArrayTools;
 
 
 	const TYPE_STRING = 0;
-	const TYPE_JSON = 1;
-	const TYPE_BINARY = 2;
+	const TYPE_BINARY = 1;
+	const TYPE_JSON = 2;
+	const TYPE_XRD = 3;
 
 
 	/** @var int */
@@ -58,17 +63,23 @@ class NC20RequestResult {
 	/** @var mixed */
 	private $content;
 
+	/** @var array */
+	private $contentAsArray = [];
+
+	/** @var int */
+	private $contentType = 0;
 
 	/**
 	 * NC20RequestResult constructor.
 	 *
 	 * @param IResponse $response
-	 * @param bool $binary
 	 */
-	public function __construct(IResponse $response, bool $binary = false) {
+	public function __construct(IResponse $response) {
 		$this->setStatusCode($response->getStatusCode());
 		$this->setContent($response->getBody());
 		$this->setHeaders($response->getHeaders());
+
+		$this->generateMeta();
 	}
 
 
@@ -109,6 +120,25 @@ class NC20RequestResult {
 		return $this;
 	}
 
+	/**
+	 * @param string $key
+	 *
+	 * @return array
+	 */
+	public function getHeader(string $key): array {
+		return $this->getArray($key, $this->headers);
+	}
+
+	public function withinHeader(string $key, string $needle): bool {
+		foreach ($this->getHeader($key) as $header) {
+			if (strpos($header, $needle) !== false) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * @param string $content
@@ -136,20 +166,13 @@ class NC20RequestResult {
 
 	/**
 	 * @return array
-	 * @throws RequestResultNotJsonException
 	 */
 	public function getAsArray(): array {
-		try {
-			$arr = json_decode($this->getContent(), true);
-		} catch (RequestContentException $e) {
-			throw new RequestResultNotJsonException();
+		if (empty($this->contentAsArray)) {
+			$this->generateContentAsArray();
 		}
 
-		if (!is_array($arr)) {
-			throw new RequestResultNotJsonException();
-		}
-
-		return $arr;
+		return $this->contentAsArray;
 	}
 
 
@@ -164,21 +187,105 @@ class NC20RequestResult {
 	/**
 	 * @return int
 	 */
-	public function getType(): int {
+	public function getContentType(): int {
+		return $this->contentType;
+	}
+
+	/**
+	 * @param int $type
+	 *
+	 * @return $this
+	 */
+	public function setContentType(int $type): self {
+		$this->contentType = $type;
+
+		return $this;
+	}
+
+	/**
+	 * @param int $type
+	 *
+	 * @return bool
+	 */
+	public function isContentType(int $type): bool {
+		return ($this->contentType === $type);
+	}
+
+
+	/**
+	 *
+	 */
+	private function generateMeta(): void {
+		$this->setContentType($this->discoverContentType());
+		$this->generateContentAsArray();
+	}
+
+	/**
+	 * @return int
+	 */
+	private function discoverContentType(): int {
+		if ($this->withinHeader('Content-Type', 'application/xrd')) {
+			return self::TYPE_XRD;
+		}
+
+		if ($this->withinHeader('Content-Type', 'application/json')
+			|| $this->withinHeader('Content-Type', 'application/jrd')
+		) {
+			return self::TYPE_JSON;
+		}
+
 		try {
-			$this->getContent();
+			$content = $this->getContent();
 		} catch (RequestContentException $e) {
 			return self::TYPE_BINARY;
 		}
 
-		try {
-			$this->getAsArray();
-
+		// in case header failure
+		$arr = json_decode($content, true);
+		if (is_array($arr)) {
 			return self::TYPE_JSON;
-		} catch (RequestResultNotJsonException $e) {
 		}
 
 		return self::TYPE_STRING;
+	}
+
+	/**
+	 *
+	 */
+	private function generateContentAsArray(): void {
+		try {
+			$content = $this->getContent();
+			if ($this->isContentType(self::TYPE_XRD)) {
+				$xml = simplexml_load_string($content);
+				$content = json_encode($xml, JSON_UNESCAPED_SLASHES);
+			}
+
+			$arr = json_decode($content, true);
+			if (is_array($arr)) {
+				$this->contentAsArray = $arr;
+			}
+		} catch (RequestContentException $e) {
+		}
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		try {
+			$content = $this->getContent();
+		} catch (RequestContentException $e) {
+			$content = 'not a string';
+		}
+
+		return [
+			'statusCode'     => $this->getStatusCode(),
+			'headers'        => $this->getHeaders(),
+			'content'        => $content,
+			'contentAsArray' => $this->contentAsArray,
+			'contentType'    => $this->getContentType()
+		];
 	}
 
 }

@@ -58,20 +58,64 @@ trait TNC20Logger {
 	static $DEBUG = 0;
 
 
+
 	/**
+	 * - tip: $level and be $serializable
+	 *
 	 * @param Exception $e
-	 * @param int $level
+	 * @param int|array $level
+	 * @param array $serializable
 	 */
-	public function exception(Exception $e, int $level = 3): void {
-		$this->logger()
-			 ->log(
-				 $level,
-				 $e->getMessage(),
-				 [
-					 'app'       => $this->setup('app'),
-					 'exception' => $e
-				 ]
-			 );
+	public function exception(Exception $e, $level = 3, array $serializable = []): void {
+		if (is_array($level) && empty($serializable)) {
+			$serializable = $level;
+			$level = 3;
+		}
+
+		$message = '';
+		if (!empty($serializable)) {
+			$message = json_encode($serializable);
+		}
+
+		$opts = [
+			'app'       => $this->setup('app'),
+			'exception' => $e
+		];
+
+//		if (empty($serializable)) {
+		// fix until 20.0.2
+		// deprecated in 21
+		if ($level === self::$DEBUG) {
+			$this->logger()
+				 ->debug($message, $opts);
+		}
+		if ($level === self::$NOTICE) {
+			$this->logger()
+				 ->notice($message, $opts);
+		}
+		if ($level === self::$WARNING) {
+			$this->logger()
+				 ->warning($message, $opts);
+		}
+		if ($level === self::$ALERT) {
+			$this->logger()
+				 ->alert($message, $opts);
+		}
+		if ($level === self::$EMERGENCY) {
+			$this->logger()
+				 ->emergency($message, $opts);
+		}
+
+		// bugged in NC20 prior to 20.0.2
+//		$this->logger()
+//				 ->log(
+//					 $level,
+//					 $message,
+//					 [
+//						 'app'       => $this->setup('app'),
+//						 'exception' => $e
+//					 ]
+//				 );
 	}
 
 
@@ -81,7 +125,7 @@ trait TNC20Logger {
 	 * @param array $serializable
 	 */
 	public function emergency(string $message, bool $trace = false, array $serializable = []): void {
-		$this->log(self::$EMERGENCY, $message, $trace, $serializable);
+		$this->log(self::$EMERGENCY, '[emergency] ' . $message, $trace, $serializable);
 	}
 
 	/**
@@ -90,7 +134,7 @@ trait TNC20Logger {
 	 * @param array $serializable
 	 */
 	public function alert(string $message, bool $trace = false, array $serializable = []): void {
-		$this->log(self::$ALERT, $message, $trace, $serializable);
+		$this->log(self::$ALERT, '[alert] ' . $message, $trace, $serializable);
 	}
 
 	/**
@@ -99,7 +143,7 @@ trait TNC20Logger {
 	 * @param array $serializable
 	 */
 	public function warning(string $message, bool $trace = false, array $serializable = []): void {
-		$this->log(self::$WARNING, $message, $trace, $serializable);
+		$this->log(self::$WARNING, '[warning] ' . $message, $trace, $serializable);
 	}
 
 	/**
@@ -108,16 +152,17 @@ trait TNC20Logger {
 	 * @param array $serializable
 	 */
 	public function notice(string $message, bool $trace = false, array $serializable = []): void {
-		$this->log(self::$NOTICE, $message, $trace, $serializable);
+		$this->log(self::$NOTICE, '[notice] ' . $message, $trace, $serializable);
 	}
 
 	/**
 	 * @param string $message
-	 * @param bool $trace
 	 * @param array $serializable
 	 */
-	public function debug(string $message, bool $trace = false, array $serializable = []): void {
-		$this->log(self::$DEBUG, $message, $trace, $serializable);
+	public function debug(string $message, array $serializable = []): void {
+		$message = '[debug] ' . $message;
+		$debugLevel = (int) $this->appConfig('debug_level');
+		$this->log($debugLevel, $message, ($this->appConfig('debug_trace') === '1'), $serializable);
 	}
 
 
@@ -131,6 +176,8 @@ trait TNC20Logger {
 		$opts = ['app' => $this->setup('app')];
 		if ($trace) {
 			$opts['exception'] = new HintException($message, json_encode($serializable));
+		} elseif (!empty($serializable)) {
+			$message .= ' -- ' . json_encode($serializable);
 		}
 
 		// fix until 20.0.2

@@ -114,6 +114,13 @@ class NC20Request extends Request {
 
 
 	/**
+	 * @return bool
+	 */
+	public function hasResult(): bool {
+		return ($this->result !== null);
+	}
+
+	/**
 	 * @return NC20RequestResult
 	 */
 	public function getResult(): NC20RequestResult {
@@ -131,5 +138,24 @@ class NC20Request extends Request {
 		return $this;
 	}
 
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		$result = null;
+		if ($this->hasResult()) {
+			$result = $this->getResult();
+		}
+
+		return array_merge(
+			parent::jsonSerialize(),
+			[
+				'clientOptions'       => $this->getClientOptions(),
+				'localAddressAllowed' => $this->isLocalAddressAllowed(),
+				'result'              => $result
+			]
+		);
+	}
 }
 

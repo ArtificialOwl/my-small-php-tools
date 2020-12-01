@@ -31,6 +31,8 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
 
 
+use OCP\IConfig;
+
 /**
  * Trait TNC20Setup
  *
@@ -59,6 +61,24 @@ trait TNC20Setup {
 		}
 
 		return '';
+	}
+
+
+	/**
+	 * @param string $key
+	 *
+	 * @return string
+	 */
+	public function appConfig(string $key): string {
+		$app = $this->setup('app');
+		if ($app === '') {
+			return '';
+		}
+
+		/** @var IConfig $config */
+		$config = \OC::$server->get(IConfig::class);
+
+		return $config->getAppValue($app, $key, '');
 	}
 
 }

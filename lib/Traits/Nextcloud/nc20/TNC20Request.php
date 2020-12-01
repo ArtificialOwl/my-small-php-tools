@@ -31,8 +31,8 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
 
 
+use daita\MySmallPhpTools\Exceptions\RequestContentException;
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
-use daita\MySmallPhpTools\Exceptions\RequestResultNotJsonException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc20\NC20Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc20\NC20RequestResult;
 use daita\MySmallPhpTools\Model\Request;
@@ -65,29 +65,20 @@ trait TNC20Request {
 	 *
 	 * @return array
 	 * @throws RequestNetworkException
-	 * @throws RequestResultNotJsonException
+	 * @throws RequestContentException
 	 */
 	public function retrieveJson(NC20Request $request): array {
-		$result = $this->doRequest($request);
+		$this->doRequest($request);
+		$requestResult = $request->getResult();
 
-		if (strpos($request->getContentType(), 'application/xrd') === 0) {
-			$xml = simplexml_load_string($result);
-			$result = json_encode($xml, JSON_UNESCAPED_SLASHES);
-		}
-
-		$result = json_decode((string)$result, true);
-		if (is_array($result)) {
-			return $result;
-		}
-
-		throw new RequestResultNotJsonException();
+		return $requestResult->getAsArray();
 	}
 
 
 	/**
 	 * @param NC20Request $request
 	 *
-	 * @return mixed
+	 * @return string
 	 * @throws RequestNetworkException
 	 */
 	public function doRequest(NC20Request $request) {
@@ -98,7 +89,8 @@ trait TNC20Request {
 
 		$this->generationClientOptions($request);
 
-		$result = null;
+		$this->debug('doRequest initiated', ['request' => $request]);
+
 		foreach ($request->getProtocols() as $protocol) {
 			$request->setUsedProtocol($protocol);
 
@@ -107,22 +99,19 @@ trait TNC20Request {
 				$request->setResult(new NC20RequestResult($response));
 				break;
 			} catch (Exception $e) {
-				$this->notice(
-					'issue while useClient()', true, [
-												 'request'   => $request,
-												 'exception' => ['type'    => get_class($e),
-																 'message' => $e->getMessage()
-												 ]
-											 ]
-				);
+				$this->exception($e, self::$INFO, ['request' => $request]);
 			}
 		}
 
-		if ($result === null) {
+		$this->debug('doRequest done', ['request' => $request]);
+
+		if (!$request->hasResult()) {
 			throw new RequestNetworkException();
 		}
 
-		return $result->getBody();
+		// deprecated, should not returns anything
+		return $request->getResult()
+					   ->getContent();
 	}
 
 

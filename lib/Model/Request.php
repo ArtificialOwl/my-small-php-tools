@@ -31,6 +31,7 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Model;
 
 
+use daita\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
 
@@ -40,6 +41,9 @@ use JsonSerializable;
  * @package daita\MySmallPhpTools\Model
  */
 class Request implements JsonSerializable {
+
+
+	use TArrayTools;
 
 
 	const TYPE_GET = 0;
@@ -425,18 +429,24 @@ class Request implements JsonSerializable {
 	}
 
 
-	public function addHeader($header): Request {
-		$this->headers[] = $header;
+	public function addHeader($key, $value): Request {
+		$header = $this->get($key, $this->headers);
+		if ($header !== '') {
+			$header .= ', ' . $value;
+		} else {
+			$header = $value;
+		}
+
+		$this->headers[$key] = $header;
 
 		return $this;
 	}
-
 
 	/**
 	 * @return array
 	 */
 	public function getHeaders(): array {
-		return $this->headers;
+		return array_merge(['User-Agent' => $this->getUserAgent()], $this->headers);
 	}
 
 	/**
