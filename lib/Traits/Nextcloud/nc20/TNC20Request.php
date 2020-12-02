@@ -155,6 +155,8 @@ trait TNC20Request {
 				'strict'  => true,
 				'referer' => true,
 			];
+		} else {
+			$options['allow_redirects'] = false;
 		}
 
 		$request->setClientOptions($options);
