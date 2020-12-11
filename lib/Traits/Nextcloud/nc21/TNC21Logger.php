@@ -28,24 +28,25 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
+namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
 use Exception;
 use OC;
 use OC\HintException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 
 /**
- * Trait TNC20Logger
+ * Trait TNC21Logger
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc20
+ * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
  */
-trait TNC20Logger {
+trait TNC21Logger {
 
 
-	use TNC20Setup;
+	use TNC21Setup;
 
 
 	static $EMERGENCY = 4;
@@ -57,6 +58,50 @@ trait TNC20Logger {
 	static $INFO = 1;
 	static $DEBUG = 0;
 
+
+	/**
+	 * @param Throwable $t
+	 * @param array $serializable
+	 */
+	public function t(Throwable $t, array $serializable = []): void {
+		$this->throwable($t, self::$ERROR, $serializable);
+	}
+
+	/**
+	 * @param Throwable $t
+	 * @param int $level
+	 * @param array $serializable
+	 */
+	public function throwable(Throwable $t, int $level = 3, array $serializable = []): void {
+		$message = '';
+		if (!empty($serializable)) {
+			$message = json_encode($serializable);
+		}
+
+		$opts = [
+			'app'       => $this->setup('app'),
+			'exception' => $t
+		];
+
+		$this->logger()
+			 ->log(
+				 $level,
+				 $message,
+				 [
+					 'app'       => $this->setup('app'),
+					 'exception' => $t
+				 ]
+			 );
+	}
+
+
+	/**
+	 * @param Exception $e
+	 * @param array $serializable
+	 */
+	public function e(Exception $e, array $serializable = []): void {
+		$this->exception($e, self::$ERROR, $serializable);
+	}
 
 	/**
 	 * @param Exception $e
@@ -74,40 +119,15 @@ trait TNC20Logger {
 			'exception' => $e
 		];
 
-//		if (empty($serializable)) {
-		// fix until 20.0.2
-		// deprecated in 21
-		if ($level === self::$DEBUG) {
-			$this->logger()
-				 ->debug($message, $opts);
-		}
-		if ($level === self::$NOTICE) {
-			$this->logger()
-				 ->notice($message, $opts);
-		}
-		if ($level === self::$WARNING) {
-			$this->logger()
-				 ->warning($message, $opts);
-		}
-		if ($level === self::$ALERT) {
-			$this->logger()
-				 ->alert($message, $opts);
-		}
-		if ($level === self::$EMERGENCY) {
-			$this->logger()
-				 ->emergency($message, $opts);
-		}
-
-		// bugged in NC20 prior to 20.0.2
-//		$this->logger()
-//				 ->log(
-//					 $level,
-//					 $message,
-//					 [
-//						 'app'       => $this->setup('app'),
-//						 'exception' => $e
-//					 ]
-//				 );
+		$this->logger()
+			 ->log(
+				 $level,
+				 $message,
+				 [
+					 'app'       => $this->setup('app'),
+					 'exception' => $e
+				 ]
+			 );
 	}
 
 
@@ -172,32 +192,8 @@ trait TNC20Logger {
 			$message .= ' -- ' . json_encode($serializable);
 		}
 
-		// fix until 20.0.2
-		// deprecated in 21
-		if ($level === self::$DEBUG) {
-			$this->logger()
-				 ->debug($message, $opts);
-		}
-		if ($level === self::$INFO) {
-			$this->logger()
-				 ->notice($message, $opts);
-		}
-		if ($level === self::$WARNING) {
-			$this->logger()
-				 ->warning($message, $opts);
-		}
-		if ($level === self::$ALERT) {
-			$this->logger()
-				 ->alert($message, $opts);
-		}
-		if ($level === self::$EMERGENCY) {
-			$this->logger()
-				 ->emergency($message, $opts);
-		}
-
-		// bugged in NC20 prior to 20.0.2
-//		$this->logger()
-//			 ->log($level, $message, $opts);
+		$this->logger()
+			 ->log($level, $message, $opts);
 	}
 
 

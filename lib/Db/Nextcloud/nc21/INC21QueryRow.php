@@ -28,23 +28,24 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools;
+namespace daita\MySmallPhpTools\Db\Nextcloud\nc21;
 
 
 /**
- * Interface IQueryRow
+ * Interface INC21QueryRow
  *
- * @deprecated
- * @package daita\MySmallPhpTools
+ * @package daita\MySmallPhpTools\Db\Nextcloud\nc21
  */
-interface IQueryRow {
+interface INC21QueryRow {
 
 	/**
 	 * import data to feed the model.
 	 *
 	 * @param array $data
+	 *
+	 * @return INC21QueryRow
 	 */
-	public function importFromDatabase(array $data);
+	public function importFromDatabase(array $data): self;
 
 }
 

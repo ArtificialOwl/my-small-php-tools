@@ -9,7 +9,7 @@ declare(strict_types=1);
  * later. See the COPYING file.
  *
  * @author Maxence Lange <maxence@artificial-owl.com>
- * @copyright 2018, Maxence Lange <maxence@artificial-owl.com>
+ * @copyright 2020, Maxence Lange <maxence@artificial-owl.com>
  * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,23 +28,58 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools;
+namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
+
+use OCP\IConfig;
 
 /**
- * Interface IQueryRow
+ * Trait TNC21Setup
  *
- * @deprecated
- * @package daita\MySmallPhpTools
+ * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
  */
-interface IQueryRow {
+trait TNC21Setup {
+
+
+	/** @var array */
+	private $_setup = [];
+
 
 	/**
-	 * import data to feed the model.
+	 * @param string $key
+	 * @param string $value
 	 *
-	 * @param array $data
+	 * @return string
 	 */
-	public function importFromDatabase(array $data);
+	public function setup(string $key, string $value = ''): string {
+		if ($value !== '') {
+			$this->_setup[$key] = $value;
+		}
+
+		if (array_key_exists($key, $this->_setup)) {
+			return $this->_setup[$key];
+		}
+
+		return '';
+	}
+
+
+	/**
+	 * @param string $key
+	 *
+	 * @return string
+	 */
+	public function appConfig(string $key): string {
+		$app = $this->setup('app');
+		if ($app === '') {
+			return '';
+		}
+
+		/** @var IConfig $config */
+		$config = \OC::$server->get(IConfig::class);
+
+		return $config->getAppValue($app, $key, '');
+	}
 
 }
 

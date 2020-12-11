@@ -40,6 +40,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 /**
  * Interface IExtendedQueryBuilder
  *
+ * @deprecated
  * @package daita\MySmallPhpTools
  */
 interface IExtendedQueryBuilder extends IQueryBuilder {
