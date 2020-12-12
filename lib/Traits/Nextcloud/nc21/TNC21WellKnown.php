@@ -56,6 +56,7 @@ trait TNC21WellKnown {
 	 * @param string $resource
 	 * @param string $rel
 	 *
+	 * @return NC21Webfinger
 	 * @throws RequestContentException
 	 * @throws RequestNetworkException
 	 */
@@ -63,6 +64,10 @@ trait TNC21WellKnown {
 		$request = new NC21Request(self::$WEBFINGER);
 		$request->setHost($host);
 		$request->setProtocols(['https', 'http']);
+		$request->setFollowLocation(true);
+		$request->setLocalAddressAllowed(true);
+		$request->setTimeout(5);
+
 		$request->addParam('resource', $resource);
 		if ($rel !== '') {
 			$request->addParam('rel', $rel);

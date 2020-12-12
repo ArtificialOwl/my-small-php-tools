@@ -36,59 +36,98 @@ use JsonSerializable;
 
 
 /**
- * Class NC21Webfinger
+ * Class NC21WellKnownLink
  *
  * @package daita\MySmallPhpTools\Model\Nextcloud\nc21
  */
-class NC21Webfinger implements JsonSerializable {
+class NC21WellKnownLink implements JsonSerializable {
 
 
 	use TArrayTools;
 
 
 	/** @var string */
-	private $subject = '';
+	private $rel = '';
+
+	/** @var string */
+	private $type = '';
+
+	/** @var string */
+	private $href = '';
 
 	/** @var array */
-	private $aliases = [];
+	private $titles = [];
 
 	/** @var array */
 	private $properties = [];
 
-	/** @var array */
-	private $links = [];
-
 
 	/**
-	 * NC21Webfinger constructor.
+	 * NC21WellKnownLink constructor.
 	 *
 	 * @param array $json
 	 */
 	public function __construct(array $json = []) {
-		$this->setSubject($this->get('subject', $json));
-		$this->setAliases($this->getArray('subject', $json));
+		$this->setRel($this->get('rel', $json));
+		$this->setType($this->get('type', $json));
+		$this->setHref($this->get('href', $json));
+		$this->setTitles($this->getArray('titles', $json));
 		$this->setProperties($this->getArray('properties', $json));
-
-		foreach ($this->getArray('links', $json) as $link) {
-			$this->addLink(new NC21WellKnownLink($link));
-		}
 	}
 
 
 	/**
 	 * @return string
 	 */
-	public function getSubject(): string {
-		return $this->subject;
+	public function getRel(): string {
+		return $this->rel;
 	}
 
 	/**
-	 * @param string $subject
+	 * @param string $rel
 	 *
 	 * @return self
 	 */
-	public function setSubject(string $subject): self {
-		$this->subject = $subject;
+	public function setRel(string $rel): self {
+		$this->rel = $rel;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
+
+	/**
+	 * @param string $type
+	 *
+	 * @return self
+	 */
+	public function setType(string $type): self {
+		$this->type = $type;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getHref(): string {
+		return $this->href;
+	}
+
+	/**
+	 * @param string $href
+	 *
+	 * @return self
+	 */
+	public function setHref(string $href): self {
+		$this->href = $href;
 
 		return $this;
 	}
@@ -97,17 +136,17 @@ class NC21Webfinger implements JsonSerializable {
 	/**
 	 * @return array
 	 */
-	public function getAliases(): array {
-		return $this->aliases;
+	public function getTitles(): array {
+		return $this->titles;
 	}
 
 	/**
-	 * @param array $aliases
+	 * @param array $titles
 	 *
 	 * @return self
 	 */
-	public function setAliases(array $aliases): self {
-		$this->aliases = $aliases;
+	public function setTitles(array $titles): self {
+		$this->titles = $titles;
 
 		return $this;
 	}
@@ -131,30 +170,6 @@ class NC21Webfinger implements JsonSerializable {
 		return $this;
 	}
 
-
-	/**
-	 * @return NC21WellKnownLink[]
-	 */
-	public function getLinks(): array {
-		return $this->links;
-	}
-
-	/**
-	 * @param NC21WellKnownLink[] $links
-	 *
-	 * @return self
-	 */
-	public function setLinks(array $links): self {
-		$this->links = $links;
-
-		return $this;
-	}
-
-	public function addLink(NC21WellKnownLink $link): self {
-		$this->links[] = $link;
-
-		return $this;
-	}
 
 	/**
 	 * @return array
