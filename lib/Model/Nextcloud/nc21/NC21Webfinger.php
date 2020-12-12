@@ -131,6 +131,15 @@ class NC21Webfinger implements JsonSerializable {
 		return $this;
 	}
 
+	/**
+	 * @param string $key
+	 *
+	 * @return string
+	 */
+	public function getProperty(string $key): string {
+		return $this->get($key, $this->properties);
+	}
+
 
 	/**
 	 * @return NC21WellKnownLink[]

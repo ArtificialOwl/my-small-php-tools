@@ -151,6 +151,15 @@ class NC21WellKnownLink implements JsonSerializable {
 		return $this;
 	}
 
+	/**
+	 * @param string $key
+	 *
+	 * @return string
+	 */
+	public function getTitle(string $key): string {
+		return $this->get($key, $this->properties);
+	}
+
 
 	/**
 	 * @return array
@@ -168,6 +177,15 @@ class NC21WellKnownLink implements JsonSerializable {
 		$this->properties = $properties;
 
 		return $this;
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return string
+	 */
+	public function getProperty(string $key): string {
+		return $this->get($key, $this->properties);
 	}
 
 
