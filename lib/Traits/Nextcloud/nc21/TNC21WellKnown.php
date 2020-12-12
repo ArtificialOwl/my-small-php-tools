@@ -33,8 +33,10 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 use daita\MySmallPhpTools\Exceptions\RequestContentException;
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
+use daita\MySmallPhpTools\Exceptions\WellKnownLinkNotFoundException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Webfinger;
+use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21WellKnownLink;
 
 
 /**
@@ -78,4 +80,23 @@ trait TNC21WellKnown {
 		return new NC21Webfinger($result);
 	}
 
+
+	/**
+	 * @param string $rel
+	 * @param NC21Webfinger $webfinger
+	 *
+	 * @return NC21WellKnownLink
+	 * @throws WellKnownLinkNotFoundException
+	 */
+	public function extractLink(string $rel, NC21Webfinger $webfinger): NC21WellKnownLink {
+		foreach ($webfinger->getLinks() as $link) {
+			if ($link->getRel() === $rel) {
+				return $link;
+			}
+		}
+
+		throw new WellKnownLinkNotFoundException();
+	}
+
 }
+
