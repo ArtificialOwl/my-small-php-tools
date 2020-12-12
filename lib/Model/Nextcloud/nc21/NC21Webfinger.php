@@ -160,12 +160,14 @@ class NC21Webfinger implements JsonSerializable {
 	 * @return array
 	 */
 	public function jsonSerialize(): array {
-		return [
-			'subject'    => $this->getSubject(),
-			'aliases'    => $this->getAliases(),
-			'properties' => $this->getProperties(),
-			'links'      => $this->getLinks()
-		];
+		return array_filter(
+			[
+				'subject'    => $this->getSubject(),
+				'aliases'    => $this->getAliases(),
+				'properties' => $this->getProperties(),
+				'links'      => $this->getLinks()
+			]
+		);
 	}
 
 }

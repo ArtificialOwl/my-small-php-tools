@@ -175,12 +175,15 @@ class NC21WellKnownLink implements JsonSerializable {
 	 * @return array
 	 */
 	public function jsonSerialize(): array {
-		return [
-			'subject'    => $this->getSubject(),
-			'aliases'    => $this->getAliases(),
-			'properties' => $this->getProperties(),
-			'links'      => $this->getLinks()
-		];
+		return array_filter(
+			[
+				'rel'        => $this->getRel(),
+				'type'       => $this->getType(),
+				'href'       => $this->getHref(),
+				'titles'     => $this->getTitles(),
+				'properties' => $this->getProperties()
+			]
+		);
 	}
 
 }
