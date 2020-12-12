@@ -65,7 +65,6 @@ trait TNC21Request {
 	 *
 	 * @return array
 	 * @throws RequestNetworkException
-	 * @throws RequestContentException
 	 */
 	public function retrieveJson(NC21Request $request): array {
 		$this->doRequest($request);
@@ -78,10 +77,9 @@ trait TNC21Request {
 	/**
 	 * @param NC21Request $request
 	 *
-	 * @return string
 	 * @throws RequestNetworkException
 	 */
-	public function doRequest(NC21Request $request) {
+	public function doRequest(NC21Request $request): void {
 		$request->setClient(
 			$this->clientService()
 				 ->newClient()
@@ -93,13 +91,12 @@ trait TNC21Request {
 
 		foreach ($request->getProtocols() as $protocol) {
 			$request->setUsedProtocol($protocol);
-
 			try {
 				$response = $this->useClient($request);
 				$request->setResult(new NC21RequestResult($response));
 				break;
 			} catch (Exception $e) {
-				$this->exception($e, self::$INFO, ['request' => $request]);
+				$this->exception($e, self::$DEBUG, ['request' => $request]);
 			}
 		}
 
@@ -108,10 +105,6 @@ trait TNC21Request {
 		if (!$request->hasResult()) {
 			throw new RequestNetworkException();
 		}
-
-		// deprecated, should not returns anything
-		return $request->getResult()
-					   ->getContent();
 	}
 
 

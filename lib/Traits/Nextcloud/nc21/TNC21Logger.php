@@ -119,6 +119,10 @@ trait TNC21Logger {
 			'exception' => $e
 		];
 
+		if ($level === self::$DEBUG) {
+			$level = (int)$this->appConfig('debug_level');
+		}
+		
 		$this->logger()
 			 ->log(
 				 $level,
