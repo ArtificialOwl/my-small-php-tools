@@ -39,7 +39,7 @@ use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21WellKnownLink;
 
 
 /**
- * Trait TNC21Setup
+ * Trait TNC21WellKnown
  *
  * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
  */

@@ -30,6 +30,7 @@
 namespace daita\MySmallPhpTools\Model;
 
 
+use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
 use daita\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
@@ -226,7 +227,7 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * @param string $key
 	 *
-	 * @return bool
+	 * @return JsonSerializable
 	 */
 	public function gObj(string $key): JsonSerializable {
 		return $this->getObj($key, $this->data);
@@ -234,7 +235,7 @@ class SimpleDataStore implements JsonSerializable {
 
 	/**
 	 * @param string $key
-	 * @param bool $value
+	 * @param JsonSerializable $value
 	 *
 	 * @return SimpleDataStore
 	 */
@@ -265,6 +266,42 @@ class SimpleDataStore implements JsonSerializable {
 		$this->data = $data;
 
 		return $this;
+	}
+
+
+	public function keys(): array {
+		return array_keys($this->data);
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function haveKey(string $key): bool {
+		return (array_key_exists($key, $this->data));
+	}
+
+	/**
+	 * @param array $keys
+	 *
+	 * @param bool $must
+	 *
+	 * @return bool
+	 * @throws MalformedArrayException
+	 */
+	public function haveKeys(array $keys, bool $must = false): bool {
+		foreach ($keys as $key) {
+			if (!$this->haveKey($key)) {
+				if ($must) {
+					throw new MalformedArrayException($key . ' missing in ' . json_encode($this->keys()));
+				}
+
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 

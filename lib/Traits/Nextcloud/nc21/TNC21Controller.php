@@ -32,9 +32,13 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
 use daita\MySmallPhpTools\Exceptions\JsonNotRequestedException;
+use Exception;
+use JsonSerializable;
 use OC;
 use OC\AppFramework\Middleware\Security\Exceptions\NotLoggedInException;
 use OC\AppFramework\Utility\ControllerMethodReflector;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 use OCP\IUserSession;
 
@@ -62,11 +66,44 @@ trait TNC21Controller {
 	}
 
 
-//	public function fail(array $data): DataResponse {
-//	}
+	/**
+	 * @param array $data
+	 * @param int $status
+	 *
+	 * @return DataResponse
+	 */
+	public function success(array $data = [], int $status = Http::STATUS_OK): DataResponse {
+		$this->debug('success', ['data' => $data]);
 
-//	public function success($data): DataResponse {
-//	}
+		return new DataResponse(array_merge(['status' => 1], $data), $status);
+	}
+
+
+	/**
+	 * @param JsonSerializable $data
+	 * @param int $status
+	 *
+	 * @return DataResponse
+	 */
+	public function successObj(JsonSerializable $data, int $status = Http::STATUS_OK): DataResponse {
+		$this->debug('success', ['obj' => $data]);
+
+		return new DataResponse($data, $status);
+	}
+
+
+	/**
+	 * @param Exception $e
+	 * @param array $data
+	 * @param int $status
+	 *
+	 * @return DataResponse
+	 */
+	public function fail(Exception $e, array $data = [], int $status = Http::STATUS_NOT_FOUND): DataResponse {
+		$this->e($e, ['data' => $data]);
+
+		return new DataResponse(array_merge(['status' => -1, 'error' => $e->getMessage()], $data), $status);
+	}
 
 
 	/**
