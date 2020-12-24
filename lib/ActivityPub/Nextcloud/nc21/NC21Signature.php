@@ -33,15 +33,14 @@ namespace daita\MySmallPhpTools\ActivityPub\Nextcloud\nc21;
 
 use daita\MySmallPhpTools\Db\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Exceptions\InvalidOriginException;
+use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
-use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Exceptions\SignatoryException;
 use daita\MySmallPhpTools\Exceptions\SignatureException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21SignedRequest;
-use daita\MySmallPhpTools\Model\Request;
 use daita\MySmallPhpTools\Model\SimpleDataStore;
-use daita\MySmallPhpTools\Traits\Nextcloud\nc21\TNC21Request;
+use daita\MySmallPhpTools\Traits\Nextcloud\nc21\TNC21Signatory;
 use daita\MySmallPhpTools\Traits\TArrayTools;
 use DateTime;
 use Exception;
@@ -57,27 +56,19 @@ use OCP\IRequest;
 class NC21Signature {
 
 
-	use TNC21Request;
+	const DATE_HEADER = 'D, d M Y H:i:s T';
+	const DATE_OBJECT = 'Y-m-d\TH:i:s\Z';
+
+	const DATE_TTL = 300;
+
+
 	use TArrayTools;
+	use TNC21Signatory;
 
 
 	/** @var int */
-	private $ttl = 300;
-
-
-	/**
-	 * @return int
-	 */
-	public function getTtl(): int {
-		return $this->ttl;
-	}
-
-	/**
-	 * @param int $ttl
-	 */
-	public function setTtl(int $ttl): void {
-		$this->ttl = $ttl;
-	}
+	private $ttl = self::DATE_TTL;
+	private $dateHeader = self::DATE_HEADER;
 
 
 	/**
@@ -94,22 +85,34 @@ class NC21Signature {
 		$this->debug('[<<] incoming', ['body' => $body]);
 
 		$signedRequest = new NC21SignedRequest($body);
-		$signedRequest->setRequest(OC::$server->get(IRequest::class));
+		$signedRequest->setIncomingRequest(OC::$server->get(IRequest::class));
 		$signedRequest->setHost($host);
 
-		$this->checkRequestTime($signedRequest);
-		$this->checkRequestSignature($signedRequest);
-
-		$keyId = $signedRequest->getData()->g('keyId');
-		try {
-			$signedRequest->setSignatory($this->retrieveSignatory($keyId));
-			$this->checkSignedRequest($signedRequest);
-		} catch (SignatoryException $e) {
-			$signedRequest->setSignatory($this->retrieveSignatory($keyId, true));
-			$this->checkSignedRequest($signedRequest);
-		}
+		$this->verifyIncomingRequestTime($signedRequest);
+		$this->setIncomingSignatureHeader($signedRequest);
+		$this->setIncomingClearSignature($signedRequest);
+		$this->parseIncomingSignatureHeader($signedRequest);
+		$this->verifyIncomingRequestSignature($signedRequest);
 
 		return $signedRequest;
+	}
+
+
+	/**
+	 * @param NC21Request $request
+	 * @param NC21Signatory $signatory
+	 *
+	 * @throws SignatoryException
+	 */
+	public function signRequest(NC21Request $request, NC21Signatory $signatory): void {
+		$signedRequest = new NC21SignedRequest($request->getDataBody());
+		$signedRequest->setOutgoingRequest($request)
+					  ->setSignatory($signatory);
+
+		$this->setOutgoingSignatureHeader($signedRequest);
+		$this->setOutgoingClearSignature($signedRequest);
+		$this->setOutgoingSignedSignature($signedRequest);
+		$this->signingOutgoingRequest($signedRequest);
 	}
 
 
@@ -118,8 +121,8 @@ class NC21Signature {
 	 *
 	 * @throws SignatureException
 	 */
-	private function checkRequestTime(NC21SignedRequest $signedRequest): void {
-		$request = $signedRequest->getRequest();
+	private function verifyIncomingRequestTime(NC21SignedRequest $signedRequest): void {
+		$request = $signedRequest->getIncomingRequest();
 
 		try {
 			$dTime = new DateTime($request->getHeader('date'));
@@ -129,7 +132,7 @@ class NC21Signature {
 			throw new SignatureException('datetime exception');
 		}
 
-		if ($signedRequest->getTime() < (time() - $this->getTTL())) {
+		if ($signedRequest->getTime() < (time() - $this->ttl)) {
 			throw new SignatureException('object is too old');
 		}
 	}
@@ -137,34 +140,10 @@ class NC21Signature {
 
 	/**
 	 * @param NC21SignedRequest $signedRequest
-	 *
-	 * @throws MalformedArrayException
-	 * @throws InvalidOriginException
 	 */
-	private function checkRequestSignature(NC21SignedRequest $signedRequest): void {
-		$this->setDataFromHeaderSignature($signedRequest);
-		$this->setSignatureFromDataHeaders($signedRequest);
-
-		$data = $signedRequest->getData();
-		$data->haveKeys(['keyId', 'headers', 'signature'], true);
-
-		$signedRequest->setOrigin($this->getKeyOrigin($data->g('keyId')));
-		$signedRequest->setSigned(base64_decode($data->g('signature')));
-
-
-		// TODO: check digest
-		//		$body = $signedRequest->getBody(); -- needed to check digest
-		//	$this->generateDigest($body);
-
-	}
-
-
-	/**
-	 * @param NC21SignedRequest $signedRequest
-	 */
-	private function setDataFromHeaderSignature(NC21SignedRequest $signedRequest): void {
+	private function setIncomingSignatureHeader(NC21SignedRequest $signedRequest): void {
 		$sign = [];
-		$request = $signedRequest->getRequest();
+		$request = $signedRequest->getIncomingRequest();
 		foreach (explode(',', $request->getHeader('Signature')) as $entry) {
 			if ($entry === '' || !strpos($entry, '=')) {
 				continue;
@@ -178,19 +157,19 @@ class NC21Signature {
 			$sign[$k] = $v;
 		}
 
-		$signedRequest->setData(new SimpleDataStore($sign));
+		$signedRequest->setSignatureHeader(new SimpleDataStore($sign));
 	}
 
 
 	/**
 	 * @param NC21SignedRequest $signedRequest
 	 */
-	private function setSignatureFromDataHeaders(NC21SignedRequest $signedRequest): void {
-		$request = $signedRequest->getRequest();
+	private function setIncomingClearSignature(NC21SignedRequest $signedRequest): void {
+		$request = $signedRequest->getIncomingRequest();
 		$target = strtolower($request->getMethod()) . " " . $request->getRequestUri();
 
 		$estimated = '';
-		foreach (explode(' ', $signedRequest->getData()->g('headers')) as $key) {
+		foreach (explode(' ', $signedRequest->getSignatureHeader()->g('headers')) as $key) {
 			if ($key === '(request-target)') {
 				$estimated .= "(request-target): " . $target . "\n";
 				continue;
@@ -204,76 +183,44 @@ class NC21Signature {
 			$estimated .= $key . ': ' . $value . "\n";
 		}
 
-		$signedRequest->setSignature(trim($estimated, "\n"));
+		$signedRequest->setClearSignature(trim($estimated, "\n"));
 	}
 
 
 	/**
-	 * @param $keyId
+	 * @param NC21SignedRequest $signedRequest
 	 *
-	 * @return string
+	 * @throws MalformedArrayException
 	 * @throws InvalidOriginException
 	 */
-	private function getKeyOrigin($keyId) {
-		$host = parse_url($keyId, PHP_URL_HOST);
-		if (is_string($host) && ($host !== '')) {
-			return $host;
-		}
+	private function parseIncomingSignatureHeader(NC21SignedRequest $signedRequest): void {
+		$data = $signedRequest->getSignatureHeader();
+		$data->haveKeys(['keyId', 'headers', 'signature'], true);
 
-		throw new InvalidOriginException('cannot retrieve origin from ' . $keyId);
+		$signedRequest->setOrigin($this->getKeyOrigin($data->g('keyId')));
+		$signedRequest->setSignedSignature(base64_decode($data->g('signature')));
 	}
 
 
 	/**
-	 * return Signatory by its Id from cache or from direct request.
-	 * Should be overwritten.
+	 * @param NC21SignedRequest $signedRequest
 	 *
-	 * @param string $keyId
-	 * @param bool $refresh
-	 *
-	 * @return NC21Signatory
 	 * @throws SignatoryException
+	 * @throws SignatureException
 	 */
-	public function retrieveSignatory(string $keyId, bool $refresh = false): NC21Signatory {
-		if (!$refresh) {
-			throw new SignatoryException();
+	private function verifyIncomingRequestSignature(NC21SignedRequest $signedRequest) {
+		$data = $signedRequest->getSignatureHeader();
+		if ($data->haveKey('digest') && $data->g('digest') !== $signedRequest->getDigest()) {
+			throw new SignatureException('issue with digest');
 		}
-
-		$request = new NC21Request('', Request::TYPE_GET);
-		$request->basedOnUrl($keyId);
 
 		try {
-			return $this->generateSignatoryFromJson($keyId, $this->retrieveJson($request));
-		} catch (RequestNetworkException $e) {
-			throw new SignatoryException('network issue - ' . $e->getMessage());
+			$signedRequest->setSignatory($this->retrieveSignatory($data->g('keyId')));
+			$this->verifySignedRequest($signedRequest);
+		} catch (SignatoryException $e) {
+			$signedRequest->setSignatory($this->retrieveSignatory($data->g('keyId'), true));
+			$this->verifySignedRequest($signedRequest);
 		}
-	}
-
-
-	/**
-	 * @param string $keyId
-	 * @param array $json
-	 *
-	 * @return NC21Signatory
-	 * @throws SignatoryException
-	 */
-	private function generateSignatoryFromJson(string $keyId, array $json) {
-		$signatory = new NC21Signatory();
-		$signatory->setId($this->get('publicKey.id', $json))
-				  ->setOwner($this->get('publicKey.owner', $json))
-				  ->setPublicKey($this->get('publicKey.publicKeyPem', $json));
-
-		try {
-			if ($signatory->getId() !== $keyId
-				|| $this->getKeyOrigin($signatory->getOWner()) !== $this->getKeyOrigin($signatory->getId())
-				|| $signatory->getPublicKey() === '') {
-				throw new SignatoryException('invalid format');
-			}
-		} catch (InvalidOriginException $e) {
-			throw new SignatoryException('invalid origin');
-		}
-
-		return $signatory;
 	}
 
 
@@ -282,7 +229,7 @@ class NC21Signature {
 	 *
 	 * @throws SignatureException
 	 */
-	private function checkSignedRequest(NC21SignedRequest $signedRequest) {
+	private function verifySignedRequest(NC21SignedRequest $signedRequest) {
 		$algorithm = $this->getAlgorithm($signedRequest);
 		$publicKey = $signedRequest->getSignatory()->getPublicKey();
 		if ($publicKey === '') {
@@ -290,8 +237,8 @@ class NC21Signature {
 		}
 
 		if (openssl_verify(
-				$signedRequest->getSignature(),
-				$signedRequest->getSigned(),
+				$signedRequest->getClearSignature(),
+				$signedRequest->getSignedSignature(),
 				$publicKey,
 				$algorithm
 			) !== 1) {
@@ -303,11 +250,87 @@ class NC21Signature {
 
 	/**
 	 * @param NC21SignedRequest $signedRequest
+	 */
+	private function setOutgoingSignatureHeader(NC21SignedRequest $signedRequest): void {
+		$request = $signedRequest->getOutgoingRequest();
+
+		$data = new SimpleDataStore();
+		$data->s('(request-target)', NC21Request::method($request->getType()) . ' ' . $request->getPath())
+			 ->sInt('content-length', strlen($signedRequest->getBody()))
+			 ->s('date', gmdate($this->dateHeader))
+			 ->s('digest', $signedRequest->getDigest())
+			 ->s('host', $request->getHost());
+
+		$signedRequest->setSignatureHeader($data);
+	}
+
+
+	/**
+	 * @param NC21SignedRequest $signed
+	 */
+	private function setOutgoingClearSignature(NC21SignedRequest $signed): void {
+		$signing = [];
+		$data = $signed->getSignatureHeader();
+		foreach ($data->keys() as $element) {
+			if ($element === '(request-target)') {
+				continue;
+			}
+
+			try {
+				$value = $data->gItem($element);
+				$signing[] = $element . ': ' . $value;
+				$signed->getOutgoingRequest()->addHeader($element, $value);
+			} catch (ItemNotFoundException $e) {
+			}
+		}
+
+		$signed->setClearSignature(implode("\n", $signing));
+	}
+
+
+	/**
+	 * @param NC21SignedRequest $request
+	 *
+	 * @throws SignatoryException
+	 */
+	private function setOutgoingSignedSignature(NC21SignedRequest $request): void {
+		$clear = $request->getClearSignature();
+		$privateKey = $request->getSignatory()->getPrivateKey();
+		if ($privateKey === '') {
+			throw new SignatoryException('empty private key');
+		}
+
+		openssl_sign($clear, $signed, $privateKey, OPENSSL_ALGO_SHA256);
+
+		$request->setSignedSignature($signed);
+	}
+
+
+	/**
+	 * @param NC21SignedRequest $signedRequest
+	 *
+	 * @return void
+	 */
+	private function signingOutgoingRequest(NC21SignedRequest $signedRequest): void {
+		$headers = array_diff($signedRequest->getSignatureHeader()->keys(), ['(request-target)']);
+		$signatureElements = [
+			'keyId="' . $signedRequest->getSignatory()->getKeyId(),
+			'algorithm="rsa-sha256"',
+			'headers="' . implode(' ', $headers) . '"',
+			'signature="' . base64_encode($signedRequest->getSignedSignature()) . '"'
+		];
+
+		$signedRequest->getOutgoingRequest()->addHeader('Signature', implode(',', $signatureElements));
+	}
+
+
+	/**
+	 * @param NC21SignedRequest $signedRequest
 	 *
 	 * @return string
 	 */
 	private function getAlgorithm(NC21SignedRequest $signedRequest): string {
-		switch ($signedRequest->getData()->g('algorithm')) {
+		switch ($signedRequest->getSignatureHeader()->g('algorithm')) {
 			case 'rsa-sha512':
 				return 'sha512';
 
@@ -315,34 +338,6 @@ class NC21Signature {
 			default:
 				return 'sha256';
 		}
-	}
-
-
-	/**
-	 * @param NC21Signatory $signatory
-	 * @param string $digest
-	 * @param int $bits
-	 * @param int $type
-	 */
-	public function generateKeys(
-		NC21Signatory $signatory,
-		string $digest = 'rsa',
-		int $bits = 2048,
-		int $type = OPENSSL_KEYTYPE_RSA
-	) {
-		$res = openssl_pkey_new(
-			[
-				'digest_alg'       => $digest,
-				'private_key_bits' => $bits,
-				'private_key_type' => $type,
-			]
-		);
-
-		openssl_pkey_export($res, $privateKey);
-		$publicKey = openssl_pkey_get_details($res)['key'];
-
-		$signatory->setPublicKey($publicKey);
-		$signatory->setPrivateKey($privateKey);
 	}
 
 }

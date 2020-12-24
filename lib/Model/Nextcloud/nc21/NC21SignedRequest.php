@@ -52,25 +52,32 @@ class NC21SignedRequest implements JsonSerializable {
 	private $time = 0;
 
 	/** @var IRequest */
-	private $request;
+	private $incomingRequest;
+
+	/** @var NC21Request */
+	private $outgoingRequest;
 
 	/** @var string */
-	private $origin;
+	private $origin = '';
+
+	/** @var string */
+	private $digest = '';
 
 	/** @var SimpleDataStore */
-	private $data;
+	private $signatureHeader;
 
 	/** @var string */
 	private $host = '';
 
 	/** @var string */
-	private $signature = '';
+	private $clearSignature = '';
 
 	/** @var string */
-	private $signed = '';
+	private $signedSignature = '';
 
 	/** @var NC21Signatory */
 	private $signatory;
+
 
 	/**
 	 * NC21SignedRequest constructor.
@@ -78,15 +85,18 @@ class NC21SignedRequest implements JsonSerializable {
 	 * @param string $body
 	 */
 	public function __construct(string $body = '') {
-		$this->body = $body;
+		$this->setBody($body);
 	}
 
 
 	/**
+	 * IRequest of the incoming request
+	 * incoming
+	 *
 	 * @return IRequest
 	 */
-	public function getRequest(): IRequest {
-		return $this->request;
+	public function getIncomingRequest(): IRequest {
+		return $this->incomingRequest;
 	}
 
 	/**
@@ -94,14 +104,39 @@ class NC21SignedRequest implements JsonSerializable {
 	 *
 	 * @return NC21SignedRequest
 	 */
-	public function setRequest(IRequest $request): self {
-		$this->request = $request;
+	public function setIncomingRequest(IRequest $request): self {
+		$this->incomingRequest = $request;
 
 		return $this;
 	}
 
 
 	/**
+	 * NC21Request of the outgoint request
+	 * outgoing
+	 *
+	 * @param NC21Request $request
+	 *
+	 * @return NC21SignedRequest
+	 */
+	public function setOutgoingRequest(NC21Request $request): self {
+		$this->outgoingRequest = $request;
+
+		return $this;
+	}
+
+	/**
+	 * @return NC21Request
+	 */
+	public function getOutgoingRequest(): NC21Request {
+		return $this->outgoingRequest;
+	}
+
+
+	/**
+	 * Body content of the request
+	 * incoming/outgoing
+	 *
 	 * @return string
 	 */
 	public function getBody(): string {
@@ -115,12 +150,16 @@ class NC21SignedRequest implements JsonSerializable {
 	 */
 	public function setBody(string $body): self {
 		$this->body = $body;
+		$this->setDigest('SHA-256=' . base64_encode(hash("sha256", utf8_encode($body), true)));
 
 		return $this;
 	}
 
 
 	/**
+	 * Timestamp of the request
+	 * incoming (outgoing ?)
+	 *
 	 * @return int
 	 */
 	public function getTime(): int {
@@ -140,6 +179,9 @@ class NC21SignedRequest implements JsonSerializable {
 
 
 	/**
+	 * Origin of the request, based on the keyId
+	 * incoming
+	 *
 	 * @return string
 	 */
 	public function getOrigin(): string {
@@ -159,30 +201,59 @@ class NC21SignedRequest implements JsonSerializable {
 
 
 	/**
-	 * @return SimpleDataStore
+	 * @return string
 	 */
-	public function getData(): SimpleDataStore {
-		return $this->data;
+	public function getDigest(): string {
+		return $this->digest;
 	}
 
 	/**
-	 * @param SimpleDataStore $data
+	 * @param string $digest
 	 *
-	 * @return self
+	 * @return $this
 	 */
-	public function setData(SimpleDataStore $data): self {
-		$this->data = $data;
+	public function setDigest(string $digest): self {
+		$this->digest = $digest;
 
 		return $this;
 	}
 
+
 	/**
-	 * @param string $signature
+	 * Data from the 'Signature' header
+	 * incoming/outgoing
+	 *
+	 * @return SimpleDataStore
+	 */
+	public function getSignatureHeader(): SimpleDataStore {
+		return $this->signatureHeader;
+	}
+
+	/**
+	 * @param SimpleDataStore $signatureHeader
+	 *
+	 * @return self
+	 */
+	public function setSignatureHeader(SimpleDataStore $signatureHeader): self {
+		$this->signatureHeader = $signatureHeader;
+
+		return $this;
+	}
+
+
+	/**
+	 * _Clear_ value of the Signature.
+	 * incoming/outgoing
+	 *
+	 * - estimated signature on incoming request
+	 * - generated signature on outgoing request
+	 *
+	 * @param string $clearSignature
 	 *
 	 * @return NC21SignedRequest
 	 */
-	public function setSignature(string $signature): self {
-		$this->signature = $signature;
+	public function setClearSignature(string $clearSignature): self {
+		$this->clearSignature = $clearSignature;
 
 		return $this;
 	}
@@ -190,18 +261,23 @@ class NC21SignedRequest implements JsonSerializable {
 	/**
 	 * @return string
 	 */
-	public function getSignature(): string {
-		return $this->signature;
+	public function getClearSignature(): string {
+		return $this->clearSignature;
 	}
 
 
 	/**
-	 * @param string $signed
+	 * _Signed_ value of the signature.
+	 * (not base64_encoded)
+	 *
+	 * incoming/outgoing
+	 *
+	 * @param string $signedSignature
 	 *
 	 * @return self
 	 */
-	public function setSigned(string $signed): self {
-		$this->signed = $signed;
+	public function setSignedSignature(string $signedSignature): self {
+		$this->signedSignature = $signedSignature;
 
 		return $this;
 	}
@@ -209,12 +285,18 @@ class NC21SignedRequest implements JsonSerializable {
 	/**
 	 * @return string
 	 */
-	public function getSigned(): string {
-		return $this->signed;
+	public function getSignedSignature(): string {
+		return $this->signedSignature;
 	}
 
 
 	/**
+	 * Host/Address to be used in the signature.
+	 * incoming/outgoing
+	 *
+	 * - incoming should set the local address
+	 * - outgoing should set the recipient address
+	 *
 	 * @param string $host
 	 *
 	 * @return NC21SignedRequest
@@ -234,6 +316,9 @@ class NC21SignedRequest implements JsonSerializable {
 
 
 	/**
+	 * Signatory used to sign the request
+	 * incoming/outgoing
+	 *
 	 * @param NC21Signatory $signatory
 	 */
 	public function setSignatory(NC21Signatory $signatory): void {

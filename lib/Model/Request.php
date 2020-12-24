@@ -745,5 +745,21 @@ class Request implements JsonSerializable {
 		return 0;
 	}
 
+
+	public static function method(int $type): string {
+		switch ($type) {
+			case self::TYPE_GET:
+				return 'get';
+			case self::TYPE_POST:
+				return 'post';
+			case self::TYPE_PUT:
+				return 'put';
+			case self::TYPE_DELETE:
+				return 'delete';
+		}
+
+		return '';
+	}
+
 }
 
