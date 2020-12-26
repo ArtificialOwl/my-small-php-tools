@@ -31,7 +31,7 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\ActivityPub\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Db\Nextcloud\nc21\NC21Signatory;
+use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Exceptions\InvalidOriginException;
 use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;

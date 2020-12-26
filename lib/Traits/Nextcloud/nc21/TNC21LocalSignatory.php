@@ -31,8 +31,8 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Db\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Exceptions\SignatoryException;
+use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Traits\TArrayTools;
 use OC;
 use OCP\IConfig;
@@ -47,7 +47,6 @@ trait TNC21LocalSignatory {
 
 
 	use TArrayTools;
-	use TNC21Setup;
 	use TNC21Signatory;
 
 
