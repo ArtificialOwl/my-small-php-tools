@@ -31,7 +31,6 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Model\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Db\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Model\SimpleDataStore;
 use JsonSerializable;
 use OCP\IRequest;

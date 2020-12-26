@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Db\Nextcloud\nc21;
+namespace daita\MySmallPhpTools\Model\Nextcloud\nc21;
 
 
 use daita\MySmallPhpTools\Traits\TArrayTools;
@@ -38,7 +38,7 @@ use JsonSerializable;
 /**
  * Class NC21Signatory
  *
- * @package daita\MySmallPhpTools\Db\Nextcloud\nc21
+ * @package daita\MySmallPhpTools\Model\Nextcloud\nc21
  */
 class NC21Signatory implements JsonSerializable {
 
