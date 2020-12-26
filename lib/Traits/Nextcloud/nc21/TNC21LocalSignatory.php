@@ -51,13 +51,12 @@ trait TNC21LocalSignatory {
 
 
 	/**
-	 * @param string $id
+	 * @param NC21Signatory $signatory
 	 * @param bool $generate
 	 *
-	 * @return NC21Signatory
 	 * @throws SignatoryException
 	 */
-	public function getLocalSignatory(string $id, bool $generate = false): NC21Signatory {
+	public function buildSimpleSignatory(NC21Signatory $signatory, bool $generate = false): void {
 		$app = $this->setup('app');
 		if ($app === '') {
 			$app = 'signatories';
@@ -68,25 +67,25 @@ trait TNC21LocalSignatory {
 			$signatories = [];
 		}
 
-		$signatory = new NC21Signatory($id);
+		$id = $signatory->getId();
 		$sign = $this->getArray($id, $signatories);
-		if (empty($sign)) {
-			if (!$generate) {
-				throw new SignatoryException();
-			}
+		if (!empty($sign)) {
+			$signatory->setPublicKey($this->get('publicKey', $sign))
+					  ->setPrivateKey($this->get('privateKey', $sign));
 
-			$this->generateKeys($signatory);
-			$signatories[$id] = [
-				'publicKey'  => $signatory->getPublicKey(),
-				'privateKey' => $signatory->getPrivateKey()
-			];
-			OC::$server->get(IConfig::class)->setAppValue($app, 'signatories', json_encode($signatories));
-
-			return $signatory;
+			return;
 		}
 
-		return $signatory->setPublicKey($this->get('publicKey', $sign))
-						 ->setPrivateKey($this->get('privateKey', $sign));
+		if (!$generate) {
+			throw new SignatoryException();
+		}
+
+		$this->generateKeys($signatory);
+		$signatories[$id] = [
+			'publicKey'  => $signatory->getPublicKey(),
+			'privateKey' => $signatory->getPrivateKey()
+		];
+		OC::$server->get(IConfig::class)->setAppValue($app, 'key_pairs', json_encode($signatories));
 	}
 
 }

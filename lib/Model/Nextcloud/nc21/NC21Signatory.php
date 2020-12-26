@@ -164,6 +164,7 @@ class NC21Signatory implements JsonSerializable {
 	 */
 	public function jsonSerialize(): array {
 		return [
+			'id'        => $this->getId(),
 			'publicKey' =>
 				[
 					'id'           => $this->getKeyId(),
