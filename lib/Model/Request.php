@@ -114,7 +114,7 @@ class Request implements JsonSerializable {
 	 * @param int $type
 	 * @param bool $binary
 	 */
-	public function __construct(string $url, int $type = 0, bool $binary = false) {
+	public function __construct(string $url = '', int $type = 0, bool $binary = false) {
 		$this->url = $url;
 		$this->type = $type;
 		$this->binary = $binary;

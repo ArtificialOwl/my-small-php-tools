@@ -55,7 +55,7 @@ class NC21Webfinger implements JsonSerializable {
 	/** @var array */
 	private $properties = [];
 
-	/** @var array */
+	/** @var NC21WellKnownLink[] */
 	private $links = [];
 
 

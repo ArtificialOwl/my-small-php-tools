@@ -36,6 +36,7 @@ use daita\MySmallPhpTools\Exceptions\WellKnownLinkNotFoundException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Webfinger;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21WellKnownLink;
+use daita\MySmallPhpTools\Model\SimpleDataStore;
 
 
 /**
@@ -54,13 +55,51 @@ trait TNC21WellKnown {
 
 	/**
 	 * @param string $host
-	 * @param string $resource
+	 * @param string $subject
+	 * @param string $rel
+	 *
+	 * @return SimpleDataStore
+	 * @throws RequestNetworkException
+	 * @throws WellKnownLinkNotFoundException
+	 */
+	public function getResourceData(string $host, string $subject, string $rel): SimpleDataStore {
+		$link = $this->getLink($host, $subject, $rel);
+
+		$request = new NC21Request('');
+		$request->basedOnUrl($link->getHref());
+		$request->addHeader('Accept', $link->getType());
+		$request->setFollowLocation(true);
+		$request->setLocalAddressAllowed(true);
+		$request->setTimeout(5);
+		$data = $this->retrieveJson($request);
+
+		return new SimpleDataStore($data);
+	}
+
+
+	/**
+	 * @param string $host
+	 * @param string $subject
+	 * @param string $rel
+	 *
+	 * @return NC21WellKnownLink
+	 * @throws RequestNetworkException
+	 * @throws WellKnownLinkNotFoundException
+	 */
+	public function getLink(string $host, string $subject, string $rel): NC21WellKnownLink {
+		return $this->extractLink($rel, $this->getWebfinger($host, $subject));
+	}
+
+
+	/**
+	 * @param string $host
+	 * @param string $subject
 	 * @param string $rel
 	 *
 	 * @return NC21Webfinger
 	 * @throws RequestNetworkException
 	 */
-	public function getWebfinger(string $host, string $resource, string $rel = '') {
+	public function getWebfinger(string $host, string $subject, string $rel = ''): NC21Webfinger {
 		$request = new NC21Request(self::$WEBFINGER);
 		$request->setHost($host);
 		$request->setProtocols(['https', 'http']);
@@ -68,7 +107,7 @@ trait TNC21WellKnown {
 		$request->setLocalAddressAllowed(true);
 		$request->setTimeout(5);
 
-		$request->addParam('resource', $resource);
+		$request->addParam('resource', $subject);
 		if ($rel !== '') {
 			$request->addParam('rel', $rel);
 		}
