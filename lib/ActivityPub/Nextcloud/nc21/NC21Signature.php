@@ -73,7 +73,6 @@ class NC21Signature {
 
 	/**
 	 * @param string $host the local host
-	 *
 	 * @param string $body
 	 *
 	 * @return NC21SignedRequest

@@ -354,7 +354,7 @@ class NC21SignedRequest implements JsonSerializable {
 			'host'            => $this->getHost(),
 			'clearSignature'  => $this->getClearSignature(),
 			'signedSignature' => base64_encode($this->getSignedSignature()),
-			'signatory'       => ($this->signatory !== null) ? $this->getSignatory() : false
+			'signatory'       => ($this->hasSignatory()) ? $this->getSignatory() : false,
 		];
 	}
 
