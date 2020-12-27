@@ -31,11 +31,11 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Exceptions\InvalidOriginException;
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Exceptions\SignatoryException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
+use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Model\Request;
 
 
@@ -67,7 +67,10 @@ trait TNC21Signatory {
 
 		$request = new NC21Request('', Request::TYPE_GET);
 		$request->basedOnUrl($keyId);
-		$request->setContentType('application/json');
+		$request->addHeader('Accept', 'application/ld+json');
+		$request->setFollowLocation(true);
+		$request->setLocalAddressAllowed(true);
+		$request->setTimeout(5);
 
 		try {
 			return $this->generateSignatoryFromJson($keyId, $this->retrieveJson($request));
@@ -78,12 +81,12 @@ trait TNC21Signatory {
 
 
 	/**
-	 * @param $keyId
+	 * @param string $keyId
 	 *
 	 * @return string
 	 * @throws InvalidOriginException
 	 */
-	public function getKeyOrigin($keyId) {
+	public function getKeyOrigin(string $keyId) {
 		$host = parse_url($keyId, PHP_URL_HOST);
 		if (is_string($host) && ($host !== '')) {
 			return $host;
@@ -129,13 +132,14 @@ trait TNC21Signatory {
 	 * @throws SignatoryException
 	 */
 	private function generateSignatoryFromJson(string $keyId, array $json) {
-		$signatory = new NC21Signatory();
+		$signatory = new NC21Signatory($this->get('id', $json));
 		$signatory->setKeyId($this->get('publicKey.id', $json))
-				  ->setId($this->get('publicKey.owner', $json))
+				  ->setKeyOwner($this->get('publicKey.owner', $json))
 				  ->setPublicKey($this->get('publicKey.publicKeyPem', $json));
 
 		try {
-			if ($signatory->getId() !== $keyId
+			if (($signatory->getId() !== $keyId && $signatory->getKeyId() !== $keyId)
+				|| $signatory->getId() !== $signatory->getKeyOwner()
 				|| $this->getKeyOrigin($signatory->getKeyId()) !== $this->getKeyOrigin($signatory->getId())
 				|| $signatory->getPublicKey() === '') {
 				throw new SignatoryException('invalid format');
@@ -146,7 +150,6 @@ trait TNC21Signatory {
 
 		return $signatory;
 	}
-
 
 }
 

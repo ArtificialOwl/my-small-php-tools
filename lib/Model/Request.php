@@ -711,16 +711,22 @@ class Request implements JsonSerializable {
 	 */
 	public function jsonSerialize(): array {
 		return [
-			'protocols'     => $this->getProtocols(),
-			'used_protocol' => $this->getUsedProtocol(),
-			'port'          => $this->getPort(),
-			'host'          => $this->getHost(),
-			'url'           => $this->getPath(),
-			'timeout'       => $this->getTimeout(),
-			'type'          => $this->getType(),
-			'cookies'       => $this->getCookies(),
-			'params'        => $this->getParams(),
-			'data'          => $this->getData()
+			'protocols'      => $this->getProtocols(),
+			'used_protocol'  => $this->getUsedProtocol(),
+			'port'           => $this->getPort(),
+			'host'           => $this->getHost(),
+			'url'            => $this->getPath(),
+			'timeout'        => $this->getTimeout(),
+			'type'           => $this->getType(),
+			'cookies'        => $this->getCookies(),
+			'headers'        => $this->getHeaders(),
+			'cookies'        => $this->getCookies(),
+			'params'         => $this->getParams(),
+			'data'           => $this->getData(),
+			'userAgent'      => $this->getUserAgent(),
+			'followLocation' => $this->isFollowLocation(),
+			'verifyPeer'     => $this->isVerifyPeer(),
+			'binary'         => $this->isBinary()
 		];
 	}
 

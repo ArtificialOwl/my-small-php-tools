@@ -45,7 +45,7 @@ class NC21SignedRequest implements JsonSerializable {
 
 
 	/** @var string */
-	private $body;
+	private $body = '';
 
 	/** @var int */
 	private $time = 0;
@@ -343,7 +343,19 @@ class NC21SignedRequest implements JsonSerializable {
 	 * @return array
 	 */
 	public function jsonSerialize(): array {
-		return [];
+		return [
+			'body'            => $this->getBody(),
+			'time'            => $this->getTime(),
+			'incomingRequest' => ($this->incomingRequest !== null),
+			'outgoingRequest' => $this->outgoingRequest !== null ? $this->getOutgoingRequest() : false,
+			'origin'          => $this->getOrigin(),
+			'digest'          => $this->getDigest(),
+			'signatureHeader' => ($this->signatureHeader !== null) ? $this->getSignatureHeader() : false,
+			'host'            => $this->getHost(),
+			'clearSignature'  => $this->getClearSignature(),
+			'signedSignature' => base64_encode($this->getSignedSignature()),
+			'signatory'       => ($this->signatory !== null) ? $this->getSignatory() : false
+		];
 	}
 
 }
