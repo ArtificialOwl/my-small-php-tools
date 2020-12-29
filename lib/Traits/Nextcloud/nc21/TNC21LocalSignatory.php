@@ -33,7 +33,6 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 use daita\MySmallPhpTools\Exceptions\SignatoryException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
-use daita\MySmallPhpTools\Traits\TArrayTools;
 use OC;
 use OCP\IConfig;
 
@@ -46,8 +45,9 @@ use OCP\IConfig;
 trait TNC21LocalSignatory {
 
 
-	use TArrayTools;
 	use TNC21Signatory;
+
+	static $SIGNATORIES_APP = 'signatories';
 
 
 	/**
@@ -56,19 +56,14 @@ trait TNC21LocalSignatory {
 	 *
 	 * @throws SignatoryException
 	 */
-	public function buildSimpleSignatory(NC21Signatory $signatory, bool $generate = false): void {
-		$app = $this->setup('app');
-		if ($app === '') {
-			$app = 'signatories';
-		}
-
+	public function fillSimpleSignatory(NC21Signatory $signatory, bool $generate = false): void {
+		$app = $this->setup('app', '', self::$SIGNATORIES_APP);
 		$signatories = json_decode(OC::$server->get(IConfig::class)->getAppValue($app, 'key_pairs'), true);
 		if (!is_array($signatories)) {
 			$signatories = [];
 		}
 
-		$id = $signatory->getId();
-		$sign = $this->getArray($id, $signatories);
+		$sign = $this->getArray($signatory->getId(), $signatories);
 		if (!empty($sign)) {
 			$signatory->setPublicKey($this->get('publicKey', $sign))
 					  ->setPrivateKey($this->get('privateKey', $sign));
@@ -80,11 +75,37 @@ trait TNC21LocalSignatory {
 			throw new SignatoryException();
 		}
 
+		$this->createSimpleSignatory($signatory);
+	}
+
+
+	/**
+	 * @param NC21Signatory $signatory
+	 */
+	public function createSimpleSignatory(NC21Signatory $signatory): void {
+		$app = $this->setup('app', '', self::$SIGNATORIES_APP);
 		$this->generateKeys($signatory);
-		$signatories[$id] = [
+
+		$signatories[$signatory->getId()] = [
 			'publicKey'  => $signatory->getPublicKey(),
 			'privateKey' => $signatory->getPrivateKey()
 		];
+
+		OC::$server->get(IConfig::class)->setAppValue($app, 'key_pairs', json_encode($signatories));
+	}
+
+
+	/**
+	 * @param NC21Signatory $signatory
+	 */
+	public function removeSimpleSignatory(NC21Signatory $signatory): void {
+		$app = $this->setup('app', '', self::$SIGNATORIES_APP);
+		$signatories = json_decode(OC::$server->get(IConfig::class)->getAppValue($app, 'key_pairs'), true);
+		if (!is_array($signatories)) {
+			$signatories = [];
+		}
+
+		unset($signatories[$signatory->getId()]);
 		OC::$server->get(IConfig::class)->setAppValue($app, 'key_pairs', json_encode($signatories));
 	}
 

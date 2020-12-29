@@ -31,6 +31,7 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
+use daita\MySmallPhpTools\Traits\TArrayTools;
 use OCP\IConfig;
 
 /**
@@ -41,6 +42,9 @@ use OCP\IConfig;
 trait TNC21Setup {
 
 
+	use TArrayTools;
+
+
 	/** @var array */
 	private $_setup = [];
 
@@ -49,18 +53,16 @@ trait TNC21Setup {
 	 * @param string $key
 	 * @param string $value
 	 *
+	 * @param string $default
+	 *
 	 * @return string
 	 */
-	public function setup(string $key, string $value = ''): string {
+	public function setup(string $key, string $value = '', string $default = ''): string {
 		if ($value !== '') {
 			$this->_setup[$key] = $value;
 		}
 
-		if (array_key_exists($key, $this->_setup)) {
-			return $this->_setup[$key];
-		}
-
-		return '';
+		return $this->get($key, $this->_setup, $default);
 	}
 
 

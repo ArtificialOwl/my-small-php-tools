@@ -41,7 +41,6 @@ use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21SignedRequest;
 use daita\MySmallPhpTools\Model\SimpleDataStore;
 use daita\MySmallPhpTools\Traits\Nextcloud\nc21\TNC21Signatory;
-use daita\MySmallPhpTools\Traits\TArrayTools;
 use DateTime;
 use Exception;
 use OC;
@@ -62,7 +61,6 @@ class NC21Signature {
 	const DATE_TTL = 300;
 
 
-	use TArrayTools;
 	use TNC21Signatory;
 
 
