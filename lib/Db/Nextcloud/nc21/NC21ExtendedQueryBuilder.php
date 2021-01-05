@@ -32,6 +32,7 @@ namespace daita\MySmallPhpTools\Db\Nextcloud\nc21;
 
 
 use daita\MySmallPhpTools\Exceptions\DateTimeException;
+use daita\MySmallPhpTools\Exceptions\InvalidItemException;
 use daita\MySmallPhpTools\Exceptions\RowNotFoundException;
 use DateInterval;
 use DateTime;
@@ -43,7 +44,7 @@ use OC\SystemConfig;
 use OCP\DB\QueryBuilder\ICompositeExpression;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
-use Psr\Log\LoggerInterface;
+use OCP\ILogger;
 
 
 /**
@@ -65,7 +66,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 		parent::__construct(
 			OC::$server->get(IDBConnection::class),
 			OC::$server->get(SystemConfig::class),
-			OC::$server->get(LoggerInterface::class)
+			OC::$server->get(ILogger::class)
 		);
 	}
 
@@ -500,12 +501,57 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
-	 * @param callable $method
+	 * @param string $object
 	 *
 	 * @return INC21QueryRow
 	 * @throws RowNotFoundException
 	 */
-	public function getRow(callable $method): INC21QueryRow {
+	public function asItem(string $object): INC21QueryRow {
+		return $this->getRow([$this, 'parseSimpleSelectSql'], $object);
+	}
+
+	/**
+	 * @param string $object
+	 *
+	 * @return INC21QueryRow[]
+	 */
+	public function asItems(string $object): array {
+		return $this->getRows([$this, 'parseSimpleSelectSql'], $object);
+	}
+
+
+	/**
+	 * @param array $data
+	 * @param NC21ExtendedQueryBuilder $qb
+	 * @param string $object
+	 *
+	 * @return INC21QueryRow
+	 * @throws InvalidItemException
+	 */
+	private function parseSimpleSelectSql(
+		array $data,
+		NC21ExtendedQueryBuilder $qb,
+		string $object
+	): INC21QueryRow {
+		$item = new $object();
+		if (!($item instanceof INC21QueryRow)) {
+			throw new InvalidItemException();
+		}
+
+		$item->importFromDatabase($data);
+
+		return $item;
+	}
+
+
+	/**
+	 * @param callable $method
+	 * @param string $object
+	 *
+	 * @return INC21QueryRow
+	 * @throws RowNotFoundException
+	 */
+	public function getRow(callable $method, string $object = ''): INC21QueryRow {
 		$cursor = $this->execute();
 		$data = $cursor->fetch();
 		$cursor->closeCursor();
@@ -514,20 +560,21 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 			throw new RowNotFoundException();
 		}
 
-		return $method($data, $this);
+		return $method($data, $this, $object);
 	}
 
 	/**
 	 * @param callable $method
+	 * @param string $object
 	 *
 	 * @return INC21QueryRow[]
 	 */
-	public function getRows(callable $method): array {
+	public function getRows(callable $method, string $object = ''): array {
 		$rows = [];
 		$cursor = $this->execute();
 		while ($data = $cursor->fetch()) {
 			try {
-				$rows[] = $method($data, $this);
+				$rows[] = $method($data, $this, $object);
 			} catch (Exception $e) {
 			}
 		}
