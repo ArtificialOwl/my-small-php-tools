@@ -65,17 +65,61 @@ trait TNC21Signatory {
 			throw new SignatoryException();
 		}
 
+		$signatory = new NC21Signatory($keyId);
+		$this->downloadSignatory($signatory, $keyId);
+
+		return $signatory;
+	}
+
+
+	/**
+	 * @param NC21Signatory $signatory
+	 * @param string $keyId
+	 *
+	 * @throws SignatoryException
+	 */
+	public function downloadSignatory(NC21Signatory $signatory, string $keyId = ''): void {
 		$request = new NC21Request('', Request::TYPE_GET);
-		$request->basedOnUrl($keyId);
+		$request->basedOnUrl(($keyId !== '') ? $keyId : $signatory->getId());
 		$request->addHeader('Accept', 'application/ld+json');
 		$request->setFollowLocation(true);
 		$request->setLocalAddressAllowed(true);
 		$request->setTimeout(5);
 
 		try {
-			return $this->generateSignatoryFromJson($keyId, $this->retrieveJson($request));
+			$this->updateSignatory($signatory, $this->retrieveJson($request), $keyId);
 		} catch (RequestNetworkException $e) {
 			throw new SignatoryException('network issue - ' . $e->getMessage());
+		}
+	}
+
+
+	/**
+	 * @param NC21Signatory $signatory
+	 * @param array $json
+	 * @param string $keyId
+	 *
+	 * @throws SignatoryException
+	 */
+	public function updateSignatory(NC21Signatory $signatory, array $json, string $keyId = ''): void {
+		$signatory->setOrigData($json)
+				  ->setKeyId($this->get('publicKey.id', $json))
+				  ->setKeyOwner($this->get('publicKey.owner', $json))
+				  ->setPublicKey($this->get('publicKey.publicKeyPem', $json));
+
+		if ($keyId === '') {
+			$keyId = $signatory->getKeyId();
+		}
+
+		try {
+			if (($signatory->getId() !== $keyId && $signatory->getKeyId() !== $keyId)
+				|| $signatory->getId() !== $signatory->getKeyOwner()
+				|| $this->getKeyOrigin($signatory->getKeyId()) !== $this->getKeyOrigin($signatory->getId())
+				|| $signatory->getPublicKey() === '') {
+				throw new SignatoryException('invalid format');
+			}
+		} catch (InvalidOriginException $e) {
+			throw new SignatoryException('invalid origin');
 		}
 	}
 
@@ -122,34 +166,5 @@ trait TNC21Signatory {
 		$signatory->setPublicKey($publicKey);
 		$signatory->setPrivateKey($privateKey);
 	}
-
-
-	/**
-	 * @param string $keyId
-	 * @param array $json
-	 *
-	 * @return NC21Signatory
-	 * @throws SignatoryException
-	 */
-	private function generateSignatoryFromJson(string $keyId, array $json) {
-		$signatory = new NC21Signatory($this->get('id', $json));
-		$signatory->setKeyId($this->get('publicKey.id', $json))
-				  ->setKeyOwner($this->get('publicKey.owner', $json))
-				  ->setPublicKey($this->get('publicKey.publicKeyPem', $json));
-
-		try {
-			if (($signatory->getId() !== $keyId && $signatory->getKeyId() !== $keyId)
-				|| $signatory->getId() !== $signatory->getKeyOwner()
-				|| $this->getKeyOrigin($signatory->getKeyId()) !== $this->getKeyOrigin($signatory->getId())
-				|| $signatory->getPublicKey() === '') {
-				throw new SignatoryException('invalid format');
-			}
-		} catch (InvalidOriginException $e) {
-			throw new SignatoryException('invalid origin');
-		}
-
-		return $signatory;
-	}
-
 }
 

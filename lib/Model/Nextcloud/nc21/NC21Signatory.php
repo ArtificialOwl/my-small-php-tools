@@ -61,6 +61,9 @@ class NC21Signatory implements JsonSerializable {
 	/** @var string */
 	private $privateKey = '';
 
+	/** @var array */
+	private $origData = [];
+
 
 	/**
 	 * NC21Signatory constructor.
@@ -68,9 +71,32 @@ class NC21Signatory implements JsonSerializable {
 	 * @param string $id
 	 */
 	public function __construct(string $id = '') {
+		$temp = strtok($id, '#');
+		if (is_string($temp)) {
+			$id = $temp;
+		}
+
 		$this->id = $id;
-		$this->keyOwner = $id;
-		$this->keyId = $this->id . '#main-key';
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getOrigData(): array {
+		return $this->origData;
+	}
+
+	/**
+	 * /**
+	 * @param array $data
+	 *
+	 * @return $this
+	 */
+	public function setOrigData(array $data): self {
+		$this->origData = $data;
+
+		return $this;
 	}
 
 
