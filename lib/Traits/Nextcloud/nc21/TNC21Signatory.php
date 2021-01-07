@@ -34,6 +34,7 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 use daita\MySmallPhpTools\Exceptions\InvalidOriginException;
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Exceptions\SignatoryException;
+use daita\MySmallPhpTools\Exceptions\SignatureException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use daita\MySmallPhpTools\Model\Request;
@@ -116,6 +117,7 @@ trait TNC21Signatory {
 				|| $signatory->getId() !== $signatory->getKeyOwner()
 				|| $this->getKeyOrigin($signatory->getKeyId()) !== $this->getKeyOrigin($signatory->getId())
 				|| $signatory->getPublicKey() === '') {
+				$this->debug('invalid format', ['signatory' => $signatory, 'keyId' => $keyId]);
 				throw new SignatoryException('invalid format');
 			}
 		} catch (InvalidOriginException $e) {
@@ -166,5 +168,42 @@ trait TNC21Signatory {
 		$signatory->setPublicKey($publicKey);
 		$signatory->setPrivateKey($privateKey);
 	}
+
+
+	/**
+	 * @param string $clear
+	 * @param NC21Signatory $signatory
+	 *
+	 * @return string
+	 * @throws SignatoryException
+	 */
+	public function signString(string $clear, NC21Signatory $signatory): string {
+		$privateKey = $signatory->getPrivateKey();
+		if ($privateKey === '') {
+			throw new SignatoryException('empty private key');
+		}
+
+		openssl_sign($clear, $signed, $privateKey, $this->getOpenSSLAlgo($signatory));
+
+		return base64_encode($signed);
+	}
+
+
+	/**
+	 * @param string $clear
+	 * @param string $signed
+	 * @param string $publicKey
+	 * @param string $algo
+	 *
+	 * @throws SignatureException
+	 */
+	public function verifyString(
+		string $clear, string $signed, string $publicKey, string $algo = NC21Signatory::SHA256
+	) {
+		if (openssl_verify($clear, $signed, $publicKey, $algo) !== 1) {
+			throw new SignatureException('signature issue');
+		}
+	}
+
 }
 

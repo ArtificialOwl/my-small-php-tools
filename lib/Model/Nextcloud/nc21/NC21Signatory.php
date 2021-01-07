@@ -46,6 +46,10 @@ class NC21Signatory implements JsonSerializable {
 	use TArrayTools;
 
 
+	const SHA256 = 'sha256';
+	const SHA512 = 'sha512';
+
+
 	/** @var string */
 	protected $id = '';
 
@@ -63,6 +67,9 @@ class NC21Signatory implements JsonSerializable {
 
 	/** @var array */
 	private $origData = [];
+
+	/** @var string */
+	private $algorithm = self::SHA256;
 
 
 	/**
@@ -205,6 +212,25 @@ class NC21Signatory implements JsonSerializable {
 	 */
 	public function hasPrivateKey(): bool {
 		return ($this->privateKey !== '');
+	}
+
+
+	/**
+	 * @param string $algorithm
+	 *
+	 * @return self
+	 */
+	public function setAlgorithm(string $algorithm): self {
+		$this->algorithm = $algorithm;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAlgorithm(): string {
+		return $this->algorithm;
 	}
 
 

@@ -198,7 +198,7 @@ class NC21Signature {
 		$data->haveKeys(['keyId', 'headers', 'signature'], true);
 
 		$signedRequest->setOrigin($this->getKeyOrigin($data->g('keyId')));
-		$signedRequest->setSignedSignature(base64_decode($data->g('signature')));
+		$signedRequest->setSignedSignature($data->g('signature'));
 	}
 
 
@@ -230,20 +230,21 @@ class NC21Signature {
 	 * @throws SignatureException
 	 */
 	private function verifySignedRequest(NC21SignedRequest $signedRequest) {
-		$algorithm = $this->getAlgorithm($signedRequest);
 		$publicKey = $signedRequest->getSignatory()->getPublicKey();
 		if ($publicKey === '') {
 			throw new SignatureException('empty public key');
 		}
 
-		if (openssl_verify(
+		try {
+			$this->verifyString(
 				$signedRequest->getClearSignature(),
-				$signedRequest->getSignedSignature(),
+				base64_decode($signedRequest->getSignedSignature()),
 				$publicKey,
-				$algorithm
-			) !== 1) {
-			$this->debug('signature issue', ['signed' => $signedRequest, 'algorithm' => $algorithm]);
-			throw new SignatureException('signature issue');
+				$this->getUsedEncryption($signedRequest)
+			);
+		} catch (SignatureException $e) {
+			$this->debug('signature issue', ['signed' => $signedRequest]);
+			throw $e;
 		}
 	}
 
@@ -293,13 +294,7 @@ class NC21Signature {
 	 */
 	private function setOutgoingSignedSignature(NC21SignedRequest $signedRequest): void {
 		$clear = $signedRequest->getClearSignature();
-		$privateKey = $signedRequest->getSignatory()->getPrivateKey();
-		if ($privateKey === '') {
-			throw new SignatoryException('empty private key');
-		}
-
-		openssl_sign($clear, $signed, $privateKey, OPENSSL_ALGO_SHA256);
-
+		$signed = $this->signString($clear, $signedRequest->getSignatory());
 		$signedRequest->setSignedSignature($signed);
 	}
 
@@ -311,11 +306,12 @@ class NC21Signature {
 	 */
 	private function signingOutgoingRequest(NC21SignedRequest $signedRequest): void {
 		$headers = array_diff($signedRequest->getSignatureHeader()->keys(), ['(request-target)']);
+		$signatory = $signedRequest->getSignatory();
 		$signatureElements = [
-			'keyId="' . $signedRequest->getSignatory()->getKeyId() . '"',
-			'algorithm="rsa-sha256"',
+			'keyId="' . $signatory->getKeyId() . '"',
+			'algorithm="' . $this->getChosenEncryption($signatory) . '"',
 			'headers="' . implode(' ', $headers) . '"',
-			'signature="' . base64_encode($signedRequest->getSignedSignature()) . '"'
+			'signature="' . $signedRequest->getSignedSignature() . '"'
 		];
 
 		$signedRequest->getOutgoingRequest()->addHeader('Signature', implode(',', $signatureElements));
@@ -327,14 +323,47 @@ class NC21Signature {
 	 *
 	 * @return string
 	 */
-	private function getAlgorithm(NC21SignedRequest $signedRequest): string {
+	private function getUsedEncryption(NC21SignedRequest $signedRequest): string {
 		switch ($signedRequest->getSignatureHeader()->g('algorithm')) {
 			case 'rsa-sha512':
-				return 'sha512';
+				return NC21Signatory::SHA512;
 
 			case 'rsa-sha256':
 			default:
-				return 'sha256';
+				return NC21Signatory::SHA256;
+		}
+	}
+
+	/**
+	 * @param NC21Signatory $signatory
+	 *
+	 * @return string
+	 */
+	private function getChosenEncryption(NC21Signatory $signatory): string {
+		switch ($signatory->getAlgorithm()) {
+			case NC21Signatory::SHA512:
+				return 'ras-sha512';
+
+			case NC21Signatory::SHA256:
+			default:
+				return 'ras-sha256';
+		}
+	}
+
+
+	/**
+	 * @param NC21Signatory $signatory
+	 *
+	 * @return int
+	 */
+	public function getOpenSSLAlgo(NC21Signatory $signatory): int {
+		switch ($signatory->getAlgorithm()) {
+			case NC21Signatory::SHA512:
+				return OPENSSL_ALGO_SHA512;
+
+			case NC21Signatory::SHA256:
+			default:
+				return OPENSSL_ALGO_SHA256;
 		}
 	}
 

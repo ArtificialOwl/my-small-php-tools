@@ -267,7 +267,7 @@ class NC21SignedRequest implements JsonSerializable {
 
 	/**
 	 * _Signed_ value of the signature.
-	 * (not base64_encoded)
+	 * /!\ base64_encoded, not RAW /!\
 	 *
 	 * incoming/outgoing
 	 *
