@@ -65,7 +65,9 @@ trait TNC21LocalSignatory {
 
 		$sign = $this->getArray($signatory->getId(), $signatories);
 		if (!empty($sign)) {
-			$signatory->setPublicKey($this->get('publicKey', $sign))
+			$signatory->setKeyId($this->get('keyId', $sign))
+					  ->setKeyOwner($this->get('keyOwner', $sign))
+					  ->setPublicKey($this->get('publicKey', $sign))
 					  ->setPrivateKey($this->get('privateKey', $sign));
 
 			return;
@@ -84,9 +86,13 @@ trait TNC21LocalSignatory {
 	 */
 	public function createSimpleSignatory(NC21Signatory $signatory): void {
 		$app = $this->setup('app', '', self::$SIGNATORIES_APP);
+		$signatory->setKeyId($signatory->getId() . '#main-key');
+		$signatory->setKeyOwner($signatory->getId());
 		$this->generateKeys($signatory);
 
 		$signatories[$signatory->getId()] = [
+			'keyId'      => $signatory->getKeyId(),
+			'keyOwner'   => $signatory->getKeyOwner(),
 			'publicKey'  => $signatory->getPublicKey(),
 			'privateKey' => $signatory->getPrivateKey()
 		];

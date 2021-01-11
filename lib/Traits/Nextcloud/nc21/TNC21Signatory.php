@@ -76,12 +76,18 @@ trait TNC21Signatory {
 	/**
 	 * @param NC21Signatory $signatory
 	 * @param string $keyId
+	 * @param string $url
 	 *
 	 * @throws SignatoryException
 	 */
-	public function downloadSignatory(NC21Signatory $signatory, string $keyId = ''): void {
+	public function downloadSignatory(
+		NC21Signatory $signatory,
+		string $keyId = '',
+		array $params = []
+	): void {
 		$request = new NC21Request('', Request::TYPE_GET);
 		$request->basedOnUrl(($keyId !== '') ? $keyId : $signatory->getId());
+		$request->setParams($params);
 		$request->addHeader('Accept', 'application/ld+json');
 		$request->setFollowLocation(true);
 		$request->setLocalAddressAllowed(true);
