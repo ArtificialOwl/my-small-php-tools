@@ -31,7 +31,6 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Exceptions\RequestContentException;
 use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21RequestResult;
@@ -164,7 +163,6 @@ trait TNC21Request {
 	 */
 	private function useClient(NC21Request $request): IResponse {
 		$client = $request->getClient();
-
 		switch ($request->getType()) {
 			case Request::TYPE_POST:
 				return $client->post($request->getCompleteUrl(), $request->getClientOptions());
@@ -173,9 +171,7 @@ trait TNC21Request {
 			case Request::TYPE_DELETE:
 				return $client->delete($request->getCompleteUrl(), $request->getClientOptions());
 			case Request::TYPE_GET:
-				return $client->get(
-					$request->getCompleteUrl() . '?' . $request->getUrlParams(), $request->getClientOptions()
-				);
+				return $client->get($request->getCompleteUrl() . '?' . $request->getQueryString(), $request->getClientOptions());
 			default:
 				throw new Exception('unknown request type ' . json_encode($request));
 		}

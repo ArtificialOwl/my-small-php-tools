@@ -49,9 +49,11 @@ class NC21Signatory implements JsonSerializable {
 	const SHA256 = 'sha256';
 	const SHA512 = 'sha512';
 
+	/** @var string */
+	private $instance = '';
 
 	/** @var string */
-	protected $id = '';
+	private $id = '';
 
 	/** @var string */
 	private $keyOwner = '';
@@ -84,6 +86,23 @@ class NC21Signatory implements JsonSerializable {
 		}
 
 		$this->id = $id;
+	}
+
+
+	/**
+	 * @param string $instance
+	 */
+	public function setInstance(string $instance): self {
+		$this->instance = $instance;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getInstance(): string {
+		return $this->instance;
 	}
 
 
@@ -231,6 +250,24 @@ class NC21Signatory implements JsonSerializable {
 	 */
 	public function getAlgorithm(): string {
 		return $this->algorithm;
+	}
+
+
+	/**
+	 * @param array $data
+	 *
+	 * @return $this
+	 */
+	public function import(array $data): self {
+		if ($this->getId() === '') {
+			$this->setId($this->get('id', $data));
+		}
+
+		$this->setKeyId($this->get('publicKey.id', $data));
+		$this->setKeyOwner($this->get('publicKey.owner', $data));
+		$this->setPublicKey($this->get('publicKey.publicKeyPem', $data));
+
+		return $this;
 	}
 
 

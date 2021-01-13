@@ -110,9 +110,7 @@ trait TNC21Signatory {
 	 */
 	public function updateSignatory(NC21Signatory $signatory, array $json, string $keyId = ''): void {
 		$signatory->setOrigData($json)
-				  ->setKeyId($this->get('publicKey.id', $json))
-				  ->setKeyOwner($this->get('publicKey.owner', $json))
-				  ->setPublicKey($this->get('publicKey.publicKeyPem', $json));
+				  ->import($json);
 
 		if ($keyId === '') {
 			$keyId = $signatory->getKeyId();
