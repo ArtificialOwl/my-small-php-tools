@@ -52,6 +52,10 @@ class Request implements JsonSerializable {
 	const TYPE_DELETE = 3;
 
 
+	const QS_VAR_DUPLICATE = 1;
+	const QS_VAR_ARRAY = 2;
+
+
 	/** @var string */
 	private $protocol = '';
 
@@ -93,6 +97,9 @@ class Request implements JsonSerializable {
 
 	/** @var array */
 	private $data = [];
+
+	/** @var int */
+	private $queryStringType = self::QS_VAR_DUPLICATE;
 
 	/** @var int */
 	private $timeout = 10;
@@ -481,6 +488,23 @@ class Request implements JsonSerializable {
 
 
 	/**
+	 * @param int $queryStringType
+	 */
+	public function setQueryStringType(int $queryStringType): self {
+		$this->queryStringType = $queryStringType;
+
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getQueryStringType(): int {
+		return $this->queryStringType;
+	}
+
+
+	/**
 	 * @return array
 	 */
 	public function getData(): array {
@@ -618,6 +642,7 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @return string
+	 * @deprecated - 21 - use getQueryString();
 	 */
 	public function getUrlParams(): string {
 		if ($this->getParams() === []) {
@@ -627,6 +652,29 @@ class Request implements JsonSerializable {
 		return preg_replace(
 			'/([(%5B)]{1})[0-9]+([(%5D)]{1})/', '$1$2', http_build_query($this->getParams())
 		);
+	}
+
+
+	/**
+	 * @param int $type
+	 *
+	 * @return string
+	 */
+	public function getQueryString(): string {
+		if ($this->getParams() === []) {
+			return '';
+		}
+
+		switch ($this->getQueryStringType()) {
+			case self::QS_VAR_ARRAY:
+				return http_build_query($this->getParams());
+
+			case self::QS_VAR_DUPLICATE:
+			default:
+				return preg_replace(
+					'/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->getParams())
+				);
+		}
 	}
 
 
