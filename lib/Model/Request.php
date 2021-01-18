@@ -661,19 +661,19 @@ class Request implements JsonSerializable {
 	 * @return string
 	 */
 	public function getQueryString(): string {
-		if ($this->getParams() === []) {
+		if (empty($this->getParams())) {
 			return '';
 		}
 
 		switch ($this->getQueryStringType()) {
 			case self::QS_VAR_ARRAY:
-				return http_build_query($this->getParams());
+				return '?' . http_build_query($this->getParams());
 
 			case self::QS_VAR_DUPLICATE:
 			default:
-				return preg_replace(
-					'/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->getParams())
-				);
+				return '?' . preg_replace(
+						'/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->getParams())
+					);
 		}
 	}
 

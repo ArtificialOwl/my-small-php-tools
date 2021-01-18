@@ -76,7 +76,7 @@ trait TNC21Signatory {
 	/**
 	 * @param NC21Signatory $signatory
 	 * @param string $keyId
-	 * @param string $url
+	 * @param array $params
 	 *
 	 * @throws SignatoryException
 	 */
