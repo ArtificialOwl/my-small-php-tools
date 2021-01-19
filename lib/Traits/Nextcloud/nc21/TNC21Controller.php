@@ -68,14 +68,20 @@ trait TNC21Controller {
 
 	/**
 	 * @param array $data
-	 * @param int $status
+	 * @param bool $status
+	 * @param int $code
 	 *
 	 * @return DataResponse
 	 */
-	public function success(array $data = [], int $status = Http::STATUS_OK): DataResponse {
+	public function success(array $data = [], bool $status = true, int $code = Http::STATUS_OK
+	): DataResponse {
 		$this->debug('success', ['data' => $data]);
 
-		return new DataResponse(array_merge(['status' => 1], $data), $status);
+		if ($status) {
+			$data = array_merge(['status' => 1], $data);
+		}
+
+		return new DataResponse($data, $code);
 	}
 
 
