@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace OCA\Circles\Model;
+namespace daita\MySmallPhpTools\Model\Nextcloud\nc21;
 
 
 interface INC21Convert {

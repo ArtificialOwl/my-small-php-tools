@@ -33,7 +33,8 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
 use daita\MySmallPhpTools\Exceptions\InvalidItemException;
-use OCA\Circles\Model\INC21Convert;
+use daita\MySmallPhpTools\Model\Nextcloud\nc21\INC21Convert;
+
 
 /**
  * Trait TNC21Convert
