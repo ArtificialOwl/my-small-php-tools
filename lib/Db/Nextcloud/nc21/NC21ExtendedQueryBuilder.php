@@ -506,8 +506,8 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @return INC21QueryRow
 	 * @throws RowNotFoundException
 	 */
-	public function asItem(string $object): INC21QueryRow {
-		return $this->getRow([$this, 'parseSimpleSelectSql'], $object);
+	public function asItem(string $object, array $params = []): INC21QueryRow {
+		return $this->getRow([$this, 'parseSimpleSelectSql'], $object, $params);
 	}
 
 	/**
@@ -515,8 +515,8 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 *
 	 * @return INC21QueryRow[]
 	 */
-	public function asItems(string $object): array {
-		return $this->getRows([$this, 'parseSimpleSelectSql'], $object);
+	public function asItems(string $object, array $params = []): array {
+		return $this->getRows([$this, 'parseSimpleSelectSql'], $object, $params);
 	}
 
 
@@ -531,13 +531,18 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	private function parseSimpleSelectSql(
 		array $data,
 		NC21ExtendedQueryBuilder $qb,
-		string $object
+		string $object,
+		array $params
 	): INC21QueryRow {
 		$item = new $object();
 		if (!($item instanceof INC21QueryRow)) {
 			throw new InvalidItemException();
 		}
 
+		if (!empty($params)) {
+			$data['_params'] = $params;
+		}
+		
 		$item->importFromDatabase($data);
 
 		return $item;
@@ -551,7 +556,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @return INC21QueryRow
 	 * @throws RowNotFoundException
 	 */
-	public function getRow(callable $method, string $object = ''): INC21QueryRow {
+	public function getRow(callable $method, string $object = '', array $params = []): INC21QueryRow {
 		$cursor = $this->execute();
 		$data = $cursor->fetch();
 		$cursor->closeCursor();
@@ -560,7 +565,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 			throw new RowNotFoundException();
 		}
 
-		return $method($data, $this, $object);
+		return $method($data, $this, $object, $params);
 	}
 
 	/**
@@ -569,12 +574,12 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 *
 	 * @return INC21QueryRow[]
 	 */
-	public function getRows(callable $method, string $object = ''): array {
+	public function getRows(callable $method, string $object = '', array $params = []): array {
 		$rows = [];
 		$cursor = $this->execute();
 		while ($data = $cursor->fetch()) {
 			try {
-				$rows[] = $method($data, $this, $object);
+				$rows[] = $method($data, $this, $object, $params);
 			} catch (Exception $e) {
 			}
 		}
