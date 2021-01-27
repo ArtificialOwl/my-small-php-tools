@@ -94,53 +94,72 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * Limit the request to the Id
 	 *
 	 * @param int $id
-	 *
-	 * @return self
 	 */
-	public function limitToId(int $id): self {
+	public function limitToId(int $id): void {
 		$this->limitToDBFieldInt('id', $id);
-
-		return $this;
 	}
-
 
 	/**
 	 * @param array $ids
-	 *
-	 * @return self
 	 */
-	public function limitToIds(array $ids): self {
+	public function limitToIds(array $ids): void {
 		$this->limitToDBFieldArray('id', $ids);
-
-		return $this;
 	}
 
-
 	/**
-	 * Limit the request to the Id (string)
-	 *
 	 * @param string $id
-	 *
-	 * @return self
 	 */
-	public function limitToIdString(string $id): self {
+	public function limitToIdString(string $id): void {
 		$this->limitToDBField('id', $id, false);
-
-		return $this;
 	}
 
+	/**
+	 * @param string $userId
+	 */
+	public function limitToUserId(string $userId): void {
+		$this->limitToDBField('user_id', $userId, false);
+	}
 
 	/**
-	 * Limit the request to the UserId
-	 *
-	 * @param string $userId
-	 *
-	 * @return self
+	 * @param string $uniqueId
 	 */
-	public function limitToUserId(string $userId): self {
-		$this->limitToDBField('user_id', $userId, false);
+	public function limitToUniqueId(string $uniqueId): void {
+		$this->limitToDBField('unique_id', $uniqueId, true);
+	}
 
-		return $this;
+	/**
+	 * @param string $memberId
+	 */
+	public function limitToMemberId(string $memberId): void {
+		$this->limitToDBField('member_id', $memberId, true);
+	}
+
+	/**
+	 * @param string $status
+	 */
+	public function limitToStatus(string $status): void {
+		$this->limitToDBField('status', $status, false);
+	}
+
+	/**
+	 * @param int $type
+	 */
+	public function limitToType(int $type): void {
+		$this->limitToDBFieldInt('type', $type);
+	}
+
+	/**
+	 * @param string $type
+	 */
+	public function limitToTypeString(string $type): void {
+		$this->limitToDBField('type', $type, false);
+	}
+
+	/**
+	 * @param string $token
+	 */
+	public function limitToToken(string $token): void {
+		$this->limitToDBField('token', $token, true);
 	}
 
 
@@ -502,6 +521,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 
 	/**
 	 * @param string $object
+	 * @param array $params
 	 *
 	 * @return INC21QueryRow
 	 * @throws RowNotFoundException
@@ -512,6 +532,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 
 	/**
 	 * @param string $object
+	 * @param array $params
 	 *
 	 * @return INC21QueryRow[]
 	 */
@@ -524,6 +545,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param array $data
 	 * @param NC21ExtendedQueryBuilder $qb
 	 * @param string $object
+	 * @param array $params
 	 *
 	 * @return INC21QueryRow
 	 * @throws InvalidItemException
@@ -542,7 +564,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 		if (!empty($params)) {
 			$data['_params'] = $params;
 		}
-		
+
 		$item->importFromDatabase($data);
 
 		return $item;
@@ -552,6 +574,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	/**
 	 * @param callable $method
 	 * @param string $object
+	 * @param array $params
 	 *
 	 * @return INC21QueryRow
 	 * @throws RowNotFoundException
@@ -571,6 +594,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	/**
 	 * @param callable $method
 	 * @param string $object
+	 * @param array $params
 	 *
 	 * @return INC21QueryRow[]
 	 */

@@ -107,7 +107,7 @@ class NC21Signature {
 	 * @return NC21SignedRequest
 	 * @throws SignatoryException
 	 */
-	public function signRequest(NC21Request $request, NC21Signatory $signatory): NC21SignedRequest {
+	public function signOutgoingRequest(NC21Request $request, NC21Signatory $signatory): NC21SignedRequest {
 		$signedRequest = new NC21SignedRequest($request->getDataBody());
 		$signedRequest->setOutgoingRequest($request)
 					  ->setSignatory($signatory);
