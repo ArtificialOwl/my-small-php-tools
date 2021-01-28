@@ -215,7 +215,7 @@ class NC21Signature {
 		}
 
 		try {
-			$signedRequest->setSignatory($this->retrieveSignatory($data->g('keyId')));
+			$signedRequest->setSignatory($this->retrieveSignatory($data->g('keyId'), false));
 			$this->verifySignedRequest($signedRequest);
 		} catch (SignatoryException $e) {
 			$signedRequest->setSignatory($this->retrieveSignatory($data->g('keyId'), true));

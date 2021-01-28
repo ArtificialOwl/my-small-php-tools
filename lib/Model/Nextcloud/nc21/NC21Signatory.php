@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -49,6 +50,7 @@ class NC21Signatory implements JsonSerializable {
 	const SHA256 = 'sha256';
 	const SHA512 = 'sha512';
 
+
 	/** @var string */
 	private $instance = '';
 
@@ -80,17 +82,14 @@ class NC21Signatory implements JsonSerializable {
 	 * @param string $id
 	 */
 	public function __construct(string $id = '') {
-		$temp = strtok($id, '#');
-		if (is_string($temp)) {
-			$id = $temp;
-		}
-
-		$this->id = $id;
+		$this->id = self::removeFragment($id);
 	}
 
 
 	/**
 	 * @param string $instance
+	 *
+	 * @return self
 	 */
 	public function setInstance(string $instance): self {
 		$this->instance = $instance;
@@ -284,6 +283,21 @@ class NC21Signatory implements JsonSerializable {
 					'publicKeyPem' => $this->getPublicKey()
 				]
 		];
+	}
+
+
+	/**
+	 * @param string $id
+	 *
+	 * @return string
+	 */
+	public static function removeFragment(string $id): string {
+		$temp = strtok($id, '#');
+		if (is_string($temp)) {
+			$id = $temp;
+		}
+
+		return $id;
 	}
 
 }
