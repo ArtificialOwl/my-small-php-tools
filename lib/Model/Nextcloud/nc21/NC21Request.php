@@ -55,6 +55,9 @@ class NC21Request extends Request {
 	/** @var NC21RequestResult */
 	private $result;
 
+	/** @var NC21RequestResult[] */
+	private $previousResults = [];
+
 
 	/**
 	 * @param IClient $client
@@ -133,9 +136,27 @@ class NC21Request extends Request {
 	 * @return self
 	 */
 	public function setResult(NC21RequestResult $result): self {
+		if (!is_null($this->result)) {
+			$this->previousResults[] = $this->result;
+		}
+
 		$this->result = $result;
 
 		return $this;
+	}
+
+	/**
+	 * @return NC21RequestResult[]
+	 */
+	public function getPreviousResults(): array {
+		return $this->previousResults;
+	}
+
+	/**
+	 * @return NC21RequestResult[]
+	 */
+	public function getAllResults(): array {
+		return array_values(array_merge([$this->getResult()], $this->previousResults));
 	}
 
 

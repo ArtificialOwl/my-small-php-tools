@@ -33,6 +33,7 @@ namespace daita\MySmallPhpTools\Model\Nextcloud\nc21;
 
 use daita\MySmallPhpTools\Exceptions\RequestContentException;
 use daita\MySmallPhpTools\Traits\TArrayTools;
+use GuzzleHttp\Exception\BadResponseException;
 use JsonSerializable;
 use OCP\Http\Client\IResponse;
 
@@ -69,15 +70,26 @@ class NC21RequestResult implements JsonSerializable {
 	/** @var int */
 	private $contentType = 0;
 
+	/** @var BadResponseException */
+	private $exception = null;
+
+
 	/**
 	 * NC21RequestResult constructor.
 	 *
-	 * @param IResponse $response
+	 * @param IResponse|null $response
+	 * @param BadResponseException|null $e
 	 */
-	public function __construct(IResponse $response) {
-		$this->setStatusCode($response->getStatusCode());
-		$this->setContent($response->getBody());
-		$this->setHeaders($response->getHeaders());
+	public function __construct(?IResponse $response, ?BadResponseException $e = null) {
+		if (!is_null($response)) {
+			$this->setStatusCode($response->getStatusCode());
+			$this->setContent($response->getBody());
+			$this->setHeaders($response->getHeaders());
+		}
+
+		if (!is_null($e)) {
+			$this->setException($e);
+		}
 
 		$this->generateMeta();
 	}
@@ -266,6 +278,33 @@ class NC21RequestResult implements JsonSerializable {
 			}
 		} catch (RequestContentException $e) {
 		}
+	}
+
+
+	/**
+	 * @param BadResponseException $e
+	 *
+	 * @return self
+	 */
+	public function setException(BadResponseException $e): self {
+		$this->exception = $e;
+		$this->setStatusCode($e->getResponse()->getStatusCode());
+
+		return $this;
+	}
+
+	/**
+	 * @return BadResponseException
+	 */
+	public function getException(): BadResponseException {
+		return $this->exception;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasException(): bool {
+		return (!is_null($this->exception));
 	}
 
 

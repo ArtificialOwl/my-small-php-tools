@@ -36,6 +36,7 @@ use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21RequestResult;
 use daita\MySmallPhpTools\Model\Request;
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use OC;
 use OCP\Http\Client\IClientService;
 use OCP\Http\Client\IResponse;
@@ -75,10 +76,11 @@ trait TNC21Request {
 
 	/**
 	 * @param NC21Request $request
+	 * @param bool $exceptionOnIssue
 	 *
 	 * @throws RequestNetworkException
 	 */
-	public function doRequest(NC21Request $request): void {
+	public function doRequest(NC21Request $request, bool $exceptionOnIssue = true): void {
 		$request->setClient(
 			$this->clientService()
 				 ->newClient()
@@ -93,6 +95,8 @@ trait TNC21Request {
 				$response = $this->useClient($request);
 				$request->setResult(new NC21RequestResult($response));
 				break;
+			} catch (ClientException $e) {
+				$request->setResult(new NC21RequestResult(null, $e));
 			} catch (Exception $e) {
 				$this->exception($e, self::$DEBUG, ['request' => $request]);
 			}
@@ -100,7 +104,7 @@ trait TNC21Request {
 
 		$this->debug('doRequest done', ['request' => $request]);
 
-		if (!$request->hasResult()) {
+		if ($exceptionOnIssue && (!$request->hasResult() || $request->getResult()->hasException())) {
 			throw new RequestNetworkException();
 		}
 	}
