@@ -110,14 +110,14 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param string $id
 	 */
 	public function limitToIdString(string $id): void {
-		$this->limitToDBField('id', $id, false);
+		$this->limitToDBField('id', $id, true);
 	}
 
 	/**
 	 * @param string $userId
 	 */
 	public function limitToUserId(string $userId): void {
-		$this->limitToDBField('user_id', $userId, false);
+		$this->limitToDBField('user_id', $userId, true);
 	}
 
 	/**
@@ -187,7 +187,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	public function limitToDBField(string $field, string $value, bool $cs = true, string $alias = '') {
+	public function limitToDBField(string $field, string $value, bool $cs = true, string $alias = ''): void {
 		$expr = $this->exprLimitToDBField($field, $value, true, $cs, $alias);
 
 		$this->andWhere($expr);
@@ -200,8 +200,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	public function filterDBField(string $field, string $value, bool $cs = true, string $alias = ''
-	) {
+	public function filterDBField(string $field, string $value, bool $cs = true, string $alias = ''): void {
 		$expr = $this->exprLimitToDBField($field, $value, false, $cs, $alias);
 		$this->andWhere($expr);
 	}
@@ -250,9 +249,8 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	public function limitToDBFieldArray(
-		string $field, array $values, bool $cs = true, string $alias = ''
-	) {
+	public function limitToDBFieldArray(string $field, array $values, bool $cs = true, string $alias = ''
+	): void {
 		$expr = $this->exprLimitToDBFieldArray($field, $values, true, $cs, $alias);
 		$this->andWhere($expr);
 	}
@@ -264,9 +262,8 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param bool $cs - case sensitive
 	 * @param string $alias
 	 */
-	public function filterDBFieldArray(
-		string $field, string $value, bool $cs = true, string $alias = ''
-	) {
+	public function filterDBFieldArray(string $field, string $value, bool $cs = true, string $alias = ''
+	): void {
 		$expr = $this->exprLimitToDBField($field, $value, false, $cs, $alias);
 		$this->andWhere($expr);
 	}
@@ -322,7 +319,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param int $value
 	 * @param string $alias
 	 */
-	public function limitToDBFieldInt(string $field, int $value, string $alias = '') {
+	public function limitToDBFieldInt(string $field, int $value, string $alias = ''): void {
 		$expr = $this->exprLimitToDBFieldInt($field, $value, $alias, true);
 		$this->andWhere($expr);
 	}
@@ -333,7 +330,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param int $value
 	 * @param string $alias
 	 */
-	public function filterDBFieldInt(string $field, int $value, string $alias = '') {
+	public function filterDBFieldInt(string $field, int $value, string $alias = ''): void {
 		$expr = $this->exprLimitToDBFieldInt($field, $value, $alias, false);
 		$this->andWhere($expr);
 	}
@@ -369,11 +366,10 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	/**
 	 * @param string $field
 	 */
-	public function limitToDBFieldEmpty(string $field) {
+	public function limitToDBFieldEmpty(string $field): void {
 		$expr = $this->expr();
-		$pf =
-			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-															  . '.' : '';
+		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
+																. '.' : '';
 		$field = $pf . $field;
 
 		$this->andWhere($expr->eq($field, $this->createNamedParameter('')));
@@ -383,11 +379,10 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	/**
 	 * @param string $field
 	 */
-	public function filterDBFieldEmpty(string $field) {
+	public function filterDBFieldEmpty(string $field): void {
 		$expr = $this->expr();
-		$pf =
-			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-															  . '.' : '';
+		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
+																. '.' : '';
 		$field = $pf . $field;
 
 		$this->andWhere($expr->neq($field, $this->createNamedParameter('')));
@@ -399,11 +394,10 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param DateTime $date
 	 * @param bool $orNull
 	 */
-	public function limitToDBFieldDateTime(string $field, DateTime $date, bool $orNull = false) {
+	public function limitToDBFieldDateTime(string $field, DateTime $date, bool $orNull = false): void {
 		$expr = $this->expr();
-		$pf =
-			($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-															  . '.' : '';
+		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
+																. '.' : '';
 		$field = $pf . $field;
 
 		$orX = $expr->orX();
@@ -425,7 +419,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 *
 	 * @throws DateTimeException
 	 */
-	public function limitToSince(int $timestamp, string $field) {
+	public function limitToSince(int $timestamp, string $field): void {
 		try {
 			$dTime = new DateTime();
 			$dTime->setTimestamp($timestamp);
@@ -450,11 +444,10 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 * @param string $field
 	 * @param string $value
 	 */
-	public function searchInDBField(string $field, string $value) {
+	public function searchInDBField(string $field, string $value): void {
 		$expr = $this->expr();
 
-		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-																. '.' : '';
+		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias() . '.' : '';
 		$field = $pf . $field;
 
 		$this->andWhere($expr->iLike($field, $this->createNamedParameter($value)));
@@ -471,7 +464,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 	 */
 	public function exprFieldWithinJsonFormat(
 		IQueryBuilder $qb, string $field, string $fieldRight, string $alias = ''
-	) {
+	): string {
 		$func = $qb->func();
 		$expr = $qb->expr();
 
@@ -590,6 +583,7 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 
 		return $method($data, $this, $object, $params);
 	}
+
 
 	/**
 	 * @param callable $method
