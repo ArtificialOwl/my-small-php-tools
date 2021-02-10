@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -31,6 +32,9 @@ declare(strict_types=1);
 namespace daita\MySmallPhpTools\Traits;
 
 
+use JsonSerializable;
+
+
 /**
  * Trait TAsync
  *
@@ -44,7 +48,7 @@ trait TAsync {
 	 *
 	 * @param string $result
 	 */
-	public function async(string $result = '') {
+	public function async(string $result = ''): void {
 		if (ob_get_contents() !== false) {
 			ob_end_clean();
 		}
@@ -57,6 +61,13 @@ trait TAsync {
 		header('Content-Length: ' . $size);
 		ob_end_flush();
 		flush();
+	}
+
+	/**
+	 * @param JsonSerializable $obj
+	 */
+	public function asyncObj(JsonSerializable $obj): void {
+		$this->async(json_encode($obj));
 	}
 
 }

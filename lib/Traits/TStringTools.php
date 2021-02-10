@@ -114,5 +114,21 @@ trait TStringTools {
 		return substr($str1, 0, $i);
 	}
 
+
+	/**
+	 * @param string $line
+	 * @param array $params
+	 *
+	 * @return string
+	 */
+	protected function feedStringWithParams(string $line, array $params): string {
+		$ak = array_keys($params);
+		foreach ($ak as $k) {
+			$line = str_replace('{' . $k . '}', $params[$k], $line);
+		}
+
+		return $line;
+	}
+
 }
 

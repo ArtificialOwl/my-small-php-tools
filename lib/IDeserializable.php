@@ -29,56 +29,18 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
+namespace daita\MySmallPhpTools;
 
 
-use daita\MySmallPhpTools\Exceptions\InvalidItemException;
-use daita\MySmallPhpTools\Model\Nextcloud\nc21\INC21Convert;
-
-
-/**
- * Trait TNC21Convert
- *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
- */
-trait TNC21Convert {
-
+interface IDeserializable {
 
 	/**
 	 * @param array $data
-	 * @param string $class
 	 *
-	 * @return INC21Convert
-	 * @throws InvalidItemException
+	 * @return self
 	 */
-	public function convert(array $data, string $class): INC21Convert {
-		if ($class instanceof INC21Convert) {
-			throw new InvalidItemException(get_class($class) . ' does not implement INC21Convert');
-		}
+	public function import(array $data): self;
 
-		/** @var INC21Convert $item */
-		$item = new $class;
-		$item->import($data);
-
-		return $item;
-	}
-
-
-	/**
-	 * @param array $data
-	 * @param string $class
-	 *
-	 * @return INC21Convert[]
-	 * @throws InvalidItemException
-	 */
-	public function convertArray(array $data, string $class): array {
-		$arr = [];
-		foreach ($data as $entry) {
-			$arr[] = $this->convert($entry, $class);
-		}
-
-		return $arr;
-	}
-
+	
 }
 

@@ -32,6 +32,7 @@ namespace daita\MySmallPhpTools\Model;
 
 use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
+use daita\MySmallPhpTools\IDeserializable;
 use daita\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
@@ -227,11 +228,21 @@ class SimpleDataStore implements JsonSerializable {
 
 	/**
 	 * @param string $key
+	 * @param string $class
 	 *
 	 * @return JsonSerializable
 	 */
-	public function gObj(string $key): JsonSerializable {
-		return $this->getObj($key, $this->data);
+	public function gObj(string $key, string $class = ''): JsonSerializable {
+		$ret = $this->getObj($key, $this->data);
+		if (is_array($ret) && $class !== '') {
+			$item = new $class();
+			if ($item instanceof IDeserializable) {
+				$item->import($ret);
+				$ret = $item;
+			}
+		}
+
+		return $ret;
 	}
 
 	/**
