@@ -30,10 +30,12 @@
 namespace daita\MySmallPhpTools\Model;
 
 
+use daita\MySmallPhpTools\Exceptions\InvalidItemException;
 use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
 use daita\MySmallPhpTools\IDeserializable;
 use daita\MySmallPhpTools\Traits\TArrayTools;
+use Exception;
 use JsonSerializable;
 
 
@@ -231,15 +233,21 @@ class SimpleDataStore implements JsonSerializable {
 	 * @param string $class
 	 *
 	 * @return JsonSerializable
+	 * @throws InvalidItemException
 	 */
 	public function gObj(string $key, string $class = ''): JsonSerializable {
-		$ret = $this->getObj($key, $this->data);
-		if (is_array($ret) && $class !== '') {
-			$item = new $class();
-			if ($item instanceof IDeserializable) {
+		try {
+			$ret = $this->getObj($key, $this->data);
+			if (is_array($ret) && $class !== '') {
+				$item = new $class();
+				if (!$item instanceof IDeserializable) {
+					throw new Exception();
+				}
 				$item->import($ret);
 				$ret = $item;
 			}
+		} catch (Exception $e) {
+			throw new InvalidItemException();
 		}
 
 		return $ret;
