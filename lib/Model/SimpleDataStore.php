@@ -33,9 +33,9 @@ namespace daita\MySmallPhpTools\Model;
 use daita\MySmallPhpTools\Exceptions\InvalidItemException;
 use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
+use daita\MySmallPhpTools\Exceptions\UnknownTypeException;
 use daita\MySmallPhpTools\IDeserializable;
 use daita\MySmallPhpTools\Traits\TArrayTools;
-use Exception;
 use JsonSerializable;
 
 
@@ -234,23 +234,30 @@ class SimpleDataStore implements JsonSerializable {
 	 *
 	 * @return null|JsonSerializable
 	 * @throws InvalidItemException
+	 * @throws ItemNotFoundException
+	 * @throws UnknownTypeException
 	 */
 	public function gObj(string $key, string $class = ''): ?JsonSerializable {
-		try {
-			$ret = $this->getObj($key, $this->data);
-			if (is_array($ret) && $class !== '') {
-				$item = new $class();
-				if (!$item instanceof IDeserializable) {
-					throw new Exception();
-				}
-				$item->import($ret);
-				$ret = $item;
-			}
-		} catch (Exception $e) {
-			throw new InvalidItemException();
+		$type = $this->typeOf($key);
+
+		if ($type === self::$TYPE_SERIALIZABLE || $type === self::$TYPE_NULL) {
+			return $this->getObj($key, $this->data);
 		}
 
-		return $ret;
+		if ($type === self::$TYPE_ARRAY && $class !== '') {
+			$item = new $class();
+			if (!$item instanceof IDeserializable && !$item instanceof JsonSerializable) {
+				throw new InvalidItemException(
+					$class . ' does not implement IDeserializable and JsonSerializable'
+				);
+			}
+
+			$item->import($this->getArray($key, $this->data));
+
+			return $item;
+		}
+
+		throw new InvalidItemException();
 	}
 
 	/**

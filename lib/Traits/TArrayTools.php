@@ -32,7 +32,9 @@ namespace daita\MySmallPhpTools\Traits;
 
 
 use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
+use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
 use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
+use daita\MySmallPhpTools\Exceptions\UnknownTypeException;
 use Exception;
 use JsonSerializable;
 
@@ -42,6 +44,14 @@ use JsonSerializable;
  * @package daita\MySmallPhpTools\Traits
  */
 trait TArrayTools {
+
+
+	static $TYPE_NULL = 'Null';
+	static $TYPE_STRING = 'String';
+	static $TYPE_ARRAY = 'Array';
+	static $TYPE_BOOLEAN = 'Boolean';
+	static $TYPE_INTEGER = 'Integer';
+	static $TYPE_SERIALIZABLE = 'Serializable';
 
 
 	/**
@@ -208,9 +218,9 @@ trait TArrayTools {
 	 * @param array $arr
 	 * @param JsonSerializable|null $default
 	 *
-	 * @return JsonSerializable|mixed|null
+	 * @return mixed
 	 */
-	protected function getObj(string $k, array $arr, ?JsonSerializable $default = null) {
+	protected function getObj(string $k, array $arr, ?JsonSerializable $default = null): ?JsonSerializable {
 		if ($arr === null) {
 			return $default;
 		}
@@ -326,6 +336,46 @@ trait TArrayTools {
 		}
 
 		throw new ArrayNotFoundException();
+	}
+
+
+	/**
+	 * @param string $key
+	 *
+	 * @return string
+	 * @throws ItemNotFoundException
+	 * @throws UnknownTypeException
+	 */
+	protected function typeOf(string $key): string {
+		if (!array_key_exists($key, $this->data)) {
+			throw new ItemNotFoundException();
+		}
+
+		if (is_null($this->data[$key])) {
+			return self::$TYPE_NULL;
+		}
+
+		if (is_string($this->data[$key])) {
+			return self::$TYPE_STRING;
+		}
+
+		if (is_array($this->data[$key])) {
+			return self::$TYPE_ARRAY;
+		}
+
+		if (is_bool($this->data[$key])) {
+			return self::$TYPE_BOOLEAN;
+		}
+
+		if (is_int($this->data[$key])) {
+			return self::$TYPE_INTEGER;
+		}
+
+		if ($this->data[$key] instanceof JsonSerializable) {
+			return self::$TYPE_SERIALIZABLE;
+		}
+
+		throw new UnknownTypeException();
 	}
 
 
