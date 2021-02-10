@@ -232,10 +232,10 @@ class SimpleDataStore implements JsonSerializable {
 	 * @param string $key
 	 * @param string $class
 	 *
-	 * @return JsonSerializable
+	 * @return null|JsonSerializable
 	 * @throws InvalidItemException
 	 */
-	public function gObj(string $key, string $class = ''): JsonSerializable {
+	public function gObj(string $key, string $class = ''): ?JsonSerializable {
 		try {
 			$ret = $this->getObj($key, $this->data);
 			if (is_array($ret) && $class !== '') {

@@ -208,9 +208,9 @@ trait TArrayTools {
 	 * @param array $arr
 	 * @param JsonSerializable|null $default
 	 *
-	 * @return JsonSerializable|null
+	 * @return JsonSerializable|mixed|null
 	 */
-	protected function getObj(string $k, array $arr, ?JsonSerializable $default = null): ?JsonSerializable {
+	protected function getObj(string $k, array $arr, ?JsonSerializable $default = null) {
 		if ($arr === null) {
 			return $default;
 		}
