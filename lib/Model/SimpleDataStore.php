@@ -51,7 +51,7 @@ class SimpleDataStore implements JsonSerializable {
 
 
 	/** @var array */
-	private $data = [];
+	private $data;
 
 
 	/**
@@ -59,7 +59,11 @@ class SimpleDataStore implements JsonSerializable {
 	 *
 	 * @param array $data
 	 */
-	public function __construct(array $data = []) {
+	public function __construct(?array $data = []) {
+		if (!is_array($data)) {
+			$data = [];
+		}
+
 		$this->data = $data;
 	}
 
@@ -238,7 +242,11 @@ class SimpleDataStore implements JsonSerializable {
 	 * @throws UnknownTypeException
 	 */
 	public function gObj(string $key, string $class = ''): ?JsonSerializable {
-		$type = $this->typeOf($key);
+		try {
+			$type = $this->typeOf($key);
+		} catch (ItemNotFoundException $e) {
+			return null;
+		}
 
 		if ($type === self::$TYPE_SERIALIZABLE || $type === self::$TYPE_NULL) {
 			return $this->getObj($key, $this->data);
@@ -320,9 +328,10 @@ class SimpleDataStore implements JsonSerializable {
 	 *
 	 * @return bool
 	 */
-	public function haveKey(string $key): bool {
+	public function hasKey(string $key): bool {
 		return (array_key_exists($key, $this->data));
 	}
+
 
 	/**
 	 * @param array $keys
@@ -332,7 +341,7 @@ class SimpleDataStore implements JsonSerializable {
 	 * @return bool
 	 * @throws MalformedArrayException
 	 */
-	public function haveKeys(array $keys, bool $must = false): bool {
+	public function hasKeys(array $keys, bool $must = false): bool {
 		foreach ($keys as $key) {
 			if (!$this->haveKey($key)) {
 				if ($must) {
@@ -344,6 +353,29 @@ class SimpleDataStore implements JsonSerializable {
 		}
 
 		return true;
+	}
+
+
+	/**
+	 * @param array $keys
+	 * @param bool $must
+	 *
+	 * @return bool
+	 * @throws MalformedArrayException
+	 * @deprecated
+	 */
+	public function haveKeys(array $keys, bool $must = false): bool {
+		return $this->hasKeys($keys, $must);
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return bool
+	 * @deprecated
+	 */
+	public function haveKey(string $key): bool {
+		return $this->hasKey($key);
 	}
 
 

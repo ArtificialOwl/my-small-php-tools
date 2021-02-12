@@ -347,7 +347,7 @@ trait TArrayTools {
 	 * @throws UnknownTypeException
 	 */
 	protected function typeOf(string $key): string {
-		if (!array_key_exists($key, $this->data)) {
+		if (!$this->hasKey($key)) {
 			throw new ItemNotFoundException();
 		}
 
