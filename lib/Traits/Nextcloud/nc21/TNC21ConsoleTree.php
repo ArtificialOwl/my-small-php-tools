@@ -87,12 +87,16 @@ trait TNC21ConsoleTree {
 			}
 
 			for ($i = 1; $i <= $height; $i++) {
+				$draw = $method($node->getItem(), $i);
+				if ($draw === '') {
+					continue;
+				}
 				if ($i === 1) {
 					$output->write($line);
 				} else {
 					$output->write($empty);
 				}
-				$output->writeln($method($node->getItem(), $i));
+				$output->writeln($draw);
 			}
 		}
 	}
