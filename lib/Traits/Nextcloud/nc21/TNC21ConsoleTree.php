@@ -48,8 +48,9 @@ trait TNC21ConsoleTree {
 	 * @param NC21TreeNode $root
 	 * @param callable $method
 	 * @param int $height
+	 * @param int $inter
 	 */
-	public function drawTree(NC21TreeNode $root, callable $method, int $height = 1): void {
+	public function drawTree(NC21TreeNode $root, callable $method, int $height = 1, int $inter = 0): void {
 		$output = new ConsoleOutput();
 
 		while (true) {
@@ -63,6 +64,8 @@ trait TNC21ConsoleTree {
 
 			$line = $empty = '';
 			foreach ($path as $k => $i) {
+				$line .= ' ';
+				$empty .= ' ';
 				if ($k === array_key_last($path)) {
 					if ($i->haveNext()) {
 						$line .= '├';
@@ -71,8 +74,8 @@ trait TNC21ConsoleTree {
 						$line .= '└';
 						$empty .= ' ';
 					}
-					$line .= '──';
-					$empty .= '  ';
+					$line .= '── ';
+					$empty .= '   ';
 				} else {
 					if ($i->haveNext()) {
 						$line .= '│';
@@ -97,6 +100,13 @@ trait TNC21ConsoleTree {
 					$output->write($empty);
 				}
 				$output->writeln($draw);
+			}
+
+			for ($i = 0; $i < $inter; $i++) {
+				if ($node->haveNext()) {
+					$empty .= ' │';
+				}
+				$output->writeln($empty);
 			}
 		}
 	}
