@@ -59,6 +59,9 @@ class NC21TreeNode {
 	/** @var bool */
 	private $displayed = false;
 
+	/** @var bool */
+	private $splited = false;
+
 
 	/**
 	 * NC21TreeNode constructor.
@@ -168,6 +171,7 @@ class NC21TreeNode {
 			return $this;
 		}
 
+		$this->splited = true;
 		if ($this->initCurrentChild()) {
 			$next = $this->getCurrentChild()->current();
 			if (!is_null($next)) {
@@ -226,6 +230,13 @@ class NC21TreeNode {
 	 */
 	private function isDisplayed(): bool {
 		return $this->displayed;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isSplited(): bool {
+		return $this->splited;
 	}
 
 }

@@ -50,7 +50,23 @@ trait TNC21ConsoleTree {
 	 * @param int $height
 	 * @param int $inter
 	 */
-	public function drawTree(NC21TreeNode $root, callable $method, int $height = 1, int $inter = 0): void {
+	public function drawTree(
+		NC21TreeNode $root,
+		callable $method,
+		array $config = [
+			'height'       => 1,
+			'node-spacing' => 0,
+			'item-spacing' => 0,
+		]
+	): void {
+		$config = array_merge(
+			[
+				'height'       => 1,
+				'node-spacing' => 0,
+				'item-spacing' => 0
+			], $config
+		);
+
 		$output = new ConsoleOutput();
 
 		while (true) {
@@ -89,7 +105,7 @@ trait TNC21ConsoleTree {
 				}
 			}
 
-			for ($i = 1; $i <= $height; $i++) {
+			for ($i = 1; $i <= $config['height']; $i++) {
 				$draw = $method($node->getItem(), $i);
 				if ($draw === '') {
 					continue;
@@ -102,10 +118,17 @@ trait TNC21ConsoleTree {
 				$output->writeln($draw);
 			}
 
-			for ($i = 0; $i < $inter; $i++) {
-				if ($node->haveNext()) {
-					$empty .= ' │';
+			if ($node->haveNext()) {
+				$empty .= ' │';
+			}
+
+			if (!$node->isSplited() && $node->haveNext()) {
+				for ($i = 0; $i < $config['node-spacing']; $i++) {
+					$output->writeln($empty);
 				}
+			}
+			
+			for ($i = 0; $i < $config['item-spacing']; $i++) {
 				$output->writeln($empty);
 			}
 		}
