@@ -81,7 +81,7 @@ trait TNC21Controller {
 			$data = array_merge(['status' => 1], $data);
 		}
 
-		return new DataResponse($data, $code);
+		return new DataResponse(json_decode(json_encode($data), true), $code);
 	}
 
 
@@ -94,7 +94,7 @@ trait TNC21Controller {
 	public function successObj(JsonSerializable $data, int $status = Http::STATUS_OK): DataResponse {
 		$this->debug('success', ['obj' => $data]);
 
-		return new DataResponse($data, $status);
+		return new DataResponse(json_decode(json_encode($data), true), $status);
 	}
 
 

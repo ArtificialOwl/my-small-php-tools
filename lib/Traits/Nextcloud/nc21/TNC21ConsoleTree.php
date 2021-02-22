@@ -47,8 +47,7 @@ trait TNC21ConsoleTree {
 	/**
 	 * @param NC21TreeNode $root
 	 * @param callable $method
-	 * @param int $height
-	 * @param int $inter
+	 * @param array $config
 	 */
 	public function drawTree(
 		NC21TreeNode $root,
@@ -127,7 +126,7 @@ trait TNC21ConsoleTree {
 					$output->writeln($empty);
 				}
 			}
-			
+
 			for ($i = 0; $i < $config['item-spacing']; $i++) {
 				$output->writeln($empty);
 			}
