@@ -59,11 +59,17 @@ trait TNC20Logger {
 
 
 	/**
+	 * - tip: $level and be $serializable
+	 *
 	 * @param Exception $e
-	 * @param int $level
+	 * @param int|array $level
 	 * @param array $serializable
 	 */
-	public function exception(Exception $e, int $level = 3, array $serializable = []): void {
+	public function exception(Exception $e, $level = 3, array $serializable = []): void {
+		if (is_array($level) && empty($serializable)) {
+			$serializable = $level;
+			$level = 3;
+		}
 		$message = '';
 		if (!empty($serializable)) {
 			$message = json_encode($serializable);

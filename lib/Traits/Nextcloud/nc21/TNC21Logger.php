@@ -105,10 +105,15 @@ trait TNC21Logger {
 
 	/**
 	 * @param Exception $e
-	 * @param int $level
+	 * @param int|array $level
 	 * @param array $serializable
 	 */
-	public function exception(Exception $e, int $level = 3, array $serializable = []): void {
+	public function exception(Exception $e, $level = 3, array $serializable = []): void {
+		if (is_array($level) && empty($serializable)) {
+			$serializable = $level;
+			$level = 3;
+		}
+
 		$message = '';
 		if (!empty($serializable)) {
 			$message = json_encode($serializable);
@@ -122,7 +127,7 @@ trait TNC21Logger {
 		if ($level === self::$DEBUG) {
 			$level = (int)$this->appConfig('debug_level');
 		}
-		
+
 		$this->logger()
 			 ->log(
 				 $level,

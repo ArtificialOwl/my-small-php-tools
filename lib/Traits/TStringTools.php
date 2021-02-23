@@ -130,5 +130,39 @@ trait TStringTools {
 		return $line;
 	}
 
+
+	/**
+	 * @param int $words
+	 *
+	 * @return string
+	 */
+	public function generateRandomSentence(int $words = 5): string {
+		$sentence = [];
+		for ($i = 0; $i < $words; $i++) {
+			$sentence[] = $this->generateRandomWord(rand(2, 12));
+		}
+
+		return implode(' ', $sentence);
+	}
+
+
+	/**
+	 * @param int $length
+	 *
+	 * @return string
+	 */
+	public function generateRandomWord(int $length = 8): string {
+		$c = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v'];
+		$v = ['a', 'e', 'i', 'o', 'u', 'y'];
+
+		$word = [];
+		for ($i = 0; $i <= ($length / 2); $i++) {
+			$word[] = $c[array_rand($c)];
+			$word[] = $v[array_rand($v)];
+		}
+
+		return implode('', $word);
+	}
+
 }
 
