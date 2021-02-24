@@ -41,6 +41,7 @@ use Exception;
 use OC;
 use OC\DB\QueryBuilder\QueryBuilder;
 use OC\SystemConfig;
+use OCA\Circles\Db\CoreRequestBuilder;
 use OCP\DB\QueryBuilder\ICompositeExpression;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
@@ -604,6 +605,38 @@ class NC21ExtendedQueryBuilder extends QueryBuilder {
 		$cursor->closeCursor();
 
 		return $rows;
+	}
+
+
+	/**
+	 * @param array $fields
+	 * @param string $alias
+	 * @param string $prefix
+	 * @param array $default
+	 *
+	 * @return $this
+	 */
+	public function generateSelectAlias(
+		array $fields,
+		string $alias,
+		string $prefix,
+		array $default = []
+	): self {
+
+		foreach ($fields as $field) {
+			if (array_key_exists($field, $default)) {
+				$left = $this->createFunction(
+					'COALESCE(' . $alias . '.' . $field
+					. ', ' . $this->createNamedParameter($default[$field]) . ')'
+				);
+			} else {
+				$left = $alias . '.' . $field;
+			}
+
+			$this->selectAlias($left, $prefix . $field);
+		}
+
+		return $this;
 	}
 
 }

@@ -74,7 +74,7 @@ trait TNC21LocalSignatory {
 		}
 
 		if (!$generate) {
-			throw new SignatoryException();
+			throw new SignatoryException('signatory not found');
 		}
 
 		$this->createSimpleSignatory($signatory);
