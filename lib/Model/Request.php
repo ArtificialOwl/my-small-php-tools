@@ -84,6 +84,9 @@ class Request implements JsonSerializable {
 	private $verifyPeer = true;
 
 	/** @var bool */
+	private $httpErrorsAllowed = false;
+
+	/** @var bool */
 	private $followLocation = true;
 
 	/** @var array */
@@ -343,6 +346,23 @@ class Request implements JsonSerializable {
 	 */
 	public function isVerifyPeer(): bool {
 		return $this->verifyPeer;
+	}
+
+
+	/**
+	 * @param bool $httpErrorsAllowed
+	 */
+	public function setHttpErrorsAllowed(bool $httpErrorsAllowed): Request {
+		$this->httpErrorsAllowed = $httpErrorsAllowed;
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isHttpErrorsAllowed(): bool {
+		return $this->httpErrorsAllowed;
 	}
 
 

@@ -127,9 +127,10 @@ trait TNC21Request {
 	 */
 	private function generationClientOptions(NC21Request $request) {
 		$options = [
-			'headers' => $request->getHeaders(),
-			'cookies' => $request->getCookies(),
-			'verify'  => $request->isVerifyPeer()
+			'headers'     => $request->getHeaders(),
+			'cookies'     => $request->getCookies(),
+			'verify'      => $request->isVerifyPeer(),
+			'http_errors' => !$request->isHttpErrorsAllowed()
 		];
 
 		if (!empty($request->getData())) {
