@@ -37,7 +37,6 @@ use daita\MySmallPhpTools\Exceptions\SignatoryException;
 use daita\MySmallPhpTools\Exceptions\SignatureException;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
 use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
-use daita\MySmallPhpTools\Model\Request;
 
 
 /**
@@ -77,26 +76,32 @@ trait TNC21Signatory {
 	 * @param NC21Signatory $signatory
 	 * @param string $keyId
 	 * @param array $params
+	 * @param NC21Request|null $request
 	 *
 	 * @throws SignatoryException
 	 */
 	public function downloadSignatory(
 		NC21Signatory $signatory,
 		string $keyId = '',
-		array $params = []
+		array $params = [],
+		?NC21Request $request = null
 	): void {
-		$request = new NC21Request('', Request::TYPE_GET);
+
+		if (is_null($request)) {
+			$request = new NC21Request();
+			$request->setFollowLocation(true);
+			$request->setTimeout(5);
+		}
+
 		$request->basedOnUrl(($keyId !== '') ? $keyId : $signatory->getId());
 		$request->setParams($params);
 		$request->addHeader('Accept', 'application/ld+json');
-		$request->setFollowLocation(true);
-		$request->setLocalAddressAllowed(true);
-		$request->setTimeout(5);
 
 		try {
 			$this->updateSignatory($signatory, $this->retrieveJson($request), $keyId);
 		} catch (RequestNetworkException $e) {
-			throw new SignatoryException('network issue - ' . $e->getMessage());
+			$this->debug('network issue while downloading Signatory', ['request' => $request]);
+			throw new SignatoryException('network issue: ' . $e->getMessage());
 		}
 	}
 
