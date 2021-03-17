@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -9,7 +10,7 @@ declare(strict_types=1);
  * later. See the COPYING file.
  *
  * @author Maxence Lange <maxence@artificial-owl.com>
- * @copyright 2018, Maxence Lange <maxence@artificial-owl.com>
+ * @copyright 2021, Maxence Lange <maxence@artificial-owl.com>
  * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
@@ -91,6 +92,7 @@ class NC21Signature {
 		$signedRequest->setHost($host);
 
 		$this->verifyIncomingRequestTime($signedRequest);
+		$this->verifyIncomingRequestContent($signedRequest);
 		$this->setIncomingSignatureHeader($signedRequest);
 		$this->setIncomingClearSignature($signedRequest);
 		$this->parseIncomingSignatureHeader($signedRequest);
@@ -145,6 +147,23 @@ class NC21Signature {
 
 	/**
 	 * @param NC21SignedRequest $signedRequest
+	 *
+	 * @throws SignatureException
+	 */
+	private function verifyIncomingRequestContent(NC21SignedRequest $signedRequest): void {
+		$request = $signedRequest->getIncomingRequest();
+
+		if (strlen($signedRequest->getBody()) !== (int)$request->getHeader('content-length')) {
+			throw new SignatureException('issue with content-length');
+		}
+
+		if ($signedRequest->getDigest() !== $request->getHeader('digest')) {
+			throw new SignatureException('issue with digest');
+		}
+	}
+
+	/**
+	 * @param NC21SignedRequest $signedRequest
 	 */
 	private function setIncomingSignatureHeader(NC21SignedRequest $signedRequest): void {
 		$sign = [];
@@ -171,10 +190,15 @@ class NC21Signature {
 	 */
 	private function setIncomingClearSignature(NC21SignedRequest $signedRequest): void {
 		$request = $signedRequest->getIncomingRequest();
-		$target = strtolower($request->getMethod()) . " " . $request->getRequestUri();
+		$headers = explode(' ', $signedRequest->getSignatureHeader()->g('headers'));
+		if (!empty(array_diff(['content-length', 'date', 'digest', 'host'], $headers))) {
+			throw new Exception('missing elements in \'headers\'');
+		}
 
+		$target = strtolower($request->getMethod()) . " " . $request->getRequestUri();
 		$estimated = ['(request-target): ' . $target];
-		foreach (explode(' ', $signedRequest->getSignatureHeader()->g('headers')) as $key) {
+
+		foreach ($headers as $key) {
 			$value = $request->getHeader($key);
 			if ($key === 'host') {
 				$value = $signedRequest->getHost();
@@ -182,7 +206,6 @@ class NC21Signature {
 
 			$estimated[] = $key . ': ' . $value;
 		}
-
 		$signedRequest->setClearSignature(implode("\n", $estimated));
 	}
 
@@ -195,7 +218,7 @@ class NC21Signature {
 	 */
 	private function parseIncomingSignatureHeader(NC21SignedRequest $signedRequest): void {
 		$data = $signedRequest->getSignatureHeader();
-		$data->haveKeys(['keyId', 'headers', 'signature'], true);
+		$data->hasKeys(['keyId', 'headers', 'signature'], true);
 
 		$signedRequest->setOrigin($this->getKeyOrigin($data->g('keyId')));
 		$signedRequest->setSignedSignature($data->g('signature'));
@@ -210,9 +233,6 @@ class NC21Signature {
 	 */
 	private function verifyIncomingRequestSignature(NC21SignedRequest $signedRequest) {
 		$data = $signedRequest->getSignatureHeader();
-		if ($data->haveKey('digest') && $data->g('digest') !== $signedRequest->getDigest()) {
-			throw new SignatureException('issue with digest');
-		}
 
 		try {
 			$signedRequest->setSignatory($this->retrieveSignatory($data->g('keyId'), false));
