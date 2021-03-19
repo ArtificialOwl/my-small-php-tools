@@ -63,7 +63,6 @@ class NC21Signature {
 
 
 	use TNC21Signatory;
-	use TNC21Setup;
 
 
 	/** @var int */
