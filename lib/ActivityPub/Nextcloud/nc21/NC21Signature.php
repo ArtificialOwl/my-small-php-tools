@@ -63,6 +63,7 @@ class NC21Signature {
 
 
 	use TNC21Signatory;
+	use TNC21Setup;
 
 
 	/** @var int */
@@ -157,7 +158,8 @@ class NC21Signature {
 			throw new SignatureException('issue with content-length');
 		}
 
-		if ($signedRequest->getDigest() !== $request->getHeader('digest')) {
+		if ($request->getHeader('digest') !== ''
+			&& $signedRequest->getDigest() !== $request->getHeader('digest')) {
 			throw new SignatureException('issue with digest');
 		}
 	}
@@ -191,7 +193,12 @@ class NC21Signature {
 	private function setIncomingClearSignature(NC21SignedRequest $signedRequest): void {
 		$request = $signedRequest->getIncomingRequest();
 		$headers = explode(' ', $signedRequest->getSignatureHeader()->g('headers'));
-		if (!empty(array_diff(['content-length', 'date', 'digest', 'host'], $headers))) {
+
+		$enforceHeaders = array_merge(
+			['content-length', 'date', 'host'],
+			$this->setupArray('enforceSignatureHeaders')
+		);
+		if (!empty(array_diff($enforceHeaders, $headers))) {
 			throw new Exception('missing elements in \'headers\'');
 		}
 
@@ -202,6 +209,9 @@ class NC21Signature {
 			$value = $request->getHeader($key);
 			if ($key === 'host') {
 				$value = $signedRequest->getHost();
+			}
+			if ($value === '') {
+				throw new SignatureException('empty elements in \'headers\'');
 			}
 
 			$estimated[] = $key . ': ' . $value;
@@ -282,6 +292,7 @@ class NC21Signature {
 			 ->s('digest', $signedRequest->getDigest())
 			 ->s('host', $request->getHost());
 
+		echo json_encode($data, JSON_PRETTY_PRINT);
 		$signedRequest->setSignatureHeader($data);
 	}
 

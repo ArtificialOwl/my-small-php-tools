@@ -65,7 +65,23 @@ trait TNC21Setup {
 		return $this->get($key, $this->_setup, $default);
 	}
 
+	/**
+	 * @param string $key
+	 * @param string $value
+	 *
+	 * @param string $default
+	 *
+	 * @return string
+	 */
+	public function setupArray(string $key, array $value = [], array $default = []): array {
+		if ($value !== '') {
+			$this->_setup[$key] = $value;
+		}
 
+		return $this->getArray($key, $this->_setup, $default);
+	}
+
+	
 	/**
 	 * @param string $key
 	 *
