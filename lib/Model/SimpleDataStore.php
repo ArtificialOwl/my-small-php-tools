@@ -69,6 +69,14 @@ class SimpleDataStore implements JsonSerializable {
 
 
 	/**
+	 * @param array $default
+	 */
+	public function default(array $default = []) {
+		$this->data = array_merge($default, $this->data);
+	}
+
+
+	/**
 	 * @param string $key
 	 * @param string $value
 	 *
