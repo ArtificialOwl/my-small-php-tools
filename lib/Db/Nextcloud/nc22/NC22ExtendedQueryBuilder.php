@@ -649,6 +649,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 		string $prefix,
 		array $default = []
 	): self {
+		$prefix = trim($prefix) . '_';
 
 		foreach ($fields as $field) {
 			if (array_key_exists($field, $default)) {

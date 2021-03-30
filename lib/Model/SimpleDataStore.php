@@ -250,7 +250,7 @@ class SimpleDataStore implements JsonSerializable {
 	 */
 	public function gObj(string $key, string $class = ''): ?JsonSerializable {
 		try {
-			$type = $this->typeOf($key);
+			$type = $this->typeOf($key, $this->data);
 		} catch (ItemNotFoundException $e) {
 			return null;
 		}

@@ -292,6 +292,39 @@ trait TArrayTools {
 	/**
 	 * @param string $k
 	 * @param array $arr
+	 *
+	 * @return bool
+	 */
+	public function validKey(string $k, array $arr): bool {
+		if ($arr === null) {
+			return false;
+		}
+
+		if (array_key_exists($k, $arr)) {
+			return true;
+		}
+
+		$subs = explode('.', $k, 2);
+		if (sizeof($subs) > 1) {
+			if (!array_key_exists($subs[0], $arr)) {
+				return false;
+			}
+
+			$r = $arr[$subs[0]];
+			if (!is_array($r)) {
+				return false;
+			}
+
+			return $this->validKey($subs[1], $r);
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * @param string $k
+	 * @param array $arr
 	 * @param array $import
 	 * @param array $default
 	 *
@@ -341,41 +374,57 @@ trait TArrayTools {
 
 	/**
 	 * @param string $key
+	 * @param array $arr
+	 * @param bool $root
 	 *
 	 * @return string
 	 * @throws ItemNotFoundException
 	 * @throws UnknownTypeException
 	 */
-	public function typeOf(string $key): string {
-		if (!$this->hasKey($key)) {
-			throw new ItemNotFoundException();
+	public function typeOf(string $key, array $arr, bool $root = true): string {
+		if (array_key_exists($key, $arr)) {
+			$item = $arr[$key];
+
+			if (is_null($item)) {
+				return self::$TYPE_NULL;
+			}
+
+			if (is_string($item)) {
+				return self::$TYPE_STRING;
+			}
+
+			if (is_array($item)) {
+				return self::$TYPE_ARRAY;
+			}
+
+			if (is_bool($item)) {
+				return self::$TYPE_BOOLEAN;
+			}
+
+			if (is_int($item)) {
+				return self::$TYPE_INTEGER;
+			}
+
+			if ($item instanceof JsonSerializable) {
+				return self::$TYPE_SERIALIZABLE;
+			}
+
+			throw new UnknownTypeException();
 		}
 
-		if (is_null($this->data[$key])) {
-			return self::$TYPE_NULL;
+		$subs = explode('.', $key, 2);
+		if (sizeof($subs) > 1) {
+			if (!array_key_exists($subs[0], $arr)) {
+				throw new ItemNotFoundException();
+			}
+
+			$r = $arr[$subs[0]];
+			if (is_array($r)) {
+				return $this->typeOf($subs[1], $r);
+			}
 		}
 
-		if (is_string($this->data[$key])) {
-			return self::$TYPE_STRING;
-		}
-
-		if (is_array($this->data[$key])) {
-			return self::$TYPE_ARRAY;
-		}
-
-		if (is_bool($this->data[$key])) {
-			return self::$TYPE_BOOLEAN;
-		}
-
-		if (is_int($this->data[$key])) {
-			return self::$TYPE_INTEGER;
-		}
-
-		if ($this->data[$key] instanceof JsonSerializable) {
-			return self::$TYPE_SERIALIZABLE;
-		}
-
-		throw new UnknownTypeException();
+		throw new ItemNotFoundException();
 	}
 
 
