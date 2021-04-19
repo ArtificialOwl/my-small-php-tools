@@ -112,7 +112,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 			$this->setFirstResult($offset);
 		}
 
-		if ($limit > -1) {
+		if ($limit > 0) {
 			$this->setMaxResults($limit);
 		}
 	}
@@ -347,8 +347,19 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 * @param int $value
 	 * @param string $alias
 	 */
+	public function limitToDBFieldInArray(string $field, array $values, string $alias = ''): void {
+		$expr = $this->exprLimitToDBFieldInArray($field, $values, $alias, true);
+		$this->andWhere($expr);
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param int $value
+	 * @param string $alias
+	 */
 	public function limitToDBFieldInt(string $field, int $value, string $alias = ''): void {
-		$expr = $this->exprLimitToDBFieldInt($field, $value, $alias, true);
+		$expr = $this->exprLimitToDBFieldInt($field, $value, true, $alias);
 		$this->andWhere($expr);
 	}
 
@@ -359,20 +370,20 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 * @param string $alias
 	 */
 	public function filterDBFieldInt(string $field, int $value, string $alias = ''): void {
-		$expr = $this->exprLimitToDBFieldInt($field, $value, $alias, false);
+		$expr = $this->exprLimitToDBFieldInt($field, $value, false, $alias);
 		$this->andWhere($expr);
 	}
 
 
 	/**
 	 * @param string $field
-	 * @param int $value
+	 * @param int $value1
 	 * @param string $alias
 	 * @param bool $eq
 	 *
 	 * @return string
 	 */
-	public function exprLimitToDBFieldInt(string $field, int $value, string $alias = '', bool $eq = true
+	public function exprLimitToDBFieldInt(string $field, int $value, bool $eq = true, string $alias = ''
 	): string {
 		$expr = $this->expr();
 
@@ -393,14 +404,46 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 	/**
 	 * @param string $field
+	 * @param int $value
+	 * @param string $alias
+	 * @param bool $eq
+	 *
+	 * @return string
 	 */
-	public function limitToDBFieldEmpty(string $field): void {
+	public function exprLimitToDBFieldInArray(
+		string $field, array $values, string $alias = '', bool $eq = true
+	): string {
 		$expr = $this->expr();
-		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias()
-																. '.' : '';
+
+		$pf = '';
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$pf = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.';
+		}
 		$field = $pf . $field;
 
-		$this->andWhere($expr->eq($field, $this->createNamedParameter('')));
+		$comp = 'eq';
+		if ($eq === false) {
+			$comp = 'neq';
+		}
+
+		return $expr->$comp($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_STR_ARRAY));
+	}
+
+
+	/**
+	 * @param string $field
+	 */
+	public function limitToDBFieldEmpty(string $field, bool $orNull = false): void {
+		$expr = $this->expr();
+		$pf = ($this->getType() === DBALQueryBuilder::SELECT) ? $this->getDefaultSelectAlias() . '.' : '';
+		$field = $pf . $field;
+
+		$orX = $expr->orX();
+		$orX->add($expr->emptyString($field));
+		if ($orNull) {
+			$orX->add($expr->isNull($field));
+		}
+		$this->andWhere($orX);
 	}
 
 
