@@ -232,6 +232,7 @@ class SimpleDataStore implements JsonSerializable {
 		return $this;
 	}
 
+
 	/**
 	 * @param string $key
 	 * @param string $class
@@ -281,6 +282,44 @@ class SimpleDataStore implements JsonSerializable {
 		$this->data[$key][] = $value;
 
 		return $this;
+	}
+
+
+	/**
+	 * @param string $key
+	 * @param SimpleDataStore $data
+	 *
+	 * @return $this
+	 */
+	public function sData(string $key, SimpleDataStore $data): self {
+		$this->data[$key] = $data->gAll();
+
+		return $this;
+	}
+
+	/**
+	 * @param string $key
+	 * @param SimpleDataStore $data
+	 *
+	 * @return $this
+	 */
+	public function aData(string $key, SimpleDataStore $data): self {
+		if (!array_key_exists($key, $this->data) || !is_array($this->data[$key])) {
+			$this->data[$key] = [];
+		}
+
+		$this->data[$key][] = $data->gAll();
+
+		return $this;
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return SimpleDataStore
+	 */
+	public function gData(string $key): SimpleDataStore {
+		return new SimpleDataStore($this->getArray($key, $this->data));
 	}
 
 
