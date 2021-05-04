@@ -33,6 +33,7 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud;
 
 use Exception;
 use JsonSerializable;
+use OC;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 
@@ -69,8 +70,8 @@ trait TNCDataResponse {
 		);
 
 		if ($log) {
-			\OC::$server->getLogger()
-						->log(2, $status . ' - ' . json_encode($data));
+			OC::$server->getLogger()
+					   ->log(2, $status . ' - ' . json_encode($data));
 		}
 
 		return new DataResponse($data, $status);

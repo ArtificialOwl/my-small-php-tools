@@ -271,7 +271,7 @@ trait TNC19Request {
 	 * @throws RequestServerException
 	 * @throws RequestNetworkException
 	 */
-	private function parseRequestResult($curl, Request &$request) {
+	private function parseRequestResult($curl, Request $request) {
 		$this->parseRequestResultCurl($curl, $request);
 
 		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -309,7 +309,7 @@ trait TNC19Request {
 	 *
 	 * @throws RequestContentException
 	 */
-	private function parseRequestResultCode301($code, Request $request) {
+	private function parseRequestResultCode301(int $code, Request $request) {
 		if ($code === 301) {
 			throw new RequestContentException(
 				'301 - ' . json_encode($request, JSON_UNESCAPED_SLASHES)

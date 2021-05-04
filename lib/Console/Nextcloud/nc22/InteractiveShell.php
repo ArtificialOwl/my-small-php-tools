@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Console\Nextcloud\nc21;
+namespace daita\MySmallPhpTools\Console\Nextcloud\nc22;
 
 
 use daita\MySmallPhpTools\Exceptions\ShellConfirmationException;
@@ -50,7 +50,7 @@ use Symfony\Component\Console\Question\Question;
 /**
  * Class InteractiveShell
  *
- * @package daita\MySmallPhpTools\Service
+ * @package daita\MySmallPhpTools\Console\Nextcloud\nc22
  */
 class InteractiveShell {
 

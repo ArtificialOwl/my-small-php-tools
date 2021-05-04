@@ -56,7 +56,7 @@ class RequestBuilder {
 	 * @param IQueryBuilder $qb
 	 * @param int $id
 	 */
-	protected function limitToId(IQueryBuilder &$qb, int $id) {
+	protected function limitToId(IQueryBuilder $qb, int $id) {
 		$this->limitToDBFieldInt($qb, 'id', $id);
 	}
 
@@ -67,7 +67,7 @@ class RequestBuilder {
 	 * @param IQueryBuilder $qb
 	 * @param string $id
 	 */
-	protected function limitToIdString(IQueryBuilder &$qb, string $id) {
+	protected function limitToIdString(IQueryBuilder $qb, string $id) {
 		$this->limitToDBField($qb, 'id', $id, false);
 	}
 
@@ -78,7 +78,7 @@ class RequestBuilder {
 	 * @param IQueryBuilder $qb
 	 * @param string $userId
 	 */
-	protected function limitToUserId(IQueryBuilder &$qb, string $userId) {
+	protected function limitToUserId(IQueryBuilder $qb, string $userId) {
 		$this->limitToDBField($qb, 'user_id', $userId, false);
 	}
 
@@ -91,7 +91,7 @@ class RequestBuilder {
 	 *
 	 * @throws Exception
 	 */
-	protected function limitToCreation(IQueryBuilder &$qb, int $delay = 0) {
+	protected function limitToCreation(IQueryBuilder $qb, int $delay = 0) {
 		$date = new DateTime('now');
 		$date->sub(new DateInterval('PT' . $delay . 'M'));
 
@@ -107,7 +107,7 @@ class RequestBuilder {
 	 * @param string $alias
 	 */
 	protected function limitToDBField(
-		IQueryBuilder &$qb, string $field, string $value, bool $cs = true, string $alias = ''
+		IQueryBuilder $qb, string $field, string $value, bool $cs = true, string $alias = ''
 	) {
 		$expr = $this->exprLimitToDBField($qb, $field, $value, true, $cs, $alias);
 		$qb->andWhere($expr);
@@ -122,7 +122,7 @@ class RequestBuilder {
 	 * @param string $alias
 	 */
 	protected function filterDBField(
-		IQueryBuilder &$qb, string $field, string $value, bool $cs = true, string $alias = ''
+		IQueryBuilder $qb, string $field, string $value, bool $cs = true, string $alias = ''
 	) {
 		$expr = $this->exprLimitToDBField($qb, $field, $value, false, $cs, $alias);
 		$qb->andWhere($expr);
@@ -140,7 +140,7 @@ class RequestBuilder {
 	 * @return string
 	 */
 	protected function exprLimitToDBField(
-		IQueryBuilder &$qb, string $field, string $value, bool $eq = true, bool $cs = true, string $alias = ''
+		IQueryBuilder $qb, string $field, string $value, bool $eq = true, bool $cs = true, string $alias = ''
 	): string {
 		$expr = $qb->expr();
 
@@ -174,7 +174,7 @@ class RequestBuilder {
 	 * @param string $alias
 	 */
 	protected function limitToDBFieldInt(
-		IQueryBuilder &$qb, string $field, int $value, string $alias = ''
+		IQueryBuilder $qb, string $field, int $value, string $alias = ''
 	) {
 		$expr = $this->exprLimitToDBFieldInt($qb, $field, $value, $alias, true);
 		$qb->andWhere($expr);
@@ -188,7 +188,7 @@ class RequestBuilder {
 	 * @param string $alias
 	 */
 	protected function filterDBFieldInt(
-		IQueryBuilder &$qb, string $field, int $value, string $alias = ''
+		IQueryBuilder $qb, string $field, int $value, string $alias = ''
 	) {
 		$expr = $this->exprLimitToDBFieldInt($qb, $field, $value, $alias, false);
 		$qb->andWhere($expr);
@@ -206,7 +206,7 @@ class RequestBuilder {
 	 * @return string
 	 */
 	protected function exprLimitToDBFieldInt(
-		IQueryBuilder &$qb, string $field, int $value, string $alias = '', bool $eq = true
+		IQueryBuilder $qb, string $field, int $value, string $alias = '', bool $eq = true
 	): string {
 		$expr = $qb->expr();
 
@@ -229,7 +229,7 @@ class RequestBuilder {
 	 * @param IQueryBuilder $qb
 	 * @param string $field
 	 */
-	protected function limitToDBFieldEmpty(IQueryBuilder &$qb, string $field) {
+	protected function limitToDBFieldEmpty(IQueryBuilder $qb, string $field) {
 		$expr = $qb->expr();
 		$pf = ($qb->getType() === QueryBuilder::SELECT) ? $this->defaultSelectAlias . '.' : '';
 		$field = $pf . $field;
@@ -242,7 +242,7 @@ class RequestBuilder {
 	 * @param IQueryBuilder $qb
 	 * @param string $field
 	 */
-	protected function filterDBFieldEmpty(IQueryBuilder &$qb, string $field) {
+	protected function filterDBFieldEmpty(IQueryBuilder $qb, string $field) {
 		$expr = $qb->expr();
 		$pf = ($qb->getType() === QueryBuilder::SELECT) ? $this->defaultSelectAlias . '.' : '';
 		$field = $pf . $field;
@@ -258,7 +258,7 @@ class RequestBuilder {
 	 * @param bool $orNull
 	 */
 	protected function limitToDBFieldDateTime(
-		IQueryBuilder &$qb, string $field, DateTime $date, bool $orNull = false
+		IQueryBuilder $qb, string $field, DateTime $date, bool $orNull = false
 	) {
 		$expr = $qb->expr();
 		$pf = ($qb->getType() === QueryBuilder::SELECT) ? $this->defaultSelectAlias . '.' : '';
@@ -302,7 +302,7 @@ class RequestBuilder {
 	 * @param string $field
 	 * @param array $values
 	 */
-	protected function limitToDBFieldArray(IQueryBuilder &$qb, string $field, array $values) {
+	protected function limitToDBFieldArray(IQueryBuilder $qb, string $field, array $values) {
 		$expr = $qb->expr();
 		$pf = ($qb->getType() === QueryBuilder::SELECT) ? $this->defaultSelectAlias . '.' : '';
 		$field = $pf . $field;
@@ -325,7 +325,7 @@ class RequestBuilder {
 	 * @param string $field
 	 * @param string $value
 	 */
-	protected function searchInDBField(IQueryBuilder &$qb, string $field, string $value) {
+	protected function searchInDBField(IQueryBuilder $qb, string $field, string $value) {
 		$expr = $qb->expr();
 
 		$pf = ($qb->getType() === QueryBuilder::SELECT) ? $this->defaultSelectAlias . '.' : '';

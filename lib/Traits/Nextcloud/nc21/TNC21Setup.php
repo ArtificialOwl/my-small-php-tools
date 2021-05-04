@@ -32,6 +32,7 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
 use daita\MySmallPhpTools\Traits\TArrayTools;
+use OC;
 use OCP\IConfig;
 
 /**
@@ -81,7 +82,7 @@ trait TNC21Setup {
 		return $this->getArray($key, $this->_setup, $default);
 	}
 
-	
+
 	/**
 	 * @param string $key
 	 *
@@ -94,7 +95,7 @@ trait TNC21Setup {
 		}
 
 		/** @var IConfig $config */
-		$config = \OC::$server->get(IConfig::class);
+		$config = OC::$server->get(IConfig::class);
 
 		return $config->getAppValue($app, $key, '');
 	}

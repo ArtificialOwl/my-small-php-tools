@@ -33,6 +33,7 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc22;
 
 
 use daita\MySmallPhpTools\Traits\TArrayTools;
+use OC;
 use OCP\IConfig;
 
 /**
@@ -95,7 +96,7 @@ trait TNC22Setup {
 		}
 
 		/** @var IConfig $config */
-		$config = \OC::$server->get(IConfig::class);
+		$config = OC::$server->get(IConfig::class);
 
 		return $config->getAppValue($app, $key, '');
 	}

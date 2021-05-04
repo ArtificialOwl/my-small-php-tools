@@ -351,6 +351,8 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @param bool $httpErrorsAllowed
+	 *
+	 * @return Request
 	 */
 	public function setHttpErrorsAllowed(bool $httpErrorsAllowed): Request {
 		$this->httpErrorsAllowed = $httpErrorsAllowed;
@@ -509,6 +511,8 @@ class Request implements JsonSerializable {
 
 	/**
 	 * @param int $queryStringType
+	 *
+	 * @return Request
 	 */
 	public function setQueryStringType(int $queryStringType): self {
 		$this->queryStringType = $queryStringType;
@@ -788,7 +792,6 @@ class Request implements JsonSerializable {
 			'type'           => $this->getType(),
 			'cookies'        => $this->getCookies(),
 			'headers'        => $this->getHeaders(),
-			'cookies'        => $this->getCookies(),
 			'params'         => $this->getParams(),
 			'data'           => $this->getData(),
 			'userAgent'      => $this->getUserAgent(),

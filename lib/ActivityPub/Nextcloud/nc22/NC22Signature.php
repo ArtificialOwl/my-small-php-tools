@@ -188,6 +188,8 @@ class NC22Signature {
 
 	/**
 	 * @param NC22SignedRequest $signedRequest
+	 *
+	 * @throws SignatureException
 	 */
 	private function setIncomingClearSignature(NC22SignedRequest $signedRequest): void {
 		$request = $signedRequest->getIncomingRequest();

@@ -432,6 +432,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 	/**
 	 * @param string $field
+	 * @param bool $orNull
 	 */
 	public function limitToDBFieldEmpty(string $field, bool $orNull = false): void {
 		$expr = $this->expr();

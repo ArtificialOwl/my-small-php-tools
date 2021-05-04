@@ -78,11 +78,6 @@ trait TNC21Logger {
 			$message = json_encode($serializable);
 		}
 
-		$opts = [
-			'app'       => $this->setup('app'),
-			'exception' => $t
-		];
-
 		$this->logger()
 			 ->log(
 				 $level,
@@ -118,11 +113,6 @@ trait TNC21Logger {
 		if (!empty($serializable)) {
 			$message = json_encode($serializable);
 		}
-
-		$opts = [
-			'app'       => $this->setup('app'),
-			'exception' => $e
-		];
 
 		if ($level === self::$DEBUG) {
 			$level = (int)$this->appConfig('debug_level');

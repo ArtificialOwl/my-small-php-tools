@@ -41,7 +41,6 @@ use Exception;
 use OC;
 use OC\DB\QueryBuilder\QueryBuilder;
 use OC\SystemConfig;
-use OCA\Circles\Db\CoreRequestBuilder;
 use OCP\DB\QueryBuilder\ICompositeExpression;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;

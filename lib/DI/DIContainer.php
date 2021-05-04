@@ -147,7 +147,7 @@ class DIContainer extends Container {
 	 *
 	 * @param string $name the class name to resolve
 	 *
-	 * @return \stdClass
+	 * @return stdClass
 	 * @throws DependencyInjectionException if the class could not be found or instantiated
 	 */
 	public function resolve($name) {
@@ -195,7 +195,7 @@ class DIContainer extends Container {
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	public function registerParameter($name, $value) {
+	public function registerParameter(string $name, $value) {
 		$this[$name] = $value;
 	}
 
