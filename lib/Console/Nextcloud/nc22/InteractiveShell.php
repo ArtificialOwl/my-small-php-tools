@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Service;
+namespace daita\MySmallPhpTools\Console\Nextcloud\nc21;
 
 
 use daita\MySmallPhpTools\Exceptions\ShellConfirmationException;
@@ -160,7 +160,6 @@ class InteractiveShell {
 	 * @return string[]
 	 */
 	private function availableCommands(string $path = ''): array {
-
 		$commands = [];
 		foreach ($this->commands as $entry) {
 			if ($path !== '' && strpos($entry, $path) === false) {
