@@ -39,7 +39,6 @@ use daita\MySmallPhpTools\Exceptions\ShellUnknownCommandException;
 use daita\MySmallPhpTools\Exceptions\ShellUnknownItemException;
 use daita\MySmallPhpTools\IInteractiveShellClient;
 use daita\MySmallPhpTools\Traits\TStringTools;
-use OC\Core\Command\Base;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,9 +57,6 @@ class InteractiveShell {
 
 	use TStringTools;
 
-
-	/** @var Base */
-	private $parent;
 
 	/** @var InputInterface */
 	private $input;
@@ -86,7 +82,6 @@ class InteractiveShell {
 		IInteractiveShellClient $client
 	) {
 		$this->helper = $parent->getHelper('question');
-		$this->parent = $parent;
 		$this->input = $input;
 		$this->output = $output;
 
