@@ -38,10 +38,12 @@ use daita\MySmallPhpTools\Exceptions\ShellMissingItemException;
 use daita\MySmallPhpTools\Exceptions\ShellUnknownCommandException;
 use daita\MySmallPhpTools\Exceptions\ShellUnknownItemException;
 use daita\MySmallPhpTools\IInteractiveShellClient;
+use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22InteractiveShellSession;
 use daita\MySmallPhpTools\Traits\TStringTools;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -52,7 +54,7 @@ use Symfony\Component\Console\Question\Question;
  *
  * @package daita\MySmallPhpTools\Console\Nextcloud\nc22
  */
-class InteractiveShell {
+class NC22InteractiveShell {
 
 
 	use TStringTools;
@@ -78,14 +80,14 @@ class InteractiveShell {
 	public function __construct(
 		Command $parent,
 		InputInterface $input,
-		OutputInterface $output,
 		IInteractiveShellClient $client
 	) {
 		$this->helper = $parent->getHelper('question');
 		$this->input = $input;
-		$this->output = $output;
-
 		$this->client = $client;
+
+		$output = new ConsoleOutput();
+		$this->output = $output->section();
 	}
 
 
@@ -93,7 +95,15 @@ class InteractiveShell {
 	 * @param array $commands
 	 */
 	public function setCommands(array $commands): void {
+		sort($commands);
 		$this->commands = array_merge($commands, ['quit', 'help']);
+	}
+
+	/**
+	 * @param array $command
+	 */
+	public function addCommand(string $command): void {
+		$this->commands[] = $command;
 	}
 
 
@@ -101,22 +111,20 @@ class InteractiveShell {
 	 * @param string $prompt
 	 */
 	public function run(string $prompt = '%PATH%>'): void {
-
-		$path = '';
+//		$path = [];
+		$session = new NC22InteractiveShellSession();
 		while (true) {
 			$question = new Question(trim(str_replace('%PATH%', $path, $prompt)) . ' ', '');
+			$this->manageAvailableCommands($session);
+			$question->setAutocompleterValues($session->getAvailableCommands());
 
-			$commands = $this->availableCommands($path);
-
-			$question->setAutocompleterValues($commands);
 			$current = strtolower($this->helper->ask($this->input, $this->output, $question));
-
 			if ($current === 'quit' || $current === 'q' || $current === 'exit') {
 				exit();
 			}
 
 			if ($current === '?' || $current === 'help') {
-				$this->listCurrentAvailableCommands($commands);
+				$this->listCurrentAvailableCommands($session->getAvailableCommands());
 				continue;
 			}
 
@@ -129,6 +137,7 @@ class InteractiveShell {
 
 			try {
 				$this->client->manageCommand($command);
+				$path = str_replace(' ', '.', $command);
 			} catch (ShellMissingCommandException $e) {
 				foreach ($this->commands as $cmd) {
 					$tmp = trim($this->commonPart(str_replace(' ', '.', $command), $cmd), '.');
@@ -155,32 +164,57 @@ class InteractiveShell {
 
 
 	/**
-	 * @param string $path
-	 *
-	 * @return string[]
+	 * @param NC22InteractiveShellSession $session
 	 */
-	private function availableCommands(string $path = ''): array {
+	private function manageAvailableCommands(NC22InteractiveShellSession $session): void {
 		$commands = [];
-		foreach ($this->commands as $entry) {
-			if ($path !== '' && strpos($entry, $path) === false) {
-				continue;
+		foreach ($this->commands as $command) {
+			if (strpos($command, $session->getPath()) !== 0) {
+				break;
 			}
 
-			$subPath = explode('.', $path);
-			$list = explode('.', $entry);
-
-			$root = [''];
-			for ($i = 0; $i < sizeof($list); $i++) {
-				$sub = $list[$i];
-				if ($sub === $subPath[$i]) {
-					continue;
-				}
-				$this->parseSubCommand($commands, $root, $sub);
-			}
+			$commands[] = $command;
 		}
 
-		return $commands;
+		$session->setAvailableCommands($commands);
 	}
+
+//
+//	/**
+//	 * @param string $path
+//	 *
+//	 * @return string[]
+//	 */
+//	private function generateInteractiveShellItem(string $path): InteractiveShellItem {
+//		$commands = [];
+//		foreach ($this->commands as $command) {
+//			$pathItems = explode('.', $path);
+//			$commandItems = explode('.', $command);
+//
+//			foreach ($pathCommand as $item) {
+//
+//			}
+//
+//
+////			if ($path !== '' && strpos($entry, $path) === false) {
+////				continue;
+////			}
+////
+////			$subPath = explode('.', $path);
+////			$list = explode('.', $entry);
+////
+////			$root = [''];
+////			for ($i = 0; $i < sizeof($list); $i++) {
+////				$sub = $list[$i];
+////				if ($sub === $subPath[$i]) {
+////					continue;
+////				}
+////				$this->parseSubCommand($commands, $root, $sub);
+////			}
+//		}
+//
+//		return $commands;
+//	}
 
 
 	/**
@@ -203,8 +237,8 @@ class InteractiveShell {
 	private function parseSubCommand(array &$commands, array &$root, string $sub): void {
 
 		if (substr($sub, 0, 1) === '?') {
-			list($source, $field) = explode('_', substr($sub, 1));
-			$list = $this->client->fillCommandList($source, $field);
+			$cmd = substr($sub, 1);
+//			$list = $this->client->fillCommandList($root, $cmd);
 		} else {
 			$list = [$sub];
 		}
