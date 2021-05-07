@@ -680,6 +680,41 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @param $table
+	 * @param $fields
+	 * @param $alias
+	 *
+	 * @return $this
+	 */
+	public function generateSelect(
+		string $table,
+		array $fields,
+		string $alias = '',
+		bool $distinct = false
+	): self {
+		$selectFields = array_map(
+			function(string $item) use ($alias) {
+				if ($alias === '') {
+					return $item;
+				}
+
+				return $alias . '.' . $item;
+			}, $fields
+		);
+
+		if ($distinct) {
+			$this->selectDistinct($selectFields);
+		} else {
+			$this->select($selectFields);
+		}
+
+		$this->from($table, $alias);
+
+		return $this;
+	}
+
+
+	/**
 	 * @param array $fields
 	 * @param string $alias
 	 * @param string $prefix
@@ -694,6 +729,10 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 		array $default = []
 	): self {
 		$prefix = trim($prefix) . '_';
+		$grouping = true;
+		if (empty($this->getQueryPart('groupBy'))) {
+			$grouping = false;
+		}
 
 		foreach ($fields as $field) {
 			if (array_key_exists($field, $default)) {
@@ -706,6 +745,32 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 			}
 
 			$this->selectAlias($left, $prefix . $field);
+			if ($grouping) {
+				$this->addGroupBy($left);
+			}
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * @param array $fields
+	 * @param string $alias
+	 *
+	 * @return $this
+	 */
+	public function generateGroupBy(array $fields, string $alias = '', bool $add = false): self {
+		if ($alias !== '') {
+			$alias .= '.';
+		}
+
+		if (!$add) {
+			$this->groupBy($alias . array_pop($fields));
+		}
+
+		foreach ($fields as $field) {
+			$this->addGroupBy($alias . $field);
 		}
 
 		return $this;
