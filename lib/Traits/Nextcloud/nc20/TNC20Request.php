@@ -134,6 +134,7 @@ trait TNC20Request {
 		$options = [
 			'headers' => $request->getHeaders(),
 			'cookies' => $request->getCookies(),
+			'timeout' => $request->getTimeout(),
 			'verify'  => $request->isVerifyPeer()
 		];
 
