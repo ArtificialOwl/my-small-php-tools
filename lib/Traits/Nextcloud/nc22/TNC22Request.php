@@ -131,6 +131,7 @@ trait TNC22Request {
 			'headers'     => $request->getHeaders(),
 			'cookies'     => $request->getCookies(),
 			'verify'      => $request->isVerifyPeer(),
+			'timeout'     => $request->getTimeout(),
 			'http_errors' => !$request->isHttpErrorsAllowed()
 		];
 
