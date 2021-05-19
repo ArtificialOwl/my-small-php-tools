@@ -71,7 +71,6 @@ class NC22Signature {
 
 
 	/**
-	 * @param string $host the local host
 	 * @param string $body
 	 *
 	 * @return NC22SignedRequest
@@ -80,7 +79,7 @@ class NC22Signature {
 	 * @throws SignatoryException
 	 * @throws SignatureException
 	 */
-	public function incomingSignedRequest(string $host, string $body = ''): NC22SignedRequest {
+	public function incomingSignedRequest(string $body = ''): NC22SignedRequest {
 		if ($body === '') {
 			$body = file_get_contents('php://input');
 		}
