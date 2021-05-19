@@ -199,7 +199,7 @@ class NC22Signature {
 			$this->setupArray('enforceSignatureHeaders')
 		);
 		if (!empty(array_diff($enforceHeaders, $headers))) {
-			throw new Exception('missing elements in \'headers\'');
+			throw new SignatureException('missing elements in \'headers\'');
 		}
 
 		$target = strtolower($request->getMethod()) . " " . $request->getRequestUri();
@@ -207,7 +207,7 @@ class NC22Signature {
 
 		foreach ($headers as $key) {
 			$value = $request->getHeader($key);
-			if ($key === 'host') {
+			if (strtolower($key) === 'host') {
 				$value = $signedRequest->getIncomingRequest()->getServerHost();
 			}
 			if ($value === '') {

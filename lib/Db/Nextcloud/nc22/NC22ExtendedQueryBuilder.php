@@ -404,7 +404,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 	/**
 	 * @param string $field
-	 * @param int $value
+	 * @param array $values
 	 * @param string $alias
 	 * @param bool $eq
 	 *
@@ -426,7 +426,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 			$comp = 'neq';
 		}
 
-		return $expr->$comp($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_STR_ARRAY));
+		return $expr->$comp($field, $this->createNamedParameter($values, IQueryBuilder::PARAM_STR_ARRAY));
 	}
 
 
@@ -680,9 +680,10 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
-	 * @param $table
-	 * @param $fields
-	 * @param $alias
+	 * @param string $table
+	 * @param array $fields
+	 * @param string $alias
+	 * @param bool $distinct
 	 *
 	 * @return $this
 	 */
@@ -758,6 +759,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	/**
 	 * @param array $fields
 	 * @param string $alias
+	 * @param bool $add
 	 *
 	 * @return $this
 	 */
