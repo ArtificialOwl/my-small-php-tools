@@ -708,7 +708,8 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 			$this->select($selectFields);
 		}
 
-		$this->from($table, $alias);
+		$this->from($table, $alias)
+			 ->setDefaultSelectAlias($alias);
 
 		return $this;
 	}

@@ -91,6 +91,8 @@ trait TNC22LocalSignatory {
 		$signatory->setKeyOwner($signatory->getId());
 		$this->generateKeys($signatory);
 
+		$signatories =
+			json_decode(OC::$server->get(IConfig::class)->getAppValue($app, 'key_pairs', '[]'), true);
 		$signatories[$signatory->getId()] = [
 			'keyId'      => $signatory->getKeyId(),
 			'keyOwner'   => $signatory->getKeyOwner(),

@@ -89,7 +89,6 @@ class NC22Signature {
 
 		$signedRequest = new NC22SignedRequest($body);
 		$signedRequest->setIncomingRequest(OC::$server->get(IRequest::class));
-		$signedRequest->setHost($host);
 
 		$this->verifyIncomingRequestTime($signedRequest);
 		$this->verifyIncomingRequestContent($signedRequest);
@@ -209,7 +208,7 @@ class NC22Signature {
 		foreach ($headers as $key) {
 			$value = $request->getHeader($key);
 			if ($key === 'host') {
-				$value = $signedRequest->getHost();
+				$value = $signedRequest->getIncomingRequest()->getServerHost();
 			}
 			if ($value === '') {
 				throw new SignatureException('empty elements in \'headers\'');
