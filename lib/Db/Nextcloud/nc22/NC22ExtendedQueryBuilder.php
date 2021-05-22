@@ -210,6 +210,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use limit();
 	 * @param string $field
 	 * @param string $value
 	 * @param bool $cs - case sensitive
@@ -223,6 +224,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use filter();
 	 * @param string $field
 	 * @param string $value
 	 * @param bool $cs - case sensitive
@@ -235,6 +237,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use exprLimit() / exprFilter();
 	 * @param string $field
 	 * @param string $value
 	 * @param bool $eq
@@ -272,6 +275,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use limitArray();
 	 * @param string $field
 	 * @param array $values
 	 * @param bool $cs - case sensitive
@@ -285,6 +289,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use filterArray();
 	 * @param string $field
 	 * @param string $value
 	 * @param bool $cs - case sensitive
@@ -298,6 +303,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use exprLimitArray() / exprFilterArray();
 	 * @param string $field
 	 * @param array $values
 	 * @param bool $eq
@@ -343,6 +349,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use limitInArray()
 	 * @param string $field
 	 * @param int $value
 	 * @param string $alias
@@ -354,6 +361,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use limitInt()
 	 * @param string $field
 	 * @param int $value
 	 * @param string $alias
@@ -365,6 +373,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use filterInt()
 	 * @param string $field
 	 * @param int $value
 	 * @param string $alias
@@ -376,6 +385,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use exprLimitInt() / exprFilterInt()
 	 * @param string $field
 	 * @param int $value1
 	 * @param string $alias
@@ -403,6 +413,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use exprLimitInArray()
 	 * @param string $field
 	 * @param array $values
 	 * @param string $alias
@@ -431,6 +442,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+ 	 * @deprecated - use limitEmpty()
 	 * @param string $field
 	 * @param bool $orNull
 	 */
@@ -449,6 +461,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - use filterEmpty()
 	 * @param string $field
 	 */
 	public function filterDBFieldEmpty(string $field): void {
@@ -527,6 +540,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - should be removed
 	 * @param IQueryBuilder $qb
 	 * @param string $field
 	 * @param string $fieldRight
@@ -554,6 +568,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @deprecated - should be removed
 	 * @param IQueryBuilder $qb
 	 * @param string $field
 	 * @param string $value
@@ -581,6 +596,75 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 		}
 
 		return $expr->$comp($field, $qb->createNamedParameter('%"' . $value . '"%'));
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 */
+	public function limit(string $field, string $value, string $alias = '', bool $cs = true): void {
+		$this->andWhere($this->exprLimit($field, $value, $alias, $cs));
+	}
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 *
+	 * @return string
+	 */
+	public function exprLimit(string $field, string $value, string $alias = '', bool $cs = true): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+
+		if ($cs) {
+			return $expr->eq($field, $this->createNamedParameter($value));
+		} else {
+			$func = $this->func();
+
+			return $expr->eq($func->lower($field), $func->lower($this->createNamedParameter($value)));
+		}
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 */
+	public function filter(string $field, string $value, string $alias = '', bool $cs = true): void {
+		$this->andWhere($this->exprFilter($field, $value, $alias, $cs));
+	}
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 *
+	 * @return string
+	 */
+	public function exprFilter(string $field, string $value, string $alias = '', bool $cs = true): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+		if ($cs) {
+			return $expr->neq($field, $this->createNamedParameter($value));
+		} else {
+			$func = $this->func();
+
+			return $expr->neq($func->lower($field), $func->lower($this->createNamedParameter($value)));
+		}
 	}
 
 
