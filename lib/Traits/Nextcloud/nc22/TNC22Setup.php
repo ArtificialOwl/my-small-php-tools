@@ -36,6 +36,7 @@ use daita\MySmallPhpTools\Traits\TArrayTools;
 use OC;
 use OCP\IConfig;
 
+
 /**
  * Trait TNC22Setup
  *
@@ -69,20 +70,33 @@ trait TNC22Setup {
 
 	/**
 	 * @param string $key
-	 * @param string $value
+	 * @param array $value
+	 * @param array $default
 	 *
-	 * @param string $default
-	 *
-	 * @return string
+	 * @return array
 	 */
 	public function setupArray(string $key, array $value = [], array $default = []): array {
-		if ($value !== '') {
+		if (!empty($value)) {
 			$this->_setup[$key] = $value;
 		}
 
 		return $this->getArray($key, $this->_setup, $default);
 	}
 
+	/**
+	 * @param string $key
+	 * @param int $value
+	 * @param int $default
+	 *
+	 * @return int
+	 */
+	public function setupInt(string $key, int $value = -999, int $default = 0): int {
+		if ($value !== -999) {
+			$this->_setup[$key] = $value;
+		}
+
+		return $this->getInt($key, $this->_setup, $default);
+	}
 
 	/**
 	 * @param string $key
