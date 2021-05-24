@@ -36,6 +36,7 @@ use JsonSerializable;
 
 
 /**
+ * @deprecated
  * Trait TAsync
  *
  * @package daita\MySmallPhpTools\Traits
@@ -54,6 +55,7 @@ trait TAsync {
 		}
 
 		header('Connection: close');
+		header('Content-Encoding: none');
 		ignore_user_abort();
 		ob_start();
 		echo($result);

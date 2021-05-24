@@ -61,6 +61,7 @@ trait TNC22Async {
 		}
 
 		header('Connection: close');
+		header('Content-Encoding: none');
 		ignore_user_abort();
 		$timeLimit = $this->setupInt(self::$SETUP_TIME_LIMIT);
 		set_time_limit(($timeLimit > 0) ? $timeLimit : 0);
