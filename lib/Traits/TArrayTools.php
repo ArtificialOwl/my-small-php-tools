@@ -201,11 +201,12 @@ trait TArrayTools {
 			return $arr[$k];
 		}
 
-		if ($arr[$k] === '1' || strtolower($arr[$k]) === 'true') {
+		$sk = (string)$arr[$k];
+		if ($sk === '1' || strtolower($sk) === 'true') {
 			return true;
 		}
 
-		if ($arr[$k] === '0') {
+		if ($sk === '0' || strtolower($sk) === 'false') {
 			return false;
 		}
 
