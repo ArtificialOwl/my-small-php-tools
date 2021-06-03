@@ -673,6 +673,15 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 		$this->andWhere($this->exprLimitInArray($field, $value, $alias));
 	}
 
+	/**
+	 * @param string $field
+	 * @param int $flag
+	 * @param string $alias
+	 */
+	public function limitBitwise(string $field, int $flag, string $alias = ''): void {
+		$this->andWhere($this->exprLimitBitwise($field, $flag, $alias));
+	}
+
 
 	/**
 	 * @param string $field
@@ -837,6 +846,26 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 	/**
 	 * @param string $field
+	 * @param int $flag
+	 * @param string $alias
+	 *
+	 * @return string
+	 */
+	public function exprLimitBitwise(string $field, int $flag, string $alias = ''): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+
+		return $expr->gt(
+			$expr->bitwiseAnd($field, $flag),
+			$this->createNamedParameter(0, IQueryBuilder::PARAM_INT)
+		);
+	}
+
+	/**
+	 * @param string $field
 	 * @param string $value
 	 * @param string $alias
 	 * @param bool $cs
@@ -898,6 +927,15 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 */
 	public function filterInArray(string $field, array $value, string $alias = ''): void {
 		$this->andWhere($this->exprFilterInArray($field, $value, $alias));
+	}
+
+	/**
+	 * @param string $field
+	 * @param int $flag
+	 * @param string $alias
+	 */
+	public function filterBitwise(string $field, int $flag, string $alias = ''): void {
+		$this->andWhere($this->exprFilterBitwise($field, $flag, $alias));
 	}
 
 
@@ -1063,6 +1101,27 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @param string $field
+	 * @param int $flag
+	 * @param string $alias
+	 *
+	 * @return string
+	 */
+	public function exprFilterBitwise(string $field, int $flag, string $alias = ''): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+
+		return $expr->eq(
+			$expr->bitwiseAnd($field, $flag),
+			$this->createNamedParameter(0, IQueryBuilder::PARAM_INT)
+		);
+	}
+
+
+	/**
 	 * @param string $object
 	 * @param array $params
 	 *
@@ -1215,18 +1274,18 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 		}
 
 		foreach ($fields as $field) {
+			$select = $alias . '.' . $field;
 			if (array_key_exists($field, $default)) {
 				$left = $this->createFunction(
-					'COALESCE(' . $alias . '.' . $field
-					. ', ' . $this->createNamedParameter($default[$field]) . ')'
+					'COALESCE(' . $select . ', ' . $this->createNamedParameter($default[$field]) . ')'
 				);
 			} else {
-				$left = $alias . '.' . $field;
+				$left = $select;
 			}
 
 			$this->selectAlias($left, $prefix . $field);
 			if ($grouping) {
-				$this->addGroupBy($left);
+				$this->addGroupBy($select);
 			}
 		}
 
