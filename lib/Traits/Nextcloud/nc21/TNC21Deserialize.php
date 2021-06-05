@@ -34,6 +34,7 @@ namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 use daita\MySmallPhpTools\Exceptions\InvalidItemException;
 use daita\MySmallPhpTools\IDeserializable;
+use JsonSerializable;
 
 
 /**
@@ -42,6 +43,16 @@ use daita\MySmallPhpTools\IDeserializable;
  * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
  */
 trait TNC21Deserialize {
+
+
+	/**
+	 * @param JsonSerializable $model
+	 *
+	 * @return array
+	 */
+	public function serialize(JsonSerializable $model): array {
+		return json_decode(json_encode($model), true);
+	}
 
 
 	/**
