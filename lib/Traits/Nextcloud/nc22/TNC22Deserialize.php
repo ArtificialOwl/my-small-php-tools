@@ -54,6 +54,15 @@ trait TNC22Deserialize {
 		return json_decode(json_encode($model), true);
 	}
 
+	/**
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	public function serializeArray(array $data): array {
+		return json_decode(json_encode($data), true);
+	}
+
 
 	/**
 	 * @param array $data
