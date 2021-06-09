@@ -840,7 +840,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 		$expr = $this->expr();
 
-		return $expr->eq($field, $this->createNamedParameter($values, IQueryBuilder::PARAM_STR_ARRAY));
+		return $expr->in($field, $this->createNamedParameter($values, IQueryBuilder::PARAM_STR_ARRAY));
 	}
 
 
@@ -1096,7 +1096,7 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 
 		$expr = $this->expr();
 
-		return $expr->neq($field, $this->createNamedParameter($values, IQueryBuilder::PARAM_STR_ARRAY));
+		return $expr->notIn($field, $this->createNamedParameter($values, IQueryBuilder::PARAM_STR_ARRAY));
 	}
 
 
