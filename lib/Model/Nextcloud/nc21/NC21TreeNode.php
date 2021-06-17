@@ -29,16 +29,16 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Model\SimpleDataStore;
+use ArtificialOwl\MySmallPhpTools\Model\SimpleDataStore;
 
 
 /**
  * Class NC21TreeNode
  *
- * @package daita\MySmallPhpTools\Model\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc21
  */
 class NC21TreeNode {
 

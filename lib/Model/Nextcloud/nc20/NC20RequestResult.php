@@ -28,11 +28,11 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc20;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc20;
 
 
-use daita\MySmallPhpTools\Exceptions\RequestContentException;
-use daita\MySmallPhpTools\Traits\TArrayTools;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RequestContentException;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 use OCP\Http\Client\IResponse;
 
@@ -40,7 +40,7 @@ use OCP\Http\Client\IResponse;
 /**
  * Class NC20RequestResult
  *
- * @package daita\MySmallPhpTools\Model\Nextcloud\nc20
+ * @package ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc20
  */
 class NC20RequestResult implements JsonSerializable {
 

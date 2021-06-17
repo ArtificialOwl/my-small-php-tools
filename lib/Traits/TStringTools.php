@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace ArtificialOwl\MySmallPhpTools\Traits;
 
 
 use Exception;
@@ -37,7 +37,7 @@ use Exception;
 /**
  * Trait TStringTools
  *
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TStringTools {
 

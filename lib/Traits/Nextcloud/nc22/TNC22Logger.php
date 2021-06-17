@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22;
 
 
 use Exception;
@@ -42,7 +42,7 @@ use Throwable;
 /**
  * Trait TNC22Logger
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22
  */
 trait TNC22Logger {
 

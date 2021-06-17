@@ -29,21 +29,21 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
-use daita\MySmallPhpTools\Exceptions\WellKnownLinkNotFoundException;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22Request;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22Webfinger;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22WellKnownLink;
-use daita\MySmallPhpTools\Model\SimpleDataStore;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RequestNetworkException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\WellKnownLinkNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22Request;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22Webfinger;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22WellKnownLink;
+use ArtificialOwl\MySmallPhpTools\Model\SimpleDataStore;
 
 
 /**
  * Trait TNC22WellKnown
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22
  */
 trait TNC22WellKnown {
 

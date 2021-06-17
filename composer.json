@@ -1,5 +1,5 @@
 {
-  "name": "daita/my-small-php-tools",
+  "name": "artificialowl/my-small-php-tools",
   "description": "My small PHP Tools",
   "minimum-stability": "stable",
   "license": "AGPL-3.0-or-later",
@@ -14,7 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "daita\\MySmallPhpTools\\": "lib/"
+      "ArtificialOwl\\MySmallPhpTools\\": "lib/"
     }
   }
 }

@@ -29,18 +29,18 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Exceptions\InvalidItemException;
-use daita\MySmallPhpTools\IDeserializable;
+use ArtificialOwl\MySmallPhpTools\Exceptions\InvalidItemException;
+use ArtificialOwl\MySmallPhpTools\IDeserializable;
 use JsonSerializable;
 
 
 /**
  * Trait TNC21Deserialize
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21
  */
 trait TNC21Deserialize {
 

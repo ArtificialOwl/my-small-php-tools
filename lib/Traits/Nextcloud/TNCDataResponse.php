@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud;
 
 
 use Exception;
@@ -42,7 +42,7 @@ use OCP\AppFramework\Http\DataResponse;
  * Trait TNCDataResponse
  *
  * @deprecated - 19
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TNCDataResponse {
 

@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc20;
 
 
 use Exception;
@@ -40,7 +40,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Trait TNC20Logger
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc20
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc20
  */
 trait TNC20Logger {
 

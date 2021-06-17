@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace ArtificialOwl\MySmallPhpTools\Traits;
 
 
 use JsonSerializable;
@@ -39,7 +39,7 @@ use JsonSerializable;
  * @deprecated
  * Trait TAsync
  *
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TAsync {
 

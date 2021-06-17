@@ -29,24 +29,35 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Model\SimpleDataStore;
+use ArtificialOwl\MySmallPhpTools\Model\SimpleDataStore;
+use JsonSerializable;
+
 
 /**
  * Class NC22InteractiveShellSession
  *
- * @package daita\MySmallPhpTools\Model\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22
  */
-class NC22InteractiveShellSession {
+class NC22InteractiveShellSession implements JsonSerializable {
 
+
+	/** @var string */
+	private $prompt = '%PATH%>';
 
 	/** @var string */
 	private $path = '';
 
 	/** @var array */
 	private $availableCommands = [];
+
+	/** @var array */
+	private $commands = [];
+
+	/** @var array */
+	private $globalCommands = [];
 
 	/** @var SimpleDataStore */
 	private $data;
@@ -56,6 +67,24 @@ class NC22InteractiveShellSession {
 	 * NC22InteractiveShellSession constructor.
 	 */
 	public function __construct() {
+		$this->data = new SimpleDataStore();
+	}
+
+
+	/**
+	 * @param string $prompt
+	 */
+	public function setPrompt(string $prompt): self {
+		$this->prompt = $prompt;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPrompt(): string {
+		return $this->prompt;
 	}
 
 
@@ -65,7 +94,7 @@ class NC22InteractiveShellSession {
 	 * @return NC22InteractiveShellSession
 	 */
 	public function setPath(string $path): self {
-		$this->path = $path;
+		$this->path = trim($path, '.');
 
 		return $this;
 	}
@@ -73,8 +102,66 @@ class NC22InteractiveShellSession {
 	/**
 	 * @return string
 	 */
-	public function getPath(): string {
-		return $this->path;
+	public function getPath(string $command = ''): string {
+		if ($command === '') {
+			return $this->path;
+		}
+
+		return trim($this->path . '.' . $command, '.');
+	}
+
+	/**
+	 * @param string $path
+	 *
+	 * @return $this
+	 */
+	public function addPath(string $path): self {
+		$this->path .= '.' . $path;
+		$this->path = trim($this->path, '.');
+
+		return $this;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function goParent(): self {
+		$path = explode('.', $this->path);
+		if (!empty($path)) {
+			array_pop($path);
+			$this->path = implode('.', $path);
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * @param array $commands
+	 */
+	public function setCommands(array $commands): self {
+		$this->commands = $commands;
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getCommands(): array {
+		return $this->commands;
+	}
+
+
+	/**
+	 * @param array $commands
+	 *
+	 * @return $this
+	 */
+	public function setGlobalCommands(array $commands = []): self {
+		$this->globalCommands = $commands;
+
+		return $this;
 	}
 
 
@@ -84,7 +171,7 @@ class NC22InteractiveShellSession {
 	 * @return NC22InteractiveShellSession
 	 */
 	public function setAvailableCommands(array $availableCommands): self {
-		$this->availableCommands = $availableCommands;
+		$this->availableCommands = array_unique($availableCommands);
 
 		return $this;
 	}
@@ -93,7 +180,23 @@ class NC22InteractiveShellSession {
 	 * @return array
 	 */
 	public function getAvailableCommands(): array {
-		return $this->availableCommands;
+		return array_merge($this->availableCommands, $this->globalCommands);
+	}
+
+
+	/**
+	 * @param string $command
+	 *
+	 * @return bool
+	 */
+	public function isCommandAvailable(array $commands, string $isAvailable): bool {
+		foreach ($commands as $command) {
+			if (strpos($command, $this->getPath($isAvailable)) === 0) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 
@@ -113,6 +216,18 @@ class NC22InteractiveShellSession {
 	 */
 	public function getData(): SimpleDataStore {
 		return $this->data;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		return [
+			'path'              => $this->getPath(),
+			'availableCommands' => $this->getAvailableCommands(),
+			'data'              => $this->getData()
+		];
 	}
 
 }

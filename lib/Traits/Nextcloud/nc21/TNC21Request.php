@@ -28,13 +28,13 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
-use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
-use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21RequestResult;
-use daita\MySmallPhpTools\Model\Request;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RequestNetworkException;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc21\NC21Request;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc21\NC21RequestResult;
+use ArtificialOwl\MySmallPhpTools\Model\Request;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use OC;
@@ -45,7 +45,7 @@ use OCP\Http\Client\IResponse;
 /**
  * Trait TNC21Request
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21
  */
 trait TNC21Request {
 

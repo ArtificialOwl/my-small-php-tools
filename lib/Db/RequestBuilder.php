@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Db;
+namespace ArtificialOwl\MySmallPhpTools\Db;
 
 
 use DateInterval;
@@ -41,7 +41,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 /**
  * Class RequestBuilder
  * @deprecated - 19
- * @package daita\MySmallPhpTools\Db
+ * @package ArtificialOwl\MySmallPhpTools\Db
  */
 class RequestBuilder {
 

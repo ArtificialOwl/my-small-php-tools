@@ -29,17 +29,13 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Console\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Console\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Exceptions\ShellConfirmationException;
-use daita\MySmallPhpTools\Exceptions\ShellMissingCommandException;
-use daita\MySmallPhpTools\Exceptions\ShellMissingItemException;
-use daita\MySmallPhpTools\Exceptions\ShellUnknownCommandException;
-use daita\MySmallPhpTools\Exceptions\ShellUnknownItemException;
-use daita\MySmallPhpTools\IInteractiveShellClient;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22InteractiveShellSession;
-use daita\MySmallPhpTools\Traits\TStringTools;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ShellConfirmationException;
+use ArtificialOwl\MySmallPhpTools\IInteractiveShellClient;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22InteractiveShellSession;
+use ArtificialOwl\MySmallPhpTools\Traits\TStringTools;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,7 +48,7 @@ use Symfony\Component\Console\Question\Question;
 /**
  * Class InteractiveShell
  *
- * @package daita\MySmallPhpTools\Console\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Console\Nextcloud\nc22
  */
 class NC22InteractiveShell {
 
@@ -85,9 +81,7 @@ class NC22InteractiveShell {
 		$this->helper = $parent->getHelper('question');
 		$this->input = $input;
 		$this->client = $client;
-
-		$output = new ConsoleOutput();
-		$this->output = $output->section();
+		$this->output = new ConsoleOutput();
 	}
 
 
@@ -110,11 +104,25 @@ class NC22InteractiveShell {
 	/**
 	 * @param string $prompt
 	 */
-	public function run(string $prompt = '%PATH%>'): void {
-//		$path = [];
-		$session = new NC22InteractiveShellSession();
+	public function run(?NC22InteractiveShellSession $session = null): void {
+		if (is_null($session)) {
+			$session = new NC22InteractiveShellSession();
+		}
+
+		$session->setCommands($this->commands);
 		while (true) {
-			$question = new Question(trim(str_replace('%PATH%', $path, $prompt)) . ' ', '');
+			$this->client->onNewPrompt($session);
+			$question = new Question(
+				trim(
+					str_replace(
+						'%PATH%',
+						$session->getPath(),
+						$session->getPrompt()
+					)
+				) . ' ',
+				''
+			);
+
 			$this->manageAvailableCommands($session);
 			$question->setAutocompleterValues($session->getAvailableCommands());
 
@@ -129,92 +137,88 @@ class NC22InteractiveShell {
 			}
 
 			if ($current === '') {
-				$path = '';
+				$session->goParent();
 				continue;
 			}
 
-			$command = ($path === '') ? $current : str_replace('.', ' ', $path) . ' ' . $current;
-
-			try {
-				$this->client->manageCommand($command);
-				$path = str_replace(' ', '.', $command);
-			} catch (ShellMissingCommandException $e) {
-				foreach ($this->commands as $cmd) {
-					$tmp = trim($this->commonPart(str_replace(' ', '.', $command), $cmd), '.');
-					if (strlen($tmp) > strlen($path)) {
-						$path = $tmp;
-					}
-				}
-			} catch (ShellMissingItemException $e) {
-				$more = ($e->getMessage()) ? ' - ' . $e->getMessage() : '';
-				$this->output->writeln(
-					'<comment>' . $command . '</comment>: missing item(s)' . $more
-				);
-			} catch (ShellUnknownItemException $e) {
-				$more = ($e->getMessage()) ? ' - ' . $e->getMessage() : '';
-				$this->output->writeln('<comment>' . $current . '</comment>: unknown item' . $more);
-			} catch (ShellUnknownCommandException $e) {
-				$more = ($e->getMessage()) ? ' - ' . $e->getMessage() : '';
-				$this->output->writeln(
-					'<comment>' . $command . '</comment>: command not found' . $more
-				);
-			}
+			$this->manageCommand($session, $current);
+//			$path = str_replace(' ', '')
+//			$command = ($path === '') ? $current : str_replace('.', ' ', $path) . ' ' . $current;
+//
+//			try {
+//				$this->client->manageCommand($command);
+//				$path = str_replace(' ', '.', $command);
+//			} catch (ShellMissingCommandException $e) {
+//				foreach ($this->commands as $cmd) {
+//					$tmp = trim($this->commonPart(str_replace(' ', '.', $command), $cmd), '.');
+//					if (strlen($tmp) > strlen($path)) {
+//						$path = $tmp;
+//					}
+//				}
+//			} catch (ShellMissingItemException $e) {
+//				$more = ($e->getMessage()) ? ' - ' . $e->getMessage() : '';
+//				$this->output->writeln(
+//					'<comment>' . $command . '</comment>: missing item(s)' . $more
+//				);
+//			} catch (ShellUnknownItemException $e) {
+//				$more = ($e->getMessage()) ? ' - ' . $e->getMessage() : '';
+//				$this->output->writeln('<comment>' . $current . '</comment>: unknown item' . $more);
+//			} catch (ShellUnknownCommandException $e) {
+//				$more = ($e->getMessage()) ? ' - ' . $e->getMessage() : '';
+//				$this->output->writeln(
+//					'<comment>' . $command . '</comment>: command not found' . $more
+//				);
+//			}
 		}
 	}
+
+//
+//	private function availableCommands(string $path = ''): array {
+//		$commands = [];
+//		foreach ($this->commands as $entry) {
+//			if ($path !== '' && strpos($entry, $path) === false) {
+//				continue;
+//			}
+//
+//			$subPath = explode('.', $path);
+//			$list = explode('.', $entry);
+//
+//			$root = [''];
+//			for ($i = 0; $i < sizeof($list); $i++) {
+//				$sub = $list[$i];
+//				if ($sub === $subPath[$i]) {
+//					continue;
+//				}
+//				$this->parseSubCommand($commands, $root, $sub);
+//			}
+//		}
+//
+//		return $commands;
+//	}
 
 
 	/**
 	 * @param NC22InteractiveShellSession $session
 	 */
 	private function manageAvailableCommands(NC22InteractiveShellSession $session): void {
-		$commands = [];
+		$availableCommands = [];
 		foreach ($this->commands as $command) {
-			if (strpos($command, $session->getPath()) !== 0) {
-				break;
+			if ($session->getPath() !== '' && strpos($command, $session->getPath()) !== 0) {
+				continue;
 			}
 
-			$commands[] = $command;
+			$commands = [];
+			$current = '';
+			foreach (explode('.', substr($command, strlen($session->getPath()))) as $item) {
+				$current .= $item . ' ';
+				$commands[] = trim($current, ' ');
+			}
+
+			$availableCommands = array_filter(array_merge($availableCommands, $commands));
 		}
 
-		$session->setAvailableCommands($commands);
+		$session->setAvailableCommands($availableCommands);
 	}
-
-//
-//	/**
-//	 * @param string $path
-//	 *
-//	 * @return string[]
-//	 */
-//	private function generateInteractiveShellItem(string $path): InteractiveShellItem {
-//		$commands = [];
-//		foreach ($this->commands as $command) {
-//			$pathItems = explode('.', $path);
-//			$commandItems = explode('.', $command);
-//
-//			foreach ($pathCommand as $item) {
-//
-//			}
-//
-//
-////			if ($path !== '' && strpos($entry, $path) === false) {
-////				continue;
-////			}
-////
-////			$subPath = explode('.', $path);
-////			$list = explode('.', $entry);
-////
-////			$root = [''];
-////			for ($i = 0; $i < sizeof($list); $i++) {
-////				$sub = $list[$i];
-////				if ($sub === $subPath[$i]) {
-////					continue;
-////				}
-////				$this->parseSubCommand($commands, $root, $sub);
-////			}
-//		}
-//
-//		return $commands;
-//	}
 
 
 	/**
@@ -226,6 +230,23 @@ class NC22InteractiveShell {
 				$this->output->writeln('<info>' . $command . '</info>');
 			}
 		}
+	}
+
+
+	/**
+	 * @param NC22InteractiveShellSession $session
+	 * @param string $command
+	 */
+	private function manageCommand(NC22InteractiveShellSession $session, string $command): void {
+		$command = str_replace(' ', '.', $command);
+		if (!$session->isCommandAvailable($this->commands, $command)) {
+			return;
+		}
+
+		$fullPath = $session->getPath($command);
+		$session->addPath($command);
+
+		$this->client->onNewCommand($session, $command);
 	}
 
 

@@ -28,14 +28,14 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools;
+namespace ArtificialOwl\MySmallPhpTools;
 
 
 /**
  * Interface IQueryRow
  *
  * @deprecated
- * @package daita\MySmallPhpTools
+ * @package ArtificialOwl\MySmallPhpTools
  */
 interface IQueryRow {
 

@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc20;
 
 
 use OCP\IConfig;
@@ -36,7 +36,7 @@ use OCP\IConfig;
 /**
  * Trait TNC20Setup
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc20
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc20
  */
 trait TNC20Setup {
 

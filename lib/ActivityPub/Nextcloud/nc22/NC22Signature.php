@@ -29,19 +29,19 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\ActivityPub\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\ActivityPub\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Exceptions\InvalidOriginException;
-use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
-use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
-use daita\MySmallPhpTools\Exceptions\SignatoryException;
-use daita\MySmallPhpTools\Exceptions\SignatureException;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22Request;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22Signatory;
-use daita\MySmallPhpTools\Model\Nextcloud\nc22\NC22SignedRequest;
-use daita\MySmallPhpTools\Model\SimpleDataStore;
-use daita\MySmallPhpTools\Traits\Nextcloud\nc22\TNC22Signatory;
+use ArtificialOwl\MySmallPhpTools\Exceptions\InvalidOriginException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ItemNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\MalformedArrayException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\SignatoryException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\SignatureException;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22Request;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22Signatory;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22SignedRequest;
+use ArtificialOwl\MySmallPhpTools\Model\SimpleDataStore;
+use ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22\TNC22Signatory;
 use DateTime;
 use Exception;
 use OC;
@@ -51,7 +51,7 @@ use OCP\IRequest;
 /**
  * Class NC22Signature
  *
- * @package daita\MySmallPhpTools\ActivityPub\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\ActivityPub\Nextcloud\nc22
  */
 class NC22Signature {
 

@@ -29,11 +29,11 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\DI;
+namespace ArtificialOwl\MySmallPhpTools\DI;
 
 
 use Closure;
-use daita\MySmallPhpTools\Exceptions\DependencyInjectionException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\DependencyInjectionException;
 use Pimple\Container;
 use ReflectionClass;
 use ReflectionException;
@@ -45,7 +45,7 @@ use stdClass;
  *
  * @require composer package "pimple/pimple"
  *
- * @package daita\MySmallPhpTools\DI
+ * @package ArtificialOwl\MySmallPhpTools\DI
  */
 class DIContainer extends Container {
 

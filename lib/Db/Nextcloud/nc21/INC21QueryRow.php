@@ -28,13 +28,13 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Db\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Db\Nextcloud\nc21;
 
 
 /**
  * Interface INC21QueryRow
  *
- * @package daita\MySmallPhpTools\Db\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Db\Nextcloud\nc21
  */
 interface INC21QueryRow {
 

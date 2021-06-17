@@ -29,17 +29,17 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21TreeNode;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc21\NC21TreeNode;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 
 /**
  * Trait TNC21ConsoleTree
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21
  */
 trait TNC21ConsoleTree {
 

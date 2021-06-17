@@ -28,13 +28,13 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace ArtificialOwl\MySmallPhpTools\Traits;
 
 
 /**
  * Trait TFileTools
  *
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TFileTools {
 

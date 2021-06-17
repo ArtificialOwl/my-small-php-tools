@@ -27,7 +27,7 @@
  */
 
 
-namespace daita\MySmallPhpTools\Exceptions;
+namespace ArtificialOwl\MySmallPhpTools\Exceptions;
 
 
 use Exception;
@@ -37,7 +37,7 @@ use Exception;
  * Class JsonNotRequestedException
  *
  *
- * @package daita\MySmallPhpTools\Exceptions
+ * @package ArtificialOwl\MySmallPhpTools\Exceptions
  */
 class JsonNotRequestedException extends Exception {
 

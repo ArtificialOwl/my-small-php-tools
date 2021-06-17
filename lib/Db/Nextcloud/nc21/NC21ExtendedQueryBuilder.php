@@ -28,12 +28,12 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Db\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Db\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Exceptions\DateTimeException;
-use daita\MySmallPhpTools\Exceptions\InvalidItemException;
-use daita\MySmallPhpTools\Exceptions\RowNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\DateTimeException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\InvalidItemException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RowNotFoundException;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -50,7 +50,7 @@ use OCP\ILogger;
 /**
  * Class NC21ExtendedQueryBuilder
  *
- * @package daita\MySmallPhpTools\Db\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Db\Nextcloud\nc21
  */
 class NC21ExtendedQueryBuilder extends QueryBuilder {
 

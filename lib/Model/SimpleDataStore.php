@@ -27,22 +27,22 @@
  */
 
 
-namespace daita\MySmallPhpTools\Model;
+namespace ArtificialOwl\MySmallPhpTools\Model;
 
 
-use daita\MySmallPhpTools\Exceptions\InvalidItemException;
-use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
-use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
-use daita\MySmallPhpTools\Exceptions\UnknownTypeException;
-use daita\MySmallPhpTools\IDeserializable;
-use daita\MySmallPhpTools\Traits\TArrayTools;
+use ArtificialOwl\MySmallPhpTools\Exceptions\InvalidItemException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ItemNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\MalformedArrayException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\UnknownTypeException;
+use ArtificialOwl\MySmallPhpTools\IDeserializable;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
 
 /**
  * Class SimpleDataStore
  *
- * @package daita\MySmallPhpTools\Model
+ * @package ArtificialOwl\MySmallPhpTools\Model
  */
 class SimpleDataStore implements JsonSerializable {
 
