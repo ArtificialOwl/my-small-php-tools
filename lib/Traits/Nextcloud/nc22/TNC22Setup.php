@@ -29,10 +29,10 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Traits\TArrayTools;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use OC;
 use OCP\IConfig;
 
@@ -40,7 +40,7 @@ use OCP\IConfig;
 /**
  * Trait TNC22Setup
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22
  */
 trait TNC22Setup {
 

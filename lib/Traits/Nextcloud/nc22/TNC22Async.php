@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22;
 
 
 use JsonSerializable;
@@ -38,7 +38,7 @@ use JsonSerializable;
 /**
  * Trait TAsync
  *
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TNC22Async {
 

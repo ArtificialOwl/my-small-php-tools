@@ -28,14 +28,14 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc20;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc20;
 
 
-use daita\MySmallPhpTools\Exceptions\RequestContentException;
-use daita\MySmallPhpTools\Exceptions\RequestNetworkException;
-use daita\MySmallPhpTools\Model\Nextcloud\nc20\NC20Request;
-use daita\MySmallPhpTools\Model\Nextcloud\nc20\NC20RequestResult;
-use daita\MySmallPhpTools\Model\Request;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RequestContentException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RequestNetworkException;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc20\NC20Request;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc20\NC20RequestResult;
+use ArtificialOwl\MySmallPhpTools\Model\Request;
 use Exception;
 use OC;
 use OCP\Http\Client\IClientService;
@@ -45,7 +45,7 @@ use OCP\Http\Client\IResponse;
 /**
  * Trait TNC20Request
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc20
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc20
  */
 trait TNC20Request {
 

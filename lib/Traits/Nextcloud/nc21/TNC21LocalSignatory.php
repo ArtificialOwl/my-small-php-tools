@@ -28,11 +28,11 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc21;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21;
 
 
-use daita\MySmallPhpTools\Exceptions\SignatoryException;
-use daita\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
+use ArtificialOwl\MySmallPhpTools\Exceptions\SignatoryException;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc21\NC21Signatory;
 use OC;
 use OCP\IConfig;
 
@@ -40,7 +40,7 @@ use OCP\IConfig;
 /**
  * Trait TNC21LocalSignatory
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc21
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc21
  */
 trait TNC21LocalSignatory {
 

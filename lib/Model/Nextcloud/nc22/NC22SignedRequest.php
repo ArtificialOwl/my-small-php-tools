@@ -28,10 +28,10 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Model\SimpleDataStore;
+use ArtificialOwl\MySmallPhpTools\Model\SimpleDataStore;
 use JsonSerializable;
 use OCP\IRequest;
 
@@ -39,7 +39,7 @@ use OCP\IRequest;
 /**
  * Class NC22SignedRequest
  *
- * @package daita\MySmallPhpTools\Model\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22
  */
 class NC22SignedRequest implements JsonSerializable {
 

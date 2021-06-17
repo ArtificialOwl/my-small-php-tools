@@ -28,17 +28,17 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Traits\TArrayTools;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
 
 /**
  * Class NC22WellKnownLink
  *
- * @package daita\MySmallPhpTools\Model\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22
  */
 class NC22WellKnownLink implements JsonSerializable {
 

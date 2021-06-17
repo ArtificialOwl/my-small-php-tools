@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22;
 
 
 interface INC22Convert {

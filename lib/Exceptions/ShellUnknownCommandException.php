@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Exceptions;
+namespace ArtificialOwl\MySmallPhpTools\Exceptions;
 
 
 use Exception;
@@ -38,7 +38,7 @@ use Exception;
 /**
  * Class ShellUnknownCommandException
  *
- * @package daita\MySmallPhpTools\Exceptions
+ * @package ArtificialOwl\MySmallPhpTools\Exceptions
  */
 class ShellUnknownCommandException extends Exception {
 

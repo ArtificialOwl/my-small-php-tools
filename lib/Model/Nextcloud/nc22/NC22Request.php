@@ -29,17 +29,17 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Model\Request;
+use ArtificialOwl\MySmallPhpTools\Model\Request;
 use OCP\Http\Client\IClient;
 
 
 /**
  * Class NC22Request
  *
- * @package daita\MySmallPhpTools\Model\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22
  */
 class NC22Request extends Request {
 

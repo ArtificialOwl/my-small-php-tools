@@ -29,10 +29,10 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits\Nextcloud\nc22;
+namespace ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22;
 
 
-use daita\MySmallPhpTools\Exceptions\JsonNotRequestedException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\JsonNotRequestedException;
 use Exception;
 use JsonSerializable;
 use OC;
@@ -47,7 +47,7 @@ use OCP\IUserSession;
 /**
  * Trait TNC22Controller
  *
- * @package daita\MySmallPhpTools\Traits\Nextcloud\nc22
+ * @package ArtificialOwl\MySmallPhpTools\Traits\Nextcloud\nc22
  */
 trait TNC22Controller {
 

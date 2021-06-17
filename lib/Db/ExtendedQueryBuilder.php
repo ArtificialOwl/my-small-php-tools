@@ -28,13 +28,13 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Db;
+namespace ArtificialOwl\MySmallPhpTools\Db;
 
 
-use daita\MySmallPhpTools\Exceptions\DateTimeException;
-use daita\MySmallPhpTools\Exceptions\RowNotFoundException;
-use daita\MySmallPhpTools\IExtendedQueryBuilder;
-use daita\MySmallPhpTools\IQueryRow;
+use ArtificialOwl\MySmallPhpTools\Exceptions\DateTimeException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\RowNotFoundException;
+use ArtificialOwl\MySmallPhpTools\IExtendedQueryBuilder;
+use ArtificialOwl\MySmallPhpTools\IQueryRow;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -47,7 +47,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 /**
  * Class ExtendedQueryBuilder
  *
- * @package daita\MySmallPhpTools\Db
+ * @package ArtificialOwl\MySmallPhpTools\Db
  */
 class ExtendedQueryBuilder extends QueryBuilder implements IExtendedQueryBuilder {
 

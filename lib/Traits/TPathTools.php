@@ -28,14 +28,14 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace ArtificialOwl\MySmallPhpTools\Traits;
 
 
 /**
  * Trait TPathTools
  *
  * @deprecated - 19
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TPathTools {
 

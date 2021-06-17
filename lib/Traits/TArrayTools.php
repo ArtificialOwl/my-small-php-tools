@@ -28,20 +28,20 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Traits;
+namespace ArtificialOwl\MySmallPhpTools\Traits;
 
 
-use daita\MySmallPhpTools\Exceptions\ArrayNotFoundException;
-use daita\MySmallPhpTools\Exceptions\ItemNotFoundException;
-use daita\MySmallPhpTools\Exceptions\MalformedArrayException;
-use daita\MySmallPhpTools\Exceptions\UnknownTypeException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ArrayNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ItemNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\MalformedArrayException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\UnknownTypeException;
 use Exception;
 use JsonSerializable;
 
 /**
  * Trait TArrayTools
  *
- * @package daita\MySmallPhpTools\Traits
+ * @package ArtificialOwl\MySmallPhpTools\Traits
  */
 trait TArrayTools {
 

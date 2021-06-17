@@ -27,7 +27,7 @@
  */
 
 
-namespace daita\MySmallPhpTools\Exceptions;
+namespace ArtificialOwl\MySmallPhpTools\Exceptions;
 
 
 use Exception;
@@ -36,7 +36,7 @@ use Exception;
 /**
  * Class RequestResultSizeException
  *
- * @package daita\MySmallPhpTools\Exceptions
+ * @package ArtificialOwl\MySmallPhpTools\Exceptions
  */
 class RequestResultSizeException extends Exception {
 

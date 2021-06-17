@@ -28,17 +28,17 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools\Model;
+namespace ArtificialOwl\MySmallPhpTools\Model;
 
 
-use daita\MySmallPhpTools\Traits\TArrayTools;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
 
 /**
  * Class Request
  *
- * @package daita\MySmallPhpTools\Model
+ * @package ArtificialOwl\MySmallPhpTools\Model
  */
 class Request implements JsonSerializable {
 

@@ -29,21 +29,36 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools;
+namespace ArtificialOwl\MySmallPhpTools;
 
 
-use daita\MySmallPhpTools\Exceptions\ShellMissingCommandException;
-use daita\MySmallPhpTools\Exceptions\ShellMissingItemException;
-use daita\MySmallPhpTools\Exceptions\ShellUnknownCommandException;
-use daita\MySmallPhpTools\Exceptions\ShellUnknownItemException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ShellMissingCommandException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ShellMissingItemException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ShellUnknownCommandException;
+use ArtificialOwl\MySmallPhpTools\Exceptions\ShellUnknownItemException;
+use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc22\NC22InteractiveShellSession;
 
 
 /**
  * Interface IInteractiveShellClient
  *
- * @package daita\MySmallPhpTools
+ * @package ArtificialOwl\MySmallPhpTools
  */
 interface IInteractiveShellClient {
+
+
+	/**
+	 * @param NC22InteractiveShellSession $session
+	 */
+	public function onNewPrompt(NC22InteractiveShellSession $session): void;
+
+
+	/**
+	 * @param NC22InteractiveShellSession $session
+	 * @param string $command
+	 */
+	public function onNewCommand(NC22InteractiveShellSession $session, string $command): void;
+
 
 
 	/**

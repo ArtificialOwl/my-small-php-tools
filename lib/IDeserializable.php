@@ -29,7 +29,7 @@ declare(strict_types=1);
  */
 
 
-namespace daita\MySmallPhpTools;
+namespace ArtificialOwl\MySmallPhpTools;
 
 
 interface IDeserializable {

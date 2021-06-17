@@ -27,18 +27,18 @@ declare(strict_types=1);
  *
  */
 
-namespace daita\MySmallPhpTools\Model;
+namespace ArtificialOwl\MySmallPhpTools\Model;
 
 
-use daita\MySmallPhpTools\Exceptions\CacheItemNotFoundException;
-use daita\MySmallPhpTools\Traits\TArrayTools;
+use ArtificialOwl\MySmallPhpTools\Exceptions\CacheItemNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use JsonSerializable;
 
 
 /**
  * Class Cache
  *
- * @package daita\MySmallPhpTools\Model
+ * @package ArtificialOwl\MySmallPhpTools\Model
  */
 class Cache implements JsonSerializable {
 
