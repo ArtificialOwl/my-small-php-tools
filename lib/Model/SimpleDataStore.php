@@ -57,7 +57,7 @@ class SimpleDataStore implements JsonSerializable {
 	/**
 	 * SimpleDataStore constructor.
 	 *
-	 * @param array $data
+	 * @param array|null $data
 	 */
 	public function __construct(?array $data = []) {
 		if (!is_array($data)) {
@@ -424,6 +424,17 @@ class SimpleDataStore implements JsonSerializable {
 		return $this->hasKey($key);
 	}
 
+
+	/**
+	 * @param string $json
+	 *
+	 * @return $this
+	 */
+	public function json(string $json): self {
+		$this->data = json_decode($json, true);
+
+		return $this;
+	}
 
 	/**
 	 * @return array
