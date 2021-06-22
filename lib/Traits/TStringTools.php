@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 
@@ -88,6 +89,20 @@ trait TStringTools {
 		return $uuid;
 	}
 
+
+	/**
+	 * @param string $line
+	 * @param int $length
+	 *
+	 * @return string
+	 */
+	protected function cut(string $line, int $length): string {
+		if (strlen($line) < $length) {
+			return $line;
+		}
+
+		return substr($line, 0, $length - 5) . ' (..)';
+	}
 
 	/**
 	 * @param string $str1
