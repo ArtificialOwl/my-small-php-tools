@@ -431,7 +431,10 @@ class SimpleDataStore implements JsonSerializable {
 	 * @return $this
 	 */
 	public function json(string $json): self {
-		$this->data = json_decode($json, true);
+		$data = json_decode($json, true);
+		if (is_array($data)) {
+			$this->data = $data;
+		}
 
 		return $this;
 	}
