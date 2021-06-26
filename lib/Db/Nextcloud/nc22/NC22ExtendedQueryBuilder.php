@@ -682,6 +682,26 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 		$this->andWhere($this->exprLimitBitwise($field, $flag, $alias));
 	}
 
+	/**
+	 * @param string $field
+	 * @param int $value
+	 * @param bool $gte
+	 * @param string $alias
+	 */
+	public function gt(string $field, int $value, bool $gte = false, string $alias = ''): void {
+		$this->andWhere($this->exprGt($field, $value, $gte, $alias));
+	}
+
+	/**
+	 * @param string $field
+	 * @param int $value
+	 * @param bool $lte
+	 * @param string $alias
+	 */
+	public function lt(string $field, int $value, bool $lte = false, string $alias = ''): void {
+		$this->andWhere($this->exprLt($field, $value, $lte, $alias));
+	}
+
 
 	/**
 	 * @param string $field
@@ -863,6 +883,52 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 			$this->createNamedParameter(0, IQueryBuilder::PARAM_INT)
 		);
 	}
+
+
+	/**
+	 * @param string $field
+	 * @param int $value
+	 * @param bool $lte
+	 * @param string $alias
+	 *
+	 * @return string
+	 */
+	public function exprLt(string $field, int $value, bool $lte = false, string $alias = ''): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+
+		if ($lte) {
+			return $expr->lte($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_INT));
+		} else {
+			return $expr->lt($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_INT));
+		}
+	}
+
+	/**
+	 * @param string $field
+	 * @param int $value
+	 * @param bool $gte
+	 * @param string $alias
+	 *
+	 * @return string
+	 */
+	public function exprGt(string $field, int $value, bool $gte = false, string $alias = ''): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+
+		if ($gte) {
+			return $expr->gte($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_INT));
+		} else {
+			return $expr->gt($field, $this->createNamedParameter($value, IQueryBuilder::PARAM_INT));
+		}
+	}
+
 
 	/**
 	 * @param string $field
