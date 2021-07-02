@@ -614,6 +614,17 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 * @param string $alias
 	 * @param bool $cs
 	 */
+	public function like(string $field, string $value, string $alias = '', bool $cs = true): void {
+		$this->andWhere($this->exprLike($field, $value, $alias, $cs));
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 */
 	public function limit(string $field, string $value, string $alias = '', bool $cs = true): void {
 		$this->andWhere($this->exprLimit($field, $value, $alias, $cs));
 	}
@@ -700,6 +711,28 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 */
 	public function lt(string $field, int $value, bool $lte = false, string $alias = ''): void {
 		$this->andWhere($this->exprLt($field, $value, $lte, $alias));
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 *
+	 * @return string
+	 */
+	public function exprLike(string $field, string $value, string $alias = '', bool $cs = true): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+		if ($cs) {
+			return $expr->like($field, $this->createNamedParameter($value));
+		} else {
+			return $expr->iLike($field, $this->createNamedParameter($value));
+		}
 	}
 
 
@@ -936,6 +969,17 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 * @param string $alias
 	 * @param bool $cs
 	 */
+	public function unlike(string $field, string $value, string $alias = '', bool $cs = true): void {
+		$this->andWhere($this->exprUnlike($field, $value, $alias, $cs));
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 */
 	public function filter(string $field, string $value, string $alias = '', bool $cs = true): void {
 		$this->andWhere($this->exprFilter($field, $value, $alias, $cs));
 	}
@@ -1002,6 +1046,30 @@ class NC22ExtendedQueryBuilder extends QueryBuilder {
 	 */
 	public function filterBitwise(string $field, int $flag, string $alias = ''): void {
 		$this->andWhere($this->exprFilterBitwise($field, $flag, $alias));
+	}
+
+
+	/**
+	 * @param string $field
+	 * @param string $value
+	 * @param string $alias
+	 * @param bool $cs
+	 *
+	 * @return string
+	 */
+	public function exprUnlike(string $field, string $value, string $alias = '', bool $cs = true): string {
+		if ($this->getType() === DBALQueryBuilder::SELECT) {
+			$field = (($alias === '') ? $this->getDefaultSelectAlias() : $alias) . '.' . $field;
+		}
+
+		$expr = $this->expr();
+		if ($cs) {
+			return $expr->notLike($field, $this->createNamedParameter($value));
+		} else {
+			$func = $this->func();
+
+			return $expr->notLike($func->lower($field), $func->lower($this->createNamedParameter($value)));
+		}
 	}
 
 
