@@ -245,6 +245,24 @@ class SimpleDataStore implements JsonSerializable {
 	 * @param string $key
 	 * @param string $class
 	 *
+	 * @return JsonSerializable[]
+	 */
+	public function gObjs(string $key, string $class = ''): array {
+		$list = $this->gArray($key);
+		$result = [];
+		foreach ($list as $item) {
+			$data = new SimpleDataStore([$key => $item]);
+			$result[] = $data->gObj($key, $class);
+		}
+
+		return array_filter($result);
+	}
+
+
+	/**
+	 * @param string $key
+	 * @param string $class
+	 *
 	 * @return null|JsonSerializable
 	 * @throws InvalidItemException
 	 * @throws UnknownTypeException
