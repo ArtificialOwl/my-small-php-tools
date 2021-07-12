@@ -1278,6 +1278,32 @@ class NC23ExtendedQueryBuilder extends QueryBuilder {
 
 
 	/**
+	 * @param string $object
+	 * @param array $params
+	 *
+	 * @return INC23QueryRow
+	 * @throws RowNotFoundException
+	 */
+	public function asItemFromField(string $field, array $params = []): INC23QueryRow {
+		$param['modelFromField'] = $field;
+
+		return $this->getRow([$this, 'parseSimpleSelectSql'], '', $params);
+	}
+
+	/**
+	 * @param string $field
+	 * @param array $params
+	 *
+	 * @return INC23QueryRow[]
+	 */
+	public function asItemsFromField(string $field, array $params = []): array {
+		$param['modelFromField'] = $field;
+
+		return $this->getRows([$this, 'parseSimpleSelectSql'], $object, $params);
+	}
+
+
+	/**
 	 * @param array $data
 	 * @param NC23ExtendedQueryBuilder $qb
 	 * @param string $object
@@ -1292,6 +1318,11 @@ class NC23ExtendedQueryBuilder extends QueryBuilder {
 		string $object,
 		array $params
 	): INC23QueryRow {
+		$fromField = $this->get('modelFromField', $params);
+		if ($fromField !== '') {
+			$object = $fromField;
+		}
+
 		$item = new $object();
 		if (!($item instanceof INC23QueryRow)) {
 			throw new InvalidItemException();
