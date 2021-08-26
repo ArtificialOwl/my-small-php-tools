@@ -53,14 +53,14 @@ trait TNC22ConsoleTree {
 		NC22TreeNode $root,
 		callable $method,
 		array $config = [
-			'height'       => 1,
+			'height' => 1,
 			'node-spacing' => 0,
 			'item-spacing' => 0,
 		]
 	): void {
 		$config = array_merge(
 			[
-				'height'       => 1,
+				'height' => 1,
 				'node-spacing' => 0,
 				'item-spacing' => 0
 			], $config
@@ -77,7 +77,8 @@ trait TNC22ConsoleTree {
 			$path = $node->getPath();
 			array_pop($path);
 
-			$line = $empty = '';
+			$line = $empty = $spacing = '';
+			$p = 0;
 			foreach ($path as $k => $i) {
 				$line .= ' ';
 				$empty .= ' ';
@@ -102,7 +103,20 @@ trait TNC22ConsoleTree {
 					$line .= '   ';
 					$empty .= '   ';
 				}
+				$p++;
 			}
+
+			if ($p < $prec) {
+				for ($i = 0; $i < $config['node-spacing']; $i++) {
+					$spacing = substr($empty, 0, -3);
+					if (substr($spacing, -1) === ' ') {
+						$spacing = substr($spacing, 0, -1) . '│';
+					}
+					$output->writeln($spacing);
+				}
+			}
+
+			$prec = $p;
 
 			for ($i = 1; $i <= $config['height']; $i++) {
 				$draw = $method($node->getItem(), $i);
