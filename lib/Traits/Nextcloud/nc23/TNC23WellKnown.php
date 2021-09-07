@@ -66,6 +66,17 @@ trait TNC23WellKnown {
 	public function getResourceData(string $host, string $subject, string $rel): SimpleDataStore {
 		$link = $this->getLink($host, $subject, $rel);
 
+		return $this->getResourceFromLink($link);
+	}
+
+
+	/**
+	 * @param NC23WellKnownLink $link
+	 *
+	 * @return SimpleDataStore
+	 * @throws RequestNetworkException
+	 */
+	public function getResourceFromLink(NC23WellKnownLink $link): SimpleDataStore {
 		$request = new NC23Request('');
 		$request->basedOnUrl($link->getHref());
 		$request->addHeader('Accept', $link->getType());
