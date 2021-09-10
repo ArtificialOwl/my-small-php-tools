@@ -94,7 +94,14 @@ trait TNC23Deserialize {
 	public function deserializeArray(array $data, string $class): array {
 		$arr = [];
 		foreach ($data as $entry) {
-			$arr[] = $this->deserialize($entry, $class);
+			if (!is_array($entry)) {
+				continue;
+			}
+
+			try {
+				$arr[] = $this->deserialize($entry, $class);
+			} catch (InvalidItemException $e) {
+			}
 		}
 
 		return $arr;
@@ -110,6 +117,9 @@ trait TNC23Deserialize {
 	 */
 	public function deserializeJson(string $json, string $class): IDeserializable {
 		$data = json_decode($json, true);
+		if (!is_array($data)) {
+			$data = [];
+		}
 
 		return $this->deserialize($data, $class);
 	}

@@ -35,6 +35,7 @@ namespace ArtificialOwl\MySmallPhpTools\Db\Nextcloud\nc23;
 use ArtificialOwl\MySmallPhpTools\Exceptions\DateTimeException;
 use ArtificialOwl\MySmallPhpTools\Exceptions\InvalidItemException;
 use ArtificialOwl\MySmallPhpTools\Exceptions\RowNotFoundException;
+use ArtificialOwl\MySmallPhpTools\Traits\TArrayTools;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
@@ -54,6 +55,9 @@ use OCP\ILogger;
  * @package ArtificialOwl\MySmallPhpTools\Db\Nextcloud\nc22
  */
 class NC23ExtendedQueryBuilder extends QueryBuilder {
+
+	
+	use TArrayTools;
 
 
 	/** @var string */
@@ -1396,7 +1400,7 @@ class NC23ExtendedQueryBuilder extends QueryBuilder {
 		bool $distinct = false
 	): self {
 		$selectFields = array_map(
-			function(string $item) use ($alias) {
+			function (string $item) use ($alias) {
 				if ($alias === '') {
 					return $item;
 				}
