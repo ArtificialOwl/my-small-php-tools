@@ -87,19 +87,23 @@ trait TNC23Deserialize {
 	/**
 	 * @param array $data
 	 * @param string $class
+	 * @param bool $associative
 	 *
 	 * @return IDeserializable[]
-	 * @throws InvalidItemException
 	 */
-	public function deserializeArray(array $data, string $class): array {
+	public function deserializeArray(array $data, string $class, bool $associative = false): array {
 		$arr = [];
-		foreach ($data as $entry) {
+		foreach ($data as $key => $entry) {
 			if (!is_array($entry)) {
 				continue;
 			}
 
 			try {
-				$arr[] = $this->deserialize($entry, $class);
+				if ($associative) {
+					$arr[$key] = $this->deserialize($entry, $class);
+				} else {
+					$arr[] = $this->deserialize($entry, $class);
+				}
 			} catch (InvalidItemException $e) {
 			}
 		}
