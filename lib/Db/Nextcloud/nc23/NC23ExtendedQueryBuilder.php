@@ -56,7 +56,7 @@ use OCP\ILogger;
  */
 class NC23ExtendedQueryBuilder extends QueryBuilder {
 
-	
+
 	use TArrayTools;
 
 
@@ -99,12 +99,12 @@ class NC23ExtendedQueryBuilder extends QueryBuilder {
 	 * @param int $size
 	 * @param int $page
 	 */
-	public function paginate(int $size, int $page = 1): void {
-		if ($page < 1) {
-			$page = 1;
+	public function paginate(int $size, int $page = 0): void {
+		if ($page < 0) {
+			$page = 0;
 		}
 
-		$this->chunk($page * $size, $page);
+		$this->chunk($page * $size, $size);
 	}
 
 	/**
@@ -1265,6 +1265,7 @@ class NC23ExtendedQueryBuilder extends QueryBuilder {
 	 *
 	 * @return INC23QueryRow
 	 * @throws RowNotFoundException
+	 * @throws InvalidItemException
 	 */
 	public function asItem(string $object, array $params = []): INC23QueryRow {
 		return $this->getRow([$this, 'parseSimpleSelectSql'], $object, $params);
@@ -1349,6 +1350,7 @@ class NC23ExtendedQueryBuilder extends QueryBuilder {
 	 *
 	 * @return INC23QueryRow
 	 * @throws RowNotFoundException
+	 * @throws InvalidItemException
 	 */
 	public function getRow(callable $method, string $object = '', array $params = []): INC23QueryRow {
 		$cursor = $this->execute();

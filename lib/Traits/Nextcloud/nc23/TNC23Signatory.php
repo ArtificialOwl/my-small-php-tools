@@ -36,6 +36,7 @@ use ArtificialOwl\MySmallPhpTools\Exceptions\InvalidOriginException;
 use ArtificialOwl\MySmallPhpTools\Exceptions\RequestNetworkException;
 use ArtificialOwl\MySmallPhpTools\Exceptions\SignatoryException;
 use ArtificialOwl\MySmallPhpTools\Exceptions\SignatureException;
+use ArtificialOwl\MySmallPhpTools\ISignedModel;
 use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc23\NC23Request;
 use ArtificialOwl\MySmallPhpTools\Model\Nextcloud\nc23\NC23Signatory;
 
@@ -142,7 +143,7 @@ trait TNC23Signatory {
 	 * @return string
 	 * @throws InvalidOriginException
 	 */
-	public function getKeyOrigin(string $keyId) {
+	public function getKeyOrigin(string $keyId): string {
 		$host = parse_url($keyId, PHP_URL_HOST);
 		if (is_string($host) && ($host !== '')) {
 			return $host;
@@ -166,7 +167,7 @@ trait TNC23Signatory {
 	) {
 		$res = openssl_pkey_new(
 			[
-				'digest_alg'       => $digest,
+				'digest_alg' => $digest,
 				'private_key_bits' => $bits,
 				'private_key_type' => $type,
 			]
@@ -200,6 +201,19 @@ trait TNC23Signatory {
 
 
 	/**
+	 * @param ISignedModel $model
+	 * @param NC23Signatory $signatory
+	 *
+	 * @throws SignatoryException
+	 */
+	public function signModel(ISignedModel $model, NC23Signatory $signatory): void {
+		$string = json_encode($model->signedData());
+		$signature = $this->signString($string, $signatory);
+		$model->setSignature($signature);
+	}
+
+
+	/**
 	 * @param string $clear
 	 * @param string $signed
 	 * @param string $publicKey
@@ -208,12 +222,31 @@ trait TNC23Signatory {
 	 * @throws SignatureException
 	 */
 	public function verifyString(
-		string $clear, string $signed, string $publicKey, string $algo = NC23Signatory::SHA256
+		string $clear,
+		string $signed,
+		string $publicKey,
+		string $algo = NC23Signatory::SHA256
 	) {
 		if (openssl_verify($clear, $signed, $publicKey, $algo) !== 1) {
 			throw new SignatureException('signature issue');
 		}
 	}
 
-}
 
+	/**
+	 * @param ISignedModel $model
+	 * @param string $publicKey
+	 * @param string $algo
+	 *
+	 * @throws SignatureException
+	 */
+	public function verifyModel(
+		ISignedModel $model,
+		string $publicKey,
+		string $algo = NC23Signatory::SHA256
+	): void {
+		$string = json_encode($model->signedData());
+		$this->verifyString($string, $model->getSignature(), $publicKey, $algo);
+	}
+
+}

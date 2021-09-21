@@ -40,6 +40,19 @@ namespace ArtificialOwl\MySmallPhpTools;
 interface ISignedModel {
 
 	/**
+	 * @param string $signature
+	 *
+	 * @return $this
+	 */
+	public function setSignature(string $signature): self;
+
+	/**
+	 * @return string
+	 */
+	public function getSignature(): string;
+
+
+	/**
 	 * returns array/data to be signed to identify the model
 	 *
 	 * @return array
