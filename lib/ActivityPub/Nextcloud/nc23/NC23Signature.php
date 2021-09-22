@@ -267,7 +267,7 @@ class NC23Signature {
 		try {
 			$this->verifyString(
 				$signedRequest->getClearSignature(),
-				base64_decode($signedRequest->getSignedSignature()),
+				$signedRequest->getSignedSignature(),
 				$publicKey,
 				$this->getUsedEncryption($signedRequest)
 			);

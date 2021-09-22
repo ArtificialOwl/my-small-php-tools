@@ -227,6 +227,7 @@ trait TNC23Signatory {
 		string $publicKey,
 		string $algo = NC23Signatory::SHA256
 	) {
+		$signed = base64_decode($signed);
 		if (openssl_verify($clear, $signed, $publicKey, $algo) !== 1) {
 			throw new SignatureException('signature issue');
 		}
