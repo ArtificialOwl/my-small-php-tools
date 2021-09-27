@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace ArtificialOwl\MySmallPhpTools\Traits;
 
 
+use DateTime;
 use Exception;
 
 
@@ -177,6 +178,42 @@ trait TStringTools {
 		}
 
 		return implode('', $word);
+	}
+
+
+	/**
+	 * @param int $bytes
+	 *
+	 * @return string
+	 */
+	public function humanReadable(int $bytes): string {
+		if ($bytes == 0) {
+			return '0.00 B';
+		}
+
+		$s = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+		$e = floor(log($bytes, 1024));
+
+		return round($bytes / pow(1024, $e), 2) . ' ' . $s[$e];
+	}
+
+
+	/**
+	 * @param int $first
+	 * @param int $second
+	 * @param bool $short
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
+	public function getDateDiff(int $first, int $second, bool $short = false): string {
+		$f = new DateTime('@' . $first);
+		$s = new DateTime('@' . $second);
+		if ($short) {
+			return $f->diff($s)->format('%aD, %hH, %iM');
+		}
+
+		return $f->diff($s)->format('%a days, %h hours, %i minutes and %s seconds');
 	}
 
 }

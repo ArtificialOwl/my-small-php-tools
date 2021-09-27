@@ -257,7 +257,7 @@ class NC23Signatory implements JsonSerializable {
 	 *
 	 * @return $this
 	 */
-	public function import(array $data): self {
+	public function importSignatory(array $data): self {
 		if ($this->getId() === '') {
 			$this->setId($this->get('id', $data));
 		}

@@ -117,7 +117,7 @@ trait TNC23Signatory {
 	 */
 	public function updateSignatory(NC23Signatory $signatory, array $json, string $keyId = ''): void {
 		$signatory->setOrigData($json)
-				  ->import($json);
+				  ->importSignatory($json);
 
 		if ($keyId === '') {
 			$keyId = $signatory->getKeyId();
