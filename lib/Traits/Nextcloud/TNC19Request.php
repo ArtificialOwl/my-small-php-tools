@@ -111,12 +111,6 @@ trait TNC19Request {
 				$request->setResultCode($result->getStatusCode());
 				break;
 			} catch (Exception $e) {
-				\OC::$server->getLogger()
-							->log(
-								3,
-								'issue while useClient(): ' . get_class($e) . '; ' . $e->getMessage() . '; '
-								. $request->getResultCode()
-							);
 			}
 		}
 
