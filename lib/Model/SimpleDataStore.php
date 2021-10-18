@@ -99,6 +99,19 @@ class SimpleDataStore implements JsonSerializable {
 
 	/**
 	 * @param string $key
+	 *
+	 * @return $this
+	 */
+	public function u(string $key): self {
+		if ($this->hasKey($key)) {
+			unset($this->data[$key]);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @param string $key
 	 * @param string $value
 	 *
 	 * @return SimpleDataStore

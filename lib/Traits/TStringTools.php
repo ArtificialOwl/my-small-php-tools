@@ -44,6 +44,9 @@ use Exception;
 trait TStringTools {
 
 
+	use TArrayTools;
+
+
 	/**
 	 * @param int $length
 	 *
@@ -206,15 +209,60 @@ trait TStringTools {
 	 * @return string
 	 * @throws Exception
 	 */
-	public function getDateDiff(int $first, int $second, bool $short = false): string {
-		$f = new DateTime('@' . $first);
-		$s = new DateTime('@' . $second);
-		if ($short) {
-			return $f->diff($s)->format('%aD, %hH, %iM');
+	public function getDateDiff(
+		int $first,
+		int $second = 0,
+		bool $short = false,
+		array $words = []
+	): string {
+		if ($second === 0) {
+			$first = time() - $first;
+			$second = time();
 		}
 
-		return $f->diff($s)->format('%a days, %h hours, %i minutes and %s seconds');
+		$f = new DateTime('@' . $first);
+		$s = new DateTime('@' . $second);
+		$duration = $second - $first;
+		if ($short) {
+			$minutes = $this->get('minutes', $words, 'M');
+			$hours = $this->get('hours', $words, 'H');
+			$days = $this->get('days', $words, 'D');
+
+			if ($duration < 60) {
+				return $f->diff($s)->format('<1' . $minutes);
+			}
+			if ($duration < 3600) {
+				return $f->diff($s)->format('%i' . $minutes);
+			}
+			if ($duration < 86400) {
+				return $f->diff($s)->format('%h' . $hours . ', %i' . $minutes);
+			}
+
+			return $f->diff($s)->format('%a' . $days . ', %h' . $hours . ', %i' . $minutes);
+		}
+
+		$seconds = $this->get('seconds', $words, 'seconds');
+		$minutes = $this->get('minutes', $words, 'minutes');
+		$hours = $this->get('hours', $words, 'hours');
+		$days = $this->get('days', $words, 'days');
+		if ($duration < 60) {
+			return $f->diff($s)->format('%s ' . $seconds);
+		}
+
+		if ($duration < 3600) {
+			return $f->diff($s)->format('%i ' . $minutes . ' and %s ' . $seconds);
+		}
+
+		if ($duration < 86400) {
+			return $f->diff($s)->format('%h ' . $hours . ', %i ' . $minutes . ' and %s ' . $seconds);
+		}
+
+		return $f->diff($s)->format(
+			'%a ' . $days .
+			', %h ' . $hours .
+			', %i ' . $minutes .
+			' and %s ' . $seconds
+		);
 	}
 
 }
-
