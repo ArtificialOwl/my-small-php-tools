@@ -143,7 +143,7 @@ trait TStringTools {
 	protected function feedStringWithParams(string $line, array $params): string {
 		$ak = array_keys($params);
 		foreach ($ak as $k) {
-			$line = str_replace('{' . $k . '}', $params[$k], $line);
+			$line = str_replace('{' . $k . '}', (string) $params[$k], $line);
 		}
 
 		return $line;
